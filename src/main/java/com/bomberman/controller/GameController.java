@@ -267,9 +267,22 @@ public class GameController {
                         gc.setFill(Color.rgb(0, 128, 64));
                         gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
-                    case EXPLOSION      -> {
+                    case EXPLOSION -> {
+                        // Fond orange
                         gc.setFill(Color.ORANGE);
                         gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+
+                        // Cercle jaune lumineux au centre
+                        gc.setFill(Color.YELLOW);
+                        gc.fillOval(drawX + CELL_SIZE * 0.2, drawY + CELL_SIZE * 0.2, CELL_SIZE * 0.6, CELL_SIZE * 0.6);
+
+                        // Optionnel: effet blanc (flash)
+                        gc.setFill(Color.rgb(255,255,255,0.4));
+                        gc.fillOval(drawX + CELL_SIZE * 0.35, drawY + CELL_SIZE * 0.35, CELL_SIZE * 0.3, CELL_SIZE * 0.3);
+
+                        // Optionnel: bordure noire
+                        gc.setStroke(Color.BLACK);
+                        gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                     default             -> {
                         gc.setFill(Color.rgb(0, 128, 64)); // Vert pelouse

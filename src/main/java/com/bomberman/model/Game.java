@@ -12,6 +12,18 @@ public class Game {
 
     private List<Bomb> bombs = new ArrayList<>();
 
+    // Nouvelle structure pour garder les explosions visibles
+    private static class Explosion {
+        int x, y;
+        int ticksRemaining;
+        Explosion(int x, int y, int ticksRemaining) {
+            this.x = x;
+            this.y = y;
+            this.ticksRemaining = ticksRemaining;
+        }
+    }
+    private List<Explosion> explosions = new ArrayList<>();
+
     public Game(int width, int height, int playerCount) {
         this.grid = new Grid(width, height);
         this.players = new ArrayList<>();
@@ -84,6 +96,7 @@ public class Game {
     }
 
     public void updateBombs() {
+        // Tick des bombes
         Iterator<Bomb> it = bombs.iterator();
         while (it.hasNext()) {
             Bomb b = it.next();
@@ -93,25 +106,30 @@ public class Game {
                 it.remove();
             }
         }
-        // Nettoyage des explosions temporaires
-        for (int y = 0; y < grid.getHeight(); y++) {
-            for (int x = 0; x < grid.getWidth(); x++) {
-                if (grid.getCell(x, y) == Grid.CellType.EXPLOSION) {
-                    grid.setCell(x, y, Grid.CellType.EMPTY);
+
+        // Tick des explosions (pour qu'elles restent affichées au moins 1 tick)
+        Iterator<Explosion> expIt = explosions.iterator();
+        while (expIt.hasNext()) {
+            Explosion exp = expIt.next();
+            exp.ticksRemaining--;
+            if (exp.ticksRemaining <= 0) {
+                // On nettoie la case
+                if (grid.getCell(exp.x, exp.y) == Grid.CellType.EXPLOSION) {
+                    grid.setCell(exp.x, exp.y, Grid.CellType.EMPTY);
                 }
-            }
-        }
-        // Remettre la case à EMPTY après explosion si elle n'est plus utilisée
-        for (Bomb b : bombs) {
-            if (grid.getCell(b.getX(), b.getY()) == Grid.CellType.BOMB) {
-                // On laisse la bombe affichée tant qu'elle n'a pas explosé
+                expIt.remove();
             }
         }
     }
 
+    private void addExplosion(int x, int y) {
+        grid.setCell(x, y, Grid.CellType.EXPLOSION);
+        explosions.add(new Explosion(x, y, 2)); // 1 tick = visible pendant un cycle
+    }
+
     private void explode(Bomb b) {
         int x = b.getX(), y = b.getY(), range = b.getRange();
-        grid.setCell(x, y, Grid.CellType.EXPLOSION);
+        addExplosion(x, y);
         destroyWall(x, y);
         damagePlayersAt(x, y);
 
@@ -122,7 +140,7 @@ public class Game {
                 if (!grid.isInBounds(nx, ny)) break;
                 Grid.CellType c = grid.getCell(nx, ny);
                 if (c == Grid.CellType.INDESTRUCTIBLE) break;
-                grid.setCell(nx, ny, Grid.CellType.EXPLOSION);
+                addExplosion(nx, ny);
                 damagePlayersAt(nx, ny);
                 if (c == Grid.CellType.DESTRUCTIBLE) {
                     destroyWall(nx, ny);
@@ -130,7 +148,6 @@ public class Game {
                 }
             }
         }
-        grid.setCell(x, y, Grid.CellType.EMPTY);
     }
 
     private void damagePlayersAt(int x, int y) {
