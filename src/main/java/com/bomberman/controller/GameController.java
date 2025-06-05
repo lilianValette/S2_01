@@ -6,12 +6,16 @@ import com.bomberman.model.Bomb;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 
@@ -19,12 +23,19 @@ public class GameController {
     @FXML
     private Canvas gameCanvas;
 
+    private Stage stage;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
     private Game game;
     private final int CELL_SIZE = 32;
     private final int BORDER_SIZE = 1;
     private final double BORDER_PIXEL_RATIO = 0.5;
     private final double TOP_UI_HEIGHT_RATIO = 2.5;
     private Timeline timeline;
+    private Timeline timerTimeline;
     private int timerSeconds = 120; // Timer en secondes (2:00)
     private Image avatarP1;
     private Image avatarP2;
@@ -67,7 +78,7 @@ public class GameController {
         timeline.play();
 
         // Timer pour décompte du temps (1 seconde)
-        Timeline timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (timerSeconds > 0) {
                 timerSeconds--;
                 drawGrid();
@@ -75,6 +86,38 @@ public class GameController {
         }));
         timerTimeline.setCycleCount(Timeline.INDEFINITE);
         timerTimeline.play();
+    }
+
+    private void returnToMenu() {
+        // Stoppe toutes les timelines pour éviter les appels en boucle
+        if (timeline != null) timeline.stop();
+        if (timerTimeline != null) timerTimeline.stop();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/menu.fxml"));
+            Parent root = loader.load();
+            MenuController menuController = loader.getController();
+            menuController.setStage(stage);
+            if (stage != null) {
+                stage.setScene(new Scene(root));
+            } else {
+                System.err.println("Impossible de trouver la fenêtre principale !");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void checkGameOver() {
+        boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
+
+        if (someoneDead) {
+            // Arrête les timelines si besoin
+            if (timeline != null) timeline.stop();
+            if (timerTimeline != null) timerTimeline.stop();
+            // Reviens au menu principal
+            returnToMenu();
+        }
     }
 
     private void handleKeyPressed(KeyEvent event) {
@@ -258,5 +301,7 @@ public class GameController {
                 // L'affichage des vies dans la grille est supprimé !
             }
         }
+
+        checkGameOver();
     }
 }
