@@ -103,7 +103,7 @@ public class GameController {
         gc.setFill(Color.ORANGE);
         gc.fillRect(0, 0, gameCanvas.getWidth(), topUiHeight);
 
-        // Affichage du timer centré dans la bande orange, avec fond blanc et cadre foncé
+        // --- Affichage du timer centré dans la bande orange, avec fond blanc et cadre foncé ---
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
         gc.setFont(Font.font("Consolas", topUiHeight * 0.4)); // Taille adaptative
         Text text = new Text(timerStr);
@@ -130,11 +130,34 @@ public class GameController {
         gc.setFill(Color.WHITE);
         gc.fillRoundRect(bgX, bgY, bgWidth, bgHeight, 12, 12);
 
-        // Texte
+        // Texte (timer)
         gc.setFill(Color.BLACK);
         gc.fillText(timerStr, timerX, timerY);
 
-        // Bordures gris très foncé autour de la grille (sous la zone orange)
+        // --- Affichage des vies des joueurs dans la bande orange ---
+        double iconSize = topUiHeight * 0.5;
+        double iconY = (topUiHeight - iconSize) / 2 + iconSize * 0.8; // Centrage vertical, ajusté pour la baseline
+
+        // Joueur 1 (bleu, à gauche)
+        Player p1 = game.getPlayers().get(0);
+        gc.setFont(Font.font("Arial", iconSize * 0.8));
+        gc.setFill(Color.BLUE);
+        String p1LivesStr = "♥ " + p1.getLives();
+        double p1TextWidth = new Text(p1LivesStr).getLayoutBounds().getWidth();
+        double p1X = bgX - 80 - p1TextWidth;
+        gc.fillText(p1LivesStr, Math.max(15, p1X), iconY);
+
+        // Joueur 2 (rouge, à droite) si présent
+        if (game.getPlayers().size() > 1) {
+            Player p2 = game.getPlayers().get(1);
+            gc.setFill(Color.RED);
+            String p2LivesStr = p2.getLives() + " ♥";
+            double p2TextWidth = new Text(p2LivesStr).getLayoutBounds().getWidth();
+            double p2X = bgX + bgWidth + 50;
+            gc.fillText(p2LivesStr, Math.min(canvasWidth - p2TextWidth - 15, p2X), iconY);
+        }
+
+        // --- Bordures gris très foncé autour de la grille (sous la zone orange) ---
         gc.setFill(Color.rgb(34, 34, 34));
         // Haut (juste sous la zone orange)
         gc.fillRect(0, topUiHeight, canvasWidth, borderPixel);
@@ -145,7 +168,7 @@ public class GameController {
         // Droite
         gc.fillRect(borderPixel + gridWidth * CELL_SIZE, topUiHeight, borderPixel, borderPixel + gridHeight * CELL_SIZE);
 
-        // Dessine la grille
+        // --- Dessine la grille ---
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
                 double drawX = borderPixel + x * CELL_SIZE;
@@ -163,24 +186,21 @@ public class GameController {
                 gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
             }
         }
-        // Dessine les bombes (optionnel)
+        // --- Dessine les bombes (optionnel) ---
         for (Bomb b : game.getBombs()) {
             double bx = borderPixel + b.getX() * CELL_SIZE + 8;
             double by = topUiHeight + borderPixel + b.getY() * CELL_SIZE + 8;
             gc.setFill(Color.BLACK);
             gc.fillOval(bx, by, CELL_SIZE - 16, CELL_SIZE - 16);
         }
-        // Dessine les joueurs
+        // --- Dessine les joueurs ---
         for (Player p : game.getPlayers()) {
             if (p.isAlive()) {
                 double px = borderPixel + p.getX() * CELL_SIZE + 4;
                 double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE + 4;
                 gc.setFill(p.getId() == 1 ? Color.BLUE : Color.RED);
                 gc.fillOval(px, py, CELL_SIZE - 8, CELL_SIZE - 8);
-                // Affiche les vies
-                gc.setFill(Color.WHITE);
-                gc.setFont(Font.font("Arial", 16));
-                gc.fillText("♥" + p.getLives(), px + 4, py + CELL_SIZE - 8);
+                // L'affichage des vies dans la grille est supprimé !
             }
         }
     }
