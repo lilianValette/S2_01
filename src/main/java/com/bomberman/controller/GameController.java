@@ -29,13 +29,19 @@ public class GameController {
     private Image avatarP1;
     private Image avatarP2;
 
+    // Images pour les murs
+    private Image wallIndestructibleImg;
+    private Image wallDestructibleImg;
+
     @FXML
     public void initialize() {
         game = new Game(15, 13, 2);
 
-        // Charge les images d'avatar (mets tes propres chemins si besoin)
+        // Charge les images d'avatar et de murs (mets tes propres chemins si besoin)
         avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
+        wallIndestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murIndestructible.png"));
+        wallDestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murDestructible.png"));
 
         // Calcul dynamique des dimensions
         int gridWidth = game.getGrid().getWidth();
@@ -170,7 +176,7 @@ public class GameController {
             gc.fillText(p2LivesStr, p2TextX, p2TextY);
         }
 
-        // --- Timer centré, même style compact ---
+        // --- Timer centré, fond élargi 1.5x ---
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
         gc.setFont(Font.font("Consolas", topUiHeight * 0.4));
         Text timerText = new Text(timerStr);
@@ -192,6 +198,7 @@ public class GameController {
         gc.strokeRoundRect(timerBgX, timerBgY, timerBgWidth, timerBgHeight, 8, 8);
         gc.setFill(Color.WHITE);
         gc.fillText(timerStr, timerTextX, timerTextY);
+
         // --- Bordures gris très foncé autour de la grille (sous la zone orange) ---
         gc.setFill(Color.rgb(34, 34, 34));
         // Haut (juste sous la zone orange)
@@ -210,15 +217,28 @@ public class GameController {
                 double drawY = topUiHeight + borderPixel + y * CELL_SIZE;
 
                 switch (grid.getCell(x, y)) {
-                    case INDESTRUCTIBLE -> gc.setFill(Color.DARKGRAY); // Couleur d'origine pour les murs indestructibles
-                    case DESTRUCTIBLE   -> gc.setFill(Color.BURLYWOOD);
-                    case BOMB           -> gc.setFill(Color.BLACK);
-                    case EXPLOSION      -> gc.setFill(Color.ORANGE);
-                    default             -> gc.setFill(Color.rgb(0, 128, 64)); // Vert pelouse
+                    case INDESTRUCTIBLE -> gc.drawImage(wallIndestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    case DESTRUCTIBLE   -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    case BOMB           -> {
+                        // On dessine d'abord le sol, puis la bombe plus bas
+                        gc.setFill(Color.rgb(0, 128, 64));
+                        gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    }
+                    case EXPLOSION      -> {
+                        gc.setFill(Color.ORANGE);
+                        gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    }
+                    default             -> {
+                        gc.setFill(Color.rgb(0, 128, 64)); // Vert pelouse
+                        gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    }
                 }
-                gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
-                gc.setStroke(Color.BLACK);
-                gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                // Si ce n'est pas un mur, on dessine la grille noire
+                if (grid.getCell(x, y) != com.bomberman.model.Grid.CellType.INDESTRUCTIBLE
+                        && grid.getCell(x, y) != com.bomberman.model.Grid.CellType.DESTRUCTIBLE) {
+                    gc.setStroke(Color.BLACK);
+                    gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                }
             }
         }
         // --- Dessine les bombes (optionnel) ---
