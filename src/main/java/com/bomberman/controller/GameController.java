@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import javafx.scene.image.Image;
 
 public class GameController {
     @FXML
@@ -25,10 +26,16 @@ public class GameController {
     private final double TOP_UI_HEIGHT_RATIO = 2.5;
     private Timeline timeline;
     private int timerSeconds = 120; // Timer en secondes (2:00)
+    private Image avatarP1;
+    private Image avatarP2;
 
     @FXML
     public void initialize() {
         game = new Game(15, 13, 2);
+
+        // Charge les images d'avatar (mets tes propres chemins si besoin)
+        avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
+        avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
 
         // Calcul dynamique des dimensions
         int gridWidth = game.getGrid().getWidth();
@@ -103,99 +110,88 @@ public class GameController {
         gc.setFill(Color.ORANGE);
         gc.fillRect(0, 0, gameCanvas.getWidth(), topUiHeight);
 
-        // --- Affichage du timer centré dans la bande orange, avec fond noir et cadre gris clair ---
+        // --- Avatars et compteurs de vie style Bomberman SNES ---
+        double iconSize = topUiHeight * 0.7; // Taille des avatars et compteurs
+        double margin = 14; // Marge latérale
+        double spacing = 4; // Espace entre avatar et compteur
+        double counterSize = iconSize; // Compteur carré
+
+        // --- Joueur 1 (gauche) ---
+        double p1AvatarX = margin;
+        double p1AvatarY = (topUiHeight - iconSize) / 2;
+        double p1CounterX = p1AvatarX + iconSize + spacing;
+        double p1CounterY = p1AvatarY;
+
+        // Affichage avatar P1
+        gc.drawImage(avatarP1, p1AvatarX, p1AvatarY, iconSize, iconSize);
+
+        // Fond du compteur de vie
+        gc.setFill(Color.BLACK);
+        gc.fillRoundRect(p1CounterX, p1CounterY, counterSize, counterSize, 8, 8);
+        // Cadre compteur
+        gc.setStroke(Color.LIGHTGRAY);
+        gc.setLineWidth(2);
+        gc.strokeRoundRect(p1CounterX, p1CounterY, counterSize, counterSize, 8, 8);
+        // Texte vie (centré)
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Consolas", counterSize * 0.7));
+        String p1LivesStr = String.valueOf(game.getPlayers().get(0).getLives());
+        Text p1Text = new Text(p1LivesStr);
+        p1Text.setFont(gc.getFont());
+        double p1TextWidth = p1Text.getLayoutBounds().getWidth();
+        double p1TextHeight = p1Text.getLayoutBounds().getHeight();
+        double p1TextX = p1CounterX + (counterSize - p1TextWidth) / 2;
+        double p1TextY = p1CounterY + counterSize - (counterSize - p1TextHeight) / 2 - 5;
+        gc.fillText(p1LivesStr, p1TextX, p1TextY);
+
+        // --- Joueur 2 (droite) ---
+        if (game.getPlayers().size() > 1) {
+            double p2AvatarX = canvasWidth - margin - iconSize;
+            double p2AvatarY = (topUiHeight - iconSize) / 2;
+            double p2CounterX = p2AvatarX - spacing - counterSize;
+            double p2CounterY = p2AvatarY;
+
+            gc.drawImage(avatarP2, p2AvatarX, p2AvatarY, iconSize, iconSize);
+
+            gc.setFill(Color.BLACK);
+            gc.fillRoundRect(p2CounterX, p2CounterY, counterSize, counterSize, 8, 8);
+            gc.setStroke(Color.LIGHTGRAY);
+            gc.setLineWidth(2);
+            gc.strokeRoundRect(p2CounterX, p2CounterY, counterSize, counterSize, 8, 8);
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Consolas", counterSize * 0.7));
+            String p2LivesStr = String.valueOf(game.getPlayers().get(1).getLives());
+            Text p2Text = new Text(p2LivesStr);
+            p2Text.setFont(gc.getFont());
+            double p2TextWidth = p2Text.getLayoutBounds().getWidth();
+            double p2TextHeight = p2Text.getLayoutBounds().getHeight();
+            double p2TextX = p2CounterX + (counterSize - p2TextWidth) / 2;
+            double p2TextY = p2CounterY + counterSize - (counterSize - p2TextHeight) / 2 - 5;
+            gc.fillText(p2LivesStr, p2TextX, p2TextY);
+        }
+
+        // --- Timer centré, même style compact ---
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
         gc.setFont(Font.font("Consolas", topUiHeight * 0.4));
         Text timerText = new Text(timerStr);
         timerText.setFont(gc.getFont());
         double timerWidth = timerText.getLayoutBounds().getWidth();
         double timerHeight = timerText.getLayoutBounds().getHeight();
-        double timerX = (canvasWidth - timerWidth) / 2;
-        double timerY = (topUiHeight / 2) + (timerHeight / 4);
 
-        // Fond noir + cadre gris clair pour le timer
-        double paddingX = 18;
-        double paddingY = 10;
-        double bgWidth = timerWidth + 2 * paddingX;
-        double bgHeight = timerHeight + 2 * paddingY;
-        double bgX = timerX - paddingX;
-        double bgY = timerY - timerHeight - paddingY / 2;
+        double timerBgWidth = iconSize * 1.5; // Largeur élargie à 1.5x la hauteur
+        double timerBgHeight = iconSize;
+        double timerBgX = (canvasWidth - timerBgWidth) / 2;
+        double timerBgY = (topUiHeight - timerBgHeight) / 2;
+        double timerTextX = timerBgX + (timerBgWidth - timerWidth) / 2;
+        double timerTextY = timerBgY + timerBgHeight - (timerBgHeight - timerHeight) / 2 - 5;
 
-        // Cadre gris clair
+        gc.setFill(Color.BLACK);
+        gc.fillRoundRect(timerBgX, timerBgY, timerBgWidth, timerBgHeight, 8, 8);
         gc.setStroke(Color.LIGHTGRAY);
         gc.setLineWidth(2);
-        gc.strokeRoundRect(bgX, bgY, bgWidth, bgHeight, 12, 12);
-
-        // Fond noir
-        gc.setFill(Color.BLACK);
-        gc.fillRoundRect(bgX, bgY, bgWidth, bgHeight, 12, 12);
-
-        // Texte (timer) en blanc
+        gc.strokeRoundRect(timerBgX, timerBgY, timerBgWidth, timerBgHeight, 8, 8);
         gc.setFill(Color.WHITE);
-        gc.fillText(timerStr, timerX, timerY);
-
-        // --- Affichage des vies des joueurs dans la bande orange, même style que le timer ---
-        double iconSize = topUiHeight * 0.4;
-        gc.setFont(Font.font("Consolas", iconSize));
-        double iconPaddingX = 18;
-        double iconPaddingY = 10;
-
-        // Joueur 1 (à gauche)
-        Player p1 = game.getPlayers().get(0);
-        String p1LivesStr = String.valueOf(p1.getLives());
-        Text p1Text = new Text(p1LivesStr);
-        p1Text.setFont(gc.getFont());
-        double p1Width = p1Text.getLayoutBounds().getWidth();
-        double p1Height = p1Text.getLayoutBounds().getHeight();
-        double p1BgWidth = p1Width + 2 * iconPaddingX;
-        double p1BgHeight = p1Height + 2 * iconPaddingY;
-        double p1BgX = 20;
-        double p1BgY = (topUiHeight - p1BgHeight) / 2;
-        double p1TextX = p1BgX + iconPaddingX;
-        double p1TextY = p1BgY + p1Height + iconPaddingY / 2;
-
-        // Cadre gris clair
-        gc.setStroke(Color.LIGHTGRAY);
-        gc.setLineWidth(2);
-        gc.strokeRoundRect(p1BgX, p1BgY, p1BgWidth, p1BgHeight, 12, 12);
-
-        // Fond noir
-        gc.setFill(Color.BLACK);
-        gc.fillRoundRect(p1BgX, p1BgY, p1BgWidth, p1BgHeight, 12, 12);
-
-        // Texte blanc
-        gc.setFill(Color.WHITE);
-        gc.fillText(p1LivesStr, p1TextX, p1TextY);
-
-        // Joueur 2 (à droite) si présent
-        if (game.getPlayers().size() > 1) {
-            Player p2 = game.getPlayers().get(1);
-            String p2LivesStr = String.valueOf(p2.getLives());
-            Text p2Text = new Text(p2LivesStr);
-            p2Text.setFont(gc.getFont());
-            double p2Width = p2Text.getLayoutBounds().getWidth();
-            double p2Height = p2Text.getLayoutBounds().getHeight();
-            double p2BgWidth = p2Width + 2 * iconPaddingX;
-            double p2BgHeight = p2Height + 2 * iconPaddingY;
-            double p2BgX = canvasWidth - p2BgWidth - 20;
-            double p2BgY = (topUiHeight - p2BgHeight) / 2;
-            double p2TextX = p2BgX + iconPaddingX;
-            double p2TextY = p2BgY + p2Height + iconPaddingY / 2;
-
-            // Cadre gris clair
-            gc.setStroke(Color.LIGHTGRAY);
-            gc.setLineWidth(2);
-            gc.strokeRoundRect(p2BgX, p2BgY, p2BgWidth, p2BgHeight, 12, 12);
-
-            // Fond noir
-            gc.setFill(Color.BLACK);
-            gc.fillRoundRect(p2BgX, p2BgY, p2BgWidth, p2BgHeight, 12, 12);
-
-            // Texte blanc
-            gc.setFill(Color.WHITE);
-            gc.fillText(p2LivesStr, p2TextX, p2TextY);
-        }
-
+        gc.fillText(timerStr, timerTextX, timerTextY);
         // --- Bordures gris très foncé autour de la grille (sous la zone orange) ---
         gc.setFill(Color.rgb(34, 34, 34));
         // Haut (juste sous la zone orange)
