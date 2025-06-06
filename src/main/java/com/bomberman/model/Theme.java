@@ -43,10 +43,10 @@ public class Theme {
                                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                         }
                 ),
-                new Theme("Test2",
-                        "/images/elementsMap/herbe.png",
-                        "/images/elementsMap/murIndestructible.png",
-                        "/images/elementsMap/murDestructible.png",
+                new Theme("Plage",
+                        "/images/elementsMap/fondSable.png",
+                        "/images/elementsMap/sandCastle.png",
+                        "/images/elementsMap/water.png",
                         new int[][] {
                                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                 {1,0,2,0,0,2,0,2,0,2,0,2,0,2,1},

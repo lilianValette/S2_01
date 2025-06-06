@@ -52,7 +52,7 @@ public class Game {
             int y = startPositions[i][1];
 
             // S'assure que la case de spawn et les 8 alentours (croix + diagonales) sont du sol (EMPTY)
-            clearSpawnZoneWithDiagonals(x, y);
+            clearSpawnZoneOnly(x, y);
 
             boolean isHuman = i < humanCount;
             Player p = new Player(i + 1, x, y, isHuman);
@@ -60,18 +60,9 @@ public class Game {
         }
     }
 
-    // Met la case de spawn et toutes ses cases adjacentes (y compris diagonales) à EMPTY
-    private void clearSpawnZoneWithDiagonals(int x, int y) {
-        int[][] dirs = {
-                {0,0},
-                {0,1}, {0,-1}, {1,0}, {-1,0},
-                {1,1}, {1,-1}, {-1,1}, {-1,-1}
-        };
-        for (int[] d : dirs) {
-            int nx = x + d[0], ny = y + d[1];
-            if (grid.isInBounds(nx, ny)) {
-                grid.setCell(nx, ny, Grid.CellType.EMPTY);
-            }
+    private void clearSpawnZoneOnly(int x, int y) {
+        if (grid.isInBounds(x, y)) {
+            grid.setCell(x, y, Grid.CellType.EMPTY);
         }
     }
 
