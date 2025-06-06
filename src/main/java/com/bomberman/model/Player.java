@@ -1,35 +1,21 @@
 package com.bomberman.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class Player {
     private int id;
     private int x;
     private int y;
     private boolean alive;
-    private int lives;    private int bombRange = 1;   // portée de base (= 1 case)
+    private int lives;
+    private int bombRange = 1;   // portée de base (= 1 case)
     private int maxBombs  = 1;   // nombre de bombes simultanées autorisées
 
-    public int getBombRange() {
-        return bombRange;
-    }
+    // Liste des bonus actifs (durée en secondes)
+    private List<ActiveBonus> activeBonuses = new ArrayList<>();
 
-    public void setBombRange(int bombRange) {
-        this.bombRange = bombRange;
-    }
-
-    // Si vous préférez encapsuler mieux :
-    // public void increaseBombRange(int amount) {
-    //     bombRange += amount;
-    //     // éventuellement limiter à une valeur max :
-    //     // bombRange = Math.min(bombRange, MAX_RANGE);
-    // }
-
-    public int getMaxBombs() {
-        return maxBombs;
-    }
-
-    public void setMaxBombs(int maxBombs) {
-        this.maxBombs = maxBombs;
-    }
     public Player(int id, int startX, int startY) {
         this.id = id;
         this.x = startX;
@@ -71,4 +57,60 @@ public class Player {
     public void moveDown(Grid grid)  { move(0,  1, grid); }
     public void moveLeft(Grid grid)  { move(-1, 0, grid); }
     public void moveRight(Grid grid) { move(1,  0, grid); }
+
+
+    public int getBombRange() {
+        return bombRange;
+    }
+
+    public void setBombRange(int bombRange) {
+        this.bombRange = bombRange;
+    }
+
+    public int getMaxBombs() {
+        return maxBombs;
+    }
+
+    public void setMaxBombs(int maxBombs) {
+        this.maxBombs = maxBombs;
+    }
+
+    public List<ActiveBonus> getActiveBonuses() {
+        return activeBonuses;
+    }
+
+    public Bomb dropBomb(int timer, List<Bomb> activeBombs) {
+        if (activeBombs.size() < maxBombs) {
+            return new Bomb(this.x, this.y, timer, this.bombRange);
+        }
+        return null;
+    }
+
+    /**
+     * Met à jour la durée des bonus actifs (appelé chaque tick, 0.5 s).
+     */
+    public void updateActiveBonuses() {
+        double tickDuration = 0.5; // chaque tick correspond à 0.5 seconde
+        Iterator<ActiveBonus> it = activeBonuses.iterator();
+        while (it.hasNext()) {
+            ActiveBonus ab = it.next();
+            ab.tick(tickDuration);
+            if (ab.isExpired()) {
+                switch (ab.getType()) {
+                    case FLAME:
+                        bombRange -= ab.getExtraValue();
+                        break;
+                }
+                it.remove();
+            }
+        }
+    }
+
+    /**
+     * Ajoute un bonus FLAME temporaire de durée donnée (en secondes).
+     */
+    public void addFlameBonusTemp(int extraRange, double durationSeconds) {
+        bombRange += extraRange;
+        activeBonuses.add(new ActiveBonus(ActiveBonus.Type.FLAME, extraRange, durationSeconds));
+    }
 }

@@ -101,16 +101,24 @@ public class Game {
     }
 
     public void placeBomb(Player player) {
-        if (!player.isAlive()) return; // Bloque la pose de bombe si joueur mort
-        // Vérifie s’il n’y a pas déjà une bombe sur la case
-        for (Bomb b : bombs)
-            if (b.getX() == player.getX() && b.getY() == player.getY()) return;
-        bombs.add(new Bomb(player.getX(), player.getY(), 3, 2)); // timer=3, range=2
-        grid.setCell(player.getX(), player.getY(), Grid.CellType.BOMB);
+        if (!player.isAlive()) return;
+
+        for (Bomb b : bombs) {
+            if (b.getX() == player.getX() && b.getY() == player.getY()) {
+                return;
+            }
+        }
+
+        Bomb newBomb = player.dropBomb(3, bombs);
+        if (newBomb != null) {
+            bombs.add(newBomb);
+            grid.setCell(player.getX(), player.getY(), Grid.CellType.BOMB);
+        }
     }
 
+
     public void updateBombs() {
-        // --- code existant de tick des bombes et tick des explosions ---
+        // 1) Tick des bombes et explosions (votre code existant) …
         Iterator<Bomb> it = bombs.iterator();
         while (it.hasNext()) {
             Bomb b = it.next();
@@ -133,7 +141,7 @@ public class Game {
             }
         }
 
-        // AJOUT BONUS : ramassage des bonus par les joueurs
+        // 2) Ramassage des bonus au sol
         for (Player p : players) {
             if (!p.isAlive()) continue;
             Iterator<Bonus> bonusIt = bonuses.iterator();
@@ -150,9 +158,17 @@ public class Game {
             }
         }
 
-        // Met à jour le statut de fin de partie
+        // 3)  mise à jour des bonus actifs (durée en secondes)
+        for (Player p : players) {
+            if (p.isAlive()) {
+                p.updateActiveBonuses();
+            }
+        }
+
+        // 4) Mise à jour du statut de fin de partie
         updateGameState();
     }
+
 
 
     private void addExplosion(int x, int y) {

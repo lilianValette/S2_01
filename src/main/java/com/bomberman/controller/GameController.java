@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 import com.bomberman.model.Bonus;
+import com.bomberman.model.ActiveBonus;
+
 
 public class GameController {
     @FXML
@@ -200,12 +202,14 @@ public class GameController {
         double p1TextY = p1CounterY + counterSize - (counterSize - p1TextHeight) / 2 - 5;
         gc.fillText(p1LivesStr, p1TextX, p1TextY);
 
+        double p2CounterX = 0;
+        double p2CounterY = 0;
         // --- Joueur 2 (droite) ---
         if (game.getPlayers().size() > 1) {
             double p2AvatarX = canvasWidth - margin - iconSize;
             double p2AvatarY = (topUiHeight - iconSize) / 2;
-            double p2CounterX = p2AvatarX - spacing - counterSize;
-            double p2CounterY = p2AvatarY;
+            p2CounterX = p2AvatarX - spacing - counterSize;
+            p2CounterY = p2AvatarY;
 
             gc.drawImage(avatarP2, p2AvatarX, p2AvatarY, iconSize, iconSize);
 
@@ -225,6 +229,31 @@ public class GameController {
             double p2TextY = p2CounterY + counterSize - (counterSize - p2TextHeight) / 2 - 5;
             gc.fillText(p2LivesStr, p2TextX, p2TextY);
         }
+
+        // ─── Afficher le temps restant du bonus FLAME pour chaque joueur ─────────────────────────────────────
+        for (Player p : game.getPlayers()) {
+            for (ActiveBonus ab : p.getActiveBonuses()) {
+                if (ab.getType() == ActiveBonus.Type.FLAME) {
+                    String timeStr = ab.getSecondsRemaining() + "s";
+                    gc.setFill(Color.WHITE);
+                    gc.setFont(Font.font("Consolas", iconSize * 0.4));
+
+                    double textX, textY;
+                    if (p.getId() == 1) {
+                        // Sous l’avatar du joueur 1
+                        textX = margin + iconSize + spacing + counterSize + 8;
+                        textY = p1CounterY + counterSize + 16;
+                    } else {
+                        // Sous l’avatar du joueur 2 (droite)
+                        textX = canvasWidth - margin - iconSize - spacing - counterSize - 40;
+                        textY = p2CounterY + counterSize + 16;
+                    }
+                    gc.fillText(timeStr, textX, textY);
+                }
+            }
+        }
+// ───────────────────────────────────────────────────────────────────────────────────────────────────
+
 
         // --- Timer centré, fond élargi 1.5x ---
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
