@@ -32,6 +32,7 @@ public class Game {
         initializePlayers(totalPlayers, playerCount);
     }
 
+    // Sécurise le spawn : le joueur spawn toujours sur du sol, jamais sur un bloc, et toutes les cases autour (y compris diagonales) sont mises à EMPTY
     private void initializePlayers(int totalPlayers, int humanCount) {
         int[][] startPositions = {
                 {1, 1},
@@ -40,9 +41,30 @@ public class Game {
                 {grid.getWidth() - 2, 1}
         };
         for (int i = 0; i < totalPlayers && i < startPositions.length; i++) {
+            int x = startPositions[i][0];
+            int y = startPositions[i][1];
+
+            // S'assure que la case de spawn et les 8 alentours (croix + diagonales) sont du sol (EMPTY)
+            clearSpawnZoneWithDiagonals(x, y);
+
             boolean isHuman = i < humanCount;
-            Player p = new Player(i + 1, startPositions[i][0], startPositions[i][1], isHuman);
+            Player p = new Player(i + 1, x, y, isHuman);
             players.add(p);
+        }
+    }
+
+    // Met la case de spawn et toutes ses cases adjacentes (y compris diagonales) à EMPTY
+    private void clearSpawnZoneWithDiagonals(int x, int y) {
+        int[][] dirs = {
+                {0,0},
+                {0,1}, {0,-1}, {1,0}, {-1,0},
+                {1,1}, {1,-1}, {-1,1}, {-1,-1}
+        };
+        for (int[] d : dirs) {
+            int nx = x + d[0], ny = y + d[1];
+            if (grid.isInBounds(nx, ny)) {
+                grid.setCell(nx, ny, Grid.CellType.EMPTY);
+            }
         }
     }
 

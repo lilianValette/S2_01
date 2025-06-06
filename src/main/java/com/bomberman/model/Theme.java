@@ -5,59 +5,62 @@ public class Theme {
     private final String solImagePath;
     private final String murImagePath;
     private final String destructibleImagePath;
-    private final int[][] previewLayout;
+    private final int[][] layout; // Nommé "layout" car c'est maintenant la vraie map
 
-    public Theme(String name, String solImagePath, String murImagePath, String destructibleImagePath, int[][] previewLayout) {
+    public Theme(String name, String solImagePath, String murImagePath, String destructibleImagePath, int[][] layout) {
         this.name = name;
         this.solImagePath = solImagePath;
         this.murImagePath = murImagePath;
         this.destructibleImagePath = destructibleImagePath;
-        this.previewLayout = previewLayout;
+        this.layout = layout;
     }
 
     public String getName() { return name; }
     public String getSolImagePath() { return solImagePath; }
     public String getMurImagePath() { return murImagePath; }
     public String getDestructibleImagePath() { return destructibleImagePath; }
-    public int[][] getPreviewLayout() { return previewLayout; }
+    public int[][] getLayout() { return layout; }
 
     public static Theme[] getPredefinedThemes() {
         return new Theme[] {
-                /*
-                new Theme("Factory",
-                        "/images/elementsMap/factory_sol.png",
-                        "/images/elementsMap/factory_mur.png",
-                        "/images/elementsMap/factory_bloc.png",
-                        new int[][] {
-                                {1,0,2,0,2,1},
-                                {0,0,1,2,0,0},
-                                {2,1,0,0,1,2},
-                                {0,2,0,1,2,0},
-                                {1,0,2,0,2,1}
-                        }
-                ),
-                new Theme("Forest",
-                        "/images/elementsMap/forest_sol.png",
-                        "/images/elementsMap/forest_mur.png",
-                        "/images/elementsMap/forest_bloc.png",
-                        new int[][] {
-                                {1,2,0,2,1,0},
-                                {2,1,2,1,0,2},
-                                {0,2,0,2,1,0},
-                                {2,1,2,1,0,2},
-                                {1,0,2,0,2,1}
-                        }
-                )*/
-                new Theme("Test",
+                new Theme("Test1",
                         "/images/elementsMap/herbe.png",
                         "/images/elementsMap/murIndestructible.png",
                         "/images/elementsMap/murDestructible.png",
                         new int[][] {
-                                {1,0,2,0,2,1},
-                                {0,0,1,2,0,0},
-                                {2,1,0,0,1,2},
-                                {0,2,0,1,2,0},
-                                {1,0,2,0,2,1}
+                                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                {1,0,0,0,2,0,2,0,2,0,2,0,2,0,1},
+                                {1,2,1,0,1,0,1,0,1,0,1,0,1,2,1},
+                                {1,0,0,2,0,2,0,2,0,2,0,2,0,0,1},
+                                {1,2,1,0,1,0,1,0,1,0,1,0,1,2,1},
+                                {1,0,2,0,2,0,2,0,2,0,2,0,2,0,1},
+                                {1,1,1,0,1,1,0,1,1,1,0,1,1,1,1},
+                                {1,0,2,0,2,0,2,0,2,0,2,0,2,0,1},
+                                {1,2,1,0,1,0,1,0,1,0,1,0,1,2,1},
+                                {1,0,0,2,0,2,0,2,0,2,0,2,0,0,1},
+                                {1,2,1,0,1,0,1,0,1,0,1,0,1,2,1},
+                                {1,0,2,0,2,0,2,0,2,0,2,0,0,0,1},
+                                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+                        }
+                ),
+                new Theme("Test2",
+                        "/images/elementsMap/herbe.png",
+                        "/images/elementsMap/murIndestructible.png",
+                        "/images/elementsMap/murDestructible.png",
+                        new int[][] {
+                                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                {1,0,2,0,0,2,0,2,0,2,0,2,0,2,1},
+                                {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                                {1,2,0,2,0,2,0,2,0,2,0,2,0,2,1},
+                                {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                                {1,2,0,2,0,2,0,2,0,2,0,2,0,2,1},
+                                {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                                {1,2,0,2,0,2,0,2,0,2,0,2,0,2,1},
+                                {1,1,1,1,0,1,1,1,0,1,1,1,1,1,1},
+                                {1,2,0,2,0,2,0,2,0,2,0,2,0,2,1},
+                                {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                                {1,2,0,2,0,2,0,2,0,2,0,2,0,2,1},
+                                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                         }
                 )
         };

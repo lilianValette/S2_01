@@ -18,7 +18,7 @@ public class Grid {
         this.height = height;
         cells = new CellType[width][height];
 
-        int[][] layout = theme != null ? theme.getPreviewLayout() : null;
+        int[][] layout = theme != null ? theme.getLayout() : null; // <-- Ici
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (layout != null && y < layout.length && x < layout[0].length) {

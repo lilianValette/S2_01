@@ -304,7 +304,7 @@ public class GameController {
     }
 
     public static Canvas createThemePreviewCanvas(Theme theme, int cellSize) {
-        int[][] preview = theme.getPreviewLayout();
+        int[][] preview = theme.getLayout();
         int w = preview[0].length;
         int h = preview.length;
 
@@ -331,6 +331,11 @@ public class GameController {
             gc.strokeLine(0, y*cellSize, w*cellSize, y*cellSize);
         for (int x = 0; x <= w; x++)
             gc.strokeLine(x*cellSize, 0, x*cellSize, h*cellSize);
+
+        // Ajoute un voile noir semi-transparent par-dessus
+        gc.setFill(new Color(0, 0, 0, 0.4)); // 50% de transparence
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
 
         return canvas;
     }
