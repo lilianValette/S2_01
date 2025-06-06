@@ -21,34 +21,45 @@ public class Theme {
     public String getDestructibleImagePath() { return destructibleImagePath; }
     public int[][] getPreviewLayout() { return previewLayout; }
 
-    // Exemples de thèmes prédéfinis, à compléter selon tes assets
     public static Theme[] getPredefinedThemes() {
         return new Theme[] {
-                new Theme("Test",
-                        "/images/elementsMap/herbe.png",
-                        "/images/elementsMap/murIndestructible.png",
-                        "/images/elementsMap/murDestructible.png",
+                /*
+                new Theme("Factory",
+                        "/images/elementsMap/factory_sol.png",
+                        "/images/elementsMap/factory_mur.png",
+                        "/images/elementsMap/factory_bloc.png",
                         new int[][] {
-                                {1,0,0,2,0,1},
-                                {0,2,1,0,2,0},
-                                {0,0,0,0,0,0},
-                                {2,1,0,2,1,2},
-                                {1,0,2,0,0,1}
+                                {1,0,2,0,2,1},
+                                {0,0,1,2,0,0},
+                                {2,1,0,0,1,2},
+                                {0,2,0,1,2,0},
+                                {1,0,2,0,2,1}
                         }
-                )
-                /*,
+                ),
                 new Theme("Forest",
                         "/images/elementsMap/forest_sol.png",
                         "/images/elementsMap/forest_mur.png",
                         "/images/elementsMap/forest_bloc.png",
                         new int[][] {
-                                {1,0,2,0,2,1},
-                                {0,0,0,2,0,0},
-                                {2,0,1,0,1,2},
-                                {0,2,0,0,2,0},
-                                {1,0,2,1,0,1}
+                                {1,2,0,2,1,0},
+                                {2,1,2,1,0,2},
+                                {0,2,0,2,1,0},
+                                {2,1,2,1,0,2},
+                                {1,0,2,0,2,1}
                         }
                 )*/
+                new Theme("Test",
+                        "/images/elementsMap/herbe.png",
+                        "/images/elementsMap/murIndestructible.png",
+                        "/images/elementsMap/murDestructible.png",
+                        new int[][] {
+                                {1,0,2,0,2,1},
+                                {0,0,1,2,0,0},
+                                {2,1,0,0,1,2},
+                                {0,2,0,1,2,0},
+                                {1,0,2,0,2,1}
+                        }
+                )
         };
     }
 }

@@ -2,6 +2,9 @@ package com.bomberman.controller;
 
 import com.bomberman.model.Theme;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,32 +13,58 @@ import javafx.stage.Stage;
 
 public class GameSetupController {
     @FXML private StackPane themePreviewPane;
-    @FXML private Button playerLeft, playerRight, iaLeft, iaRight, themeLeft, themeRight, validateButton;
+    @FXML private Button playerLeft, playerRight, iaLeft, iaRight, themeLeft, themeRight, playButton;
     @FXML private Label playerCountLabel, iaCountLabel, themeLabel;
 
     private int playerCount = 2;
     private int iaCount = 0;
     private int themeIndex = 0;
     private Theme[] themes = Theme.getPredefinedThemes();
-    private Stage stage;
 
-    // Pour la preview
+    private Stage stage;
     private final int previewCellSize = 32;
 
-    public void setStage(Stage stage) { this.stage = stage; }
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
     @FXML
     public void initialize() {
         updateUI();
 
-        playerLeft.setOnAction(e -> { playerCount = Math.max(1, playerCount-1); updateUI(); });
-        playerRight.setOnAction(e -> { playerCount = Math.min(4, playerCount+1); updateUI(); });
-        iaLeft.setOnAction(e -> { iaCount = Math.max(0, iaCount-1); updateUI(); });
-        iaRight.setOnAction(e -> { iaCount = Math.min(4, iaCount+1); updateUI(); });
-        themeLeft.setOnAction(e -> { themeIndex = (themeIndex - 1 + themes.length) % themes.length; updateUI(); });
-        themeRight.setOnAction(e -> { themeIndex = (themeIndex + 1) % themes.length; updateUI(); });
-
-        validateButton.setOnAction(e -> startGame());
+        playerLeft.setOnAction(e -> {
+            if (playerCount > 1) {
+                playerCount--;
+                updateUI();
+            }
+        });
+        playerRight.setOnAction(e -> {
+            if (playerCount + iaCount < 4) {
+                playerCount++;
+                updateUI();
+            }
+        });
+        iaLeft.setOnAction(e -> {
+            if (iaCount > 0) {
+                iaCount--;
+                updateUI();
+            }
+        });
+        iaRight.setOnAction(e -> {
+            if (playerCount + iaCount < 4) {
+                iaCount++;
+                updateUI();
+            }
+        });
+        themeLeft.setOnAction(e -> {
+            themeIndex = (themeIndex - 1 + themes.length) % themes.length;
+            updateUI();
+        });
+        themeRight.setOnAction(e -> {
+            themeIndex = (themeIndex + 1) % themes.length;
+            updateUI();
+        });
+        playButton.setOnAction(e -> startGame());
     }
 
     private void updateUI() {
@@ -52,8 +81,18 @@ public class GameSetupController {
     }
 
     private void startGame() {
-        // TODO : Passer les paramètres à GameController
-        // Exemple : loader.setPlayerCount(playerCount); loader.setAI(iaCount); loader.setTheme(themes[themeIndex]);
-        // Puis fermer la fenêtre de sélection
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/game-view.fxml"));
+            Parent root = loader.load();
+            GameController gameController = loader.getController();
+            gameController.setStage(stage);
+            gameController.setTheme(themes[themeIndex]);
+            gameController.setPlayerCount(playerCount);
+            gameController.setIaCount(iaCount);
+            gameController.startGame(); // <== Initialisation réelle ici
+            stage.setScene(new Scene(root));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
