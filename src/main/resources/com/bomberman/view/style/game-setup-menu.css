@@ -77,10 +77,12 @@
     -fx-effect: dropshadow(gaussian, #000, 16, 0.3, 0, 2);
 }
 
-/* Espacement général des HBox et VBox */
+/* Espacement général et largeur max des HBox et VBox */
 .hbox, .vbox {
     -fx-spacing: 18;
     -fx-alignment: center;
+    -fx-max-width: 420px;
+    -fx-pref-width: 420px;
 }
 
 /* Pour le focus sur les boutons : pas de cadre bleu */

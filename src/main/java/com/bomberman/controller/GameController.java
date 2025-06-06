@@ -33,7 +33,8 @@ public class GameController {
     }
 
     private Game game;
-    private final int CELL_SIZE = 32;
+    private static final int CELL_SIZE = 48;
+    public static int getCellSize() { return CELL_SIZE; }
     private final int BORDER_SIZE = 1;
     private final double BORDER_PIXEL_RATIO = 0.5;
     private final double TOP_UI_HEIGHT_RATIO = 2.5;

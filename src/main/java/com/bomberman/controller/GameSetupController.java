@@ -22,7 +22,6 @@ public class GameSetupController {
     private Theme[] themes = Theme.getPredefinedThemes();
 
     private Stage stage;
-    private final int previewCellSize = 32;
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -76,7 +75,7 @@ public class GameSetupController {
 
     private void showThemePreview(Theme theme) {
         themePreviewPane.getChildren().clear();
-        Canvas preview = GameController.createThemePreviewCanvas(theme, previewCellSize);
+        Canvas preview = GameController.createThemePreviewCanvas(theme, GameController.getCellSize());
         themePreviewPane.getChildren().add(preview);
     }
 
