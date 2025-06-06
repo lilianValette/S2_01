@@ -1,9 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<VBox spacing="20" alignment="CENTER" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.bomberman.controller.MenuController">
-    <Label text="Bomberman"/>
-    <Button text="Jouer" fx:id="playButton"/>
-    <Button text="Quitter" fx:id="quitButton"/>
-</VBox>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.bomberman.controller.MenuController"
+           fx:id="rootPane"
+           stylesheets="@style/menu-style.css">
+
+    <!-- Fond du menu -->
+    <ImageView fx:id="backgroundImage"
+               fitWidth="800"
+               fitHeight="600"
+               preserveRatio="false"
+               StackPane.alignment="CENTER"/>
+
+    <!-- Dirigeable (avion) -->
+    <ImageView fx:id="planeImage"
+               preserveRatio="true"
+               StackPane.alignment="TOP_LEFT"/>
+
+    <!-- Mongolfière -->
+    <ImageView fx:id="balloonImage"
+               preserveRatio="true"
+               StackPane.alignment="TOP_RIGHT"/>
+
+    <!-- Centre : logo + menu -->
+    <VBox spacing="16" alignment="CENTER" StackPane.alignment="CENTER">
+        <!-- Logo Bomberman -->
+        <ImageView fx:id="logoImage"
+                   fitWidth="550"
+                   fitHeight="250"
+        />
+
+        <!-- Retro menu buttons -->
+        <VBox spacing="8" alignment="CENTER">
+            <Button fx:id="playButton" text="PLAY" styleClass="menu-button"/>
+            <Button fx:id="accountButton" text="ACCOUNT" styleClass="menu-button"/>
+            <Button fx:id="settingsButton" text="SETTINGS" styleClass="menu-button"/>
+            <Button fx:id="quitButton" text="QUIT" styleClass="menu-button"/>
+        </VBox>
+
+        <!-- Credits -->
+        <Label fx:id="copyrightLabel"
+               text="TM &amp; © 1993 HUDSON SOFT  Licensed by Nintendo"
+               styleClass="copyright-label"/>
+    </VBox>
+</StackPane>
