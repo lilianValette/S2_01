@@ -242,7 +242,7 @@ public class GameController {
                     if (p.getId() == 1) {
                         // Sous l’avatar du joueur 1
                         textX = margin + iconSize + spacing + counterSize + 8;
-                        textY = p1CounterY + counterSize + 16;
+                        textY = topUiHeight * 0.6;
                     } else {
                         // Sous l’avatar du joueur 2 (droite)
                         textX = canvasWidth - margin - iconSize - spacing - counterSize - 40;
