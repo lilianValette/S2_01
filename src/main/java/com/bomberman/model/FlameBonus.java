@@ -13,7 +13,7 @@ public class FlameBonus extends Bonus {
      */
     public FlameBonus(int x, int y, int extraRange) {
         // On suppose que l’image flame_bonus.png est dans /com/bomberman/images/
-        super(x, y, "/com/bomberman/images/flame_bonus.png");
+        super(x, y, "/images/items/flame_bonus.png");
         this.extraRange = extraRange;
     }
 

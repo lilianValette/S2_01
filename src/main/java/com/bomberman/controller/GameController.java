@@ -18,6 +18,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
+import com.bomberman.model.Bonus;
 
 public class GameController {
     @FXML
@@ -303,6 +304,13 @@ public class GameController {
                 }
             }
         }
+        // dessiner chaque bonus
+        for (Bonus bonus : game.getBonuses()) {
+            double bx = borderPixel + bonus.getX() * CELL_SIZE;
+            double by = topUiHeight  + borderPixel + bonus.getY() * CELL_SIZE;
+            gc.drawImage(bonus.getSprite(), bx, by, CELL_SIZE, CELL_SIZE);
+        }
+
         // --- Dessine les bombes avec l'image ---
         for (Bomb b : game.getBombs()) {
             double bx = borderPixel + b.getX() * CELL_SIZE;

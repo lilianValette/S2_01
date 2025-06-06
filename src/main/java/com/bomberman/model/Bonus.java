@@ -30,6 +30,9 @@ public abstract class Bonus {
         this.collected = false;
         loadSprite(resource);
     }
+    public Image getSprite() {
+        return sprite;
+    }
 
     /**
      * Charge l’image depuis le classpath.

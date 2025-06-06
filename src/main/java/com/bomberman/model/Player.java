@@ -5,16 +5,30 @@ public class Player {
     private int x;
     private int y;
     private boolean alive;
-    private int lives;
-    private int bombRange = 1;
+    private int lives;    private int bombRange = 1;   // portée de base (= 1 case)
+    private int maxBombs  = 1;   // nombre de bombes simultanées autorisées
 
-    // …
     public int getBombRange() {
         return bombRange;
     }
 
     public void setBombRange(int bombRange) {
         this.bombRange = bombRange;
+    }
+
+    // Si vous préférez encapsuler mieux :
+    // public void increaseBombRange(int amount) {
+    //     bombRange += amount;
+    //     // éventuellement limiter à une valeur max :
+    //     // bombRange = Math.min(bombRange, MAX_RANGE);
+    // }
+
+    public int getMaxBombs() {
+        return maxBombs;
+    }
+
+    public void setMaxBombs(int maxBombs) {
+        this.maxBombs = maxBombs;
     }
     public Player(int id, int startX, int startY) {
         this.id = id;
