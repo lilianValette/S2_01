@@ -6,7 +6,16 @@ public class Player {
     private int y;
     private boolean alive;
     private int lives;
+    private int bombRange = 1;
 
+    // …
+    public int getBombRange() {
+        return bombRange;
+    }
+
+    public void setBombRange(int bombRange) {
+        this.bombRange = bombRange;
+    }
     public Player(int id, int startX, int startY) {
         this.id = id;
         this.x = startX;
