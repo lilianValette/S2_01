@@ -3,6 +3,7 @@ package com.bomberman.controller;
 import com.bomberman.model.Game;
 import com.bomberman.model.Player;
 import com.bomberman.model.Bomb;
+import com.bomberman.model.Theme;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -321,5 +322,38 @@ public class GameController {
         }
 
         checkGameOver();
+    }
+
+    public static Canvas createThemePreviewCanvas(Theme theme, int cellSize) {
+        int[][] preview = theme.getPreviewLayout();
+        int w = preview[0].length;
+        int h = preview.length;
+
+        Canvas canvas = new Canvas(w * cellSize, h * cellSize);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        Image solImg = new Image(GameController.class.getResourceAsStream(theme.getSolImagePath()));
+        Image murImg = new Image(GameController.class.getResourceAsStream(theme.getMurImagePath()));
+        Image blocImg = new Image(GameController.class.getResourceAsStream(theme.getDestructibleImagePath()));
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                double px = x * cellSize;
+                double py = y * cellSize;
+                switch (preview[y][x]) {
+                    case 1 -> gc.drawImage(murImg, px, py, cellSize, cellSize);
+                    case 2 -> gc.drawImage(blocImg, px, py, cellSize, cellSize);
+                    default -> gc.drawImage(solImg, px, py, cellSize, cellSize);
+                }
+            }
+        }
+        // Option : grille noire semi-transparente
+        gc.setStroke(javafx.scene.paint.Color.rgb(0,0,0,0.5));
+        for (int y = 0; y <= h; y++)
+            gc.strokeLine(0, y*cellSize, w*cellSize, y*cellSize);
+        for (int x = 0; x <= w; x++)
+            gc.strokeLine(x*cellSize, 0, x*cellSize, h*cellSize);
+
+        return canvas;
     }
 }

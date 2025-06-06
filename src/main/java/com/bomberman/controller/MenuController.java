@@ -15,6 +15,8 @@ import javafx.util.Duration;
 
 public class MenuController {
     @FXML private Button playButton;
+    @FXML private Button accountButton;
+    @FXML private Button settingsButton;
     @FXML private Button quitButton;
 
     @FXML private ImageView backgroundImage;
@@ -45,20 +47,20 @@ public class MenuController {
             startAnimations(newVal.doubleValue());
         });
 
-        playButton.setOnAction(e -> startGame());
+        playButton.setOnAction(e -> startGameSetup());
+        accountButton.setOnAction(e -> onAccount());
+        settingsButton.setOnAction(e -> onSettings());
         quitButton.setOnAction(e -> System.exit(0));
     }
 
     private void startAnimations(double paneWidth) {
-        // --- Dirigeable ---
+        // --- Dirigeable (inchangé) ---
         planeImage.setScaleX(1);
         planeImage.setTranslateY(30);
         double planeWidth = planeImage.getFitWidth();
         double planeStartX = paneWidth / 2 + planeWidth + 150;
         double planeEndX   = -paneWidth / 2 - planeWidth;
-        double planeDuration = 14.0; // secondes pour traverser l'écran
-
-        // Calcul du déplacement par frame (à 60 FPS)
+        double planeDuration = 14.0;
         double planeTotalDistance = planeStartX - planeEndX;
         double planeSpeedPerFrame = planeTotalDistance / (planeDuration * 60.0);
 
@@ -76,42 +78,66 @@ public class MenuController {
         planeTimeline.setCycleCount(Timeline.INDEFINITE);
         planeTimeline.play();
 
-        // --- Ballon ---
+        // --- Ballon : déplacement sinusoidal sur Y + translation sur X ---
         balloonImage.setScaleX(1);
-        balloonImage.setTranslateY(160);
         double balloonWidth = balloonImage.getFitWidth();
         double balloonStartX = -paneWidth / 2 - (balloonWidth + 300);
         double balloonEndX   = paneWidth / 2 + (balloonWidth - 300);
         double balloonDuration = 22.0;
-
         double balloonTotalDistance = balloonEndX - balloonStartX;
         double balloonSpeedPerFrame = balloonTotalDistance / (balloonDuration * 60.0);
+
+        // Valeurs pour l'oscillation verticale
+        double balloonBaseY = 160;          // Position Y de base du ballon
+        double oscillationAmplitude = 18.0; // Hauteur max de l'oscillation (pixels)
+        double oscillationFrequency = 0.7;  // Fréquence (oscillations/seconde)
 
         balloonImage.setTranslateX(balloonStartX);
 
         if (balloonTimeline != null) balloonTimeline.stop();
+        final double[] balloonFrame = {0};
         balloonTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/60.0), e -> {
             double currentX = balloonImage.getTranslateX();
             currentX += balloonSpeedPerFrame;
             if (currentX >= balloonEndX) {
                 currentX = balloonStartX;
+                balloonFrame[0] = 0; // reset oscillation phase
             }
             balloonImage.setTranslateX(currentX);
+
+            // Oscillation verticale
+            double t = balloonFrame[0] / 60.0; // temps écoulé en secondes
+            double offsetY = balloonBaseY + oscillationAmplitude * Math.sin(2 * Math.PI * oscillationFrequency * t);
+            balloonImage.setTranslateY(offsetY);
+
+            balloonFrame[0]++;
         }));
         balloonTimeline.setCycleCount(Timeline.INDEFINITE);
         balloonTimeline.play();
     }
 
-    private void startGame() {
+    @FXML
+    private void startGameSetup() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/game-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/game-setup.fxml"));
             Parent root = loader.load();
-            GameController gameController = loader.getController();
-            gameController.setStage(stage);
+            GameSetupController controller = loader.getController();
+            controller.setStage(stage); // si besoin
             stage.setScene(new Scene(root));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    // Fonctions placeholders pour Account et Settings
+    private void onAccount() {
+        // À implémenter plus tard
+        System.out.println("Account button clicked");
+    }
+
+    private void onSettings() {
+        // À implémenter plus tard
+        System.out.println("Settings button clicked");
     }
 
     private Image loadImage(String resourcePath) {
