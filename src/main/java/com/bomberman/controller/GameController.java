@@ -53,6 +53,7 @@ public class GameController {
 
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
+    private Image solImg;
     private Image bombImg;
 
     // Images orientées pour le joueur 1
@@ -78,13 +79,15 @@ public class GameController {
 
     // À appeler explicitement après avoir injecté les paramètres
     public void startGame() {
-        game = new Game(15, 13, playerCount, iaCount, theme);
+        Theme theme1 = theme;
+        game = new Game(15, 13, playerCount, iaCount, theme1);
 
-        // Charge les images d'avatar et de murs
+        // Charge les images d'avatar et images du thème sélectionné
         avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
-        wallIndestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murIndestructible.png"));
-        wallDestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murDestructible.png"));
+        wallIndestructibleImg = new Image(getClass().getResourceAsStream(theme.getMurImagePath()));
+        wallDestructibleImg   = new Image(getClass().getResourceAsStream(theme.getDestructibleImagePath()));
+        solImg                = new Image(getClass().getResourceAsStream(theme.getSolImagePath()));
         bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
 
         try {
@@ -94,14 +97,12 @@ public class GameController {
             player1Right = new Image(getClass().getResourceAsStream("/images/Player/joueur_droite.png"));
             player1Back = new Image(getClass().getResourceAsStream("/images/Player/joueur_dos.png"));
 
-            // Si les images ne sont pas trouvées, on utilise l'avatar par défaut
             if (player1Front.isError()) player1Front = avatarP1;
             if (player1Left.isError()) player1Left = avatarP1;
-            if (player1Right.isError()) player1Right = avatarP1; // Corrigé
+            if (player1Right.isError()) player1Right = avatarP1;
             if (player1Back.isError()) player1Back = avatarP1;
 
         } catch (Exception e) {
-            // En cas d'erreur, utilise l'avatar par défaut
             player1Front = avatarP1;
             player1Left = avatarP1;
             player1Right = avatarP1;
@@ -109,20 +110,17 @@ public class GameController {
         }
 
         try {
-            // Chargement des mêmes images pour le joueur 2 (même sprites que joueur 1)
             player2Front = new Image(getClass().getResourceAsStream("/images/Player/joueur_face.png"));
             player2Left = new Image(getClass().getResourceAsStream("/images/Player/joueur_gauche.png"));
             player2Right = new Image(getClass().getResourceAsStream("/images/Player/joueur_droite.png"));
             player2Back = new Image(getClass().getResourceAsStream("/images/Player/joueur_dos.png"));
 
-            // Si les images ne sont pas trouvées, on utilise l'avatar par défaut
             if (player2Front.isError()) player2Front = avatarP2;
             if (player2Left.isError()) player2Left = avatarP2;
             if (player2Right.isError()) player2Right = avatarP2;
             if (player2Back.isError()) player2Back = avatarP2;
 
         } catch (Exception e) {
-            // En cas d'erreur, utilise l'avatar par défaut
             player2Front = avatarP2;
             player2Left = avatarP2;
             player2Right = avatarP2;
@@ -192,61 +190,58 @@ public class GameController {
     }
 
     private void handleKeyPressed(KeyEvent event) {
-        // Toujours vérifier que la liste n'est pas vide
         if (game.getPlayers().isEmpty()) return;
         Player p1 = game.getPlayers().get(0);
         Player p2 = game.getPlayers().size() > 1 ? game.getPlayers().get(1) : null;
 
         switch (event.getCode()) {
-            // Joueur 1 (flèches + espace) - avec mise à jour de l'orientation
             case UP    -> {
                 if (p1.isAlive()) {
-                    player1Direction = 1; // haut
+                    player1Direction = 1;
                     game.movePlayer(p1, 0, -1);
                 }
             }
             case DOWN  -> {
                 if (p1.isAlive()) {
-                    player1Direction = 0; // bas
+                    player1Direction = 0;
                     game.movePlayer(p1, 0,  1);
                 }
             }
             case LEFT  -> {
                 if (p1.isAlive()) {
-                    player1Direction = 2; // gauche
+                    player1Direction = 2;
                     game.movePlayer(p1, -1, 0);
                 }
             }
             case RIGHT -> {
                 if (p1.isAlive()) {
-                    player1Direction = 3; // droite
+                    player1Direction = 3;
                     game.movePlayer(p1, 1,  0);
                 }
             }
             case SPACE -> { if (p1.isAlive()) game.placeBomb(p1); }
 
-            // Joueur 2 (ZQSD + SHIFT)
             case Z    -> {
                 if (p2 != null && p2.isAlive()) {
-                    player2Direction = 1; // haut
+                    player2Direction = 1;
                     game.movePlayer(p2, 0, -1);
                 }
             }
             case S  -> {
                 if (p2 != null && p2.isAlive()) {
-                    player2Direction = 0; // bas
+                    player2Direction = 0;
                     game.movePlayer(p2, 0, 1);
                 }
             }
             case Q  -> {
                 if (p2 != null && p2.isAlive()) {
-                    player2Direction = 2; // gauche
+                    player2Direction = 2;
                     game.movePlayer(p2, -1, 0);
                 }
             }
             case D -> {
                 if (p2 != null && p2.isAlive()) {
-                    player2Direction = 3; // droite
+                    player2Direction = 3;
                     game.movePlayer(p2, 1, 0);
                 }
             }
@@ -329,7 +324,7 @@ public class GameController {
             gc.fillText(p2LivesStr, p2TextX, p2TextY);
         }
 
-        // ─── Afficher le temps restant du bonus FLAME pour chaque joueur ─────────────────────────────────────
+        // Bonus FLAME pour chaque joueur
         for (Player p : game.getPlayers()) {
             for (ActiveBonus ab : p.getActiveBonuses()) {
                 if (ab.getType() == ActiveBonus.Type.FLAME) {
@@ -339,11 +334,9 @@ public class GameController {
 
                     double textX, textY;
                     if (p.getId() == 1) {
-                        // Sous l’avatar du joueur 1
                         textX = margin + iconSize + spacing + counterSize + 8;
                         textY = topUiHeight * 0.6;
                     } else {
-                        // Sous l’avatar du joueur 2 (droite)
                         textX = canvasWidth - margin - iconSize - spacing - counterSize - 40;
                         textY = p2CounterY + counterSize + 16;
                     }
@@ -351,9 +344,8 @@ public class GameController {
                 }
             }
         }
-        // ───────────────────────────────────────────────────────────────────────────────────────────────────
 
-        // --- Timer centré, fond élargi 1.5x ---
+        // Timer centré
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
         gc.setFont(Font.font("Consolas", topUiHeight * 0.4));
         Text timerText = new Text(timerStr);
@@ -391,8 +383,7 @@ public class GameController {
                     case INDESTRUCTIBLE -> gc.drawImage(wallIndestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case DESTRUCTIBLE   -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case BOMB           -> {
-                        gc.setFill(Color.rgb(0, 128, 64));
-                        gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                        gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                     case EXPLOSION -> {
                         gc.setFill(Color.ORANGE);
@@ -408,8 +399,7 @@ public class GameController {
                         gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                     default             -> {
-                        gc.setFill(Color.rgb(0, 128, 64));
-                        gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
+                        gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                 }
                 if (grid.getCell(x, y) != com.bomberman.model.Grid.CellType.INDESTRUCTIBLE
@@ -440,24 +430,22 @@ public class GameController {
                 double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE;
 
                 if (p.getId() == 1) {
-                    // Joueur 1 - utilise les sprites orientés
                     Image currentSprite;
                     switch (player1Direction) {
-                        case 0 -> currentSprite = player1Front; // bas
-                        case 1 -> currentSprite = player1Back;  // haut
-                        case 2 -> currentSprite = player1Left;  // gauche
-                        case 3 -> currentSprite = player1Right; // droite
+                        case 0 -> currentSprite = player1Front;
+                        case 1 -> currentSprite = player1Back;
+                        case 2 -> currentSprite = player1Left;
+                        case 3 -> currentSprite = player1Right;
                         default -> currentSprite = player1Front;
                     }
                     gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
                 } else {
-                    // Joueur 2
                     Image currentSprite;
                     switch (player2Direction) {
-                        case 0 -> currentSprite = player2Front; // bas
-                        case 1 -> currentSprite = player2Back;  // haut
-                        case 2 -> currentSprite = player2Left;  // gauche
-                        case 3 -> currentSprite = player2Right; // droite
+                        case 0 -> currentSprite = player2Front;
+                        case 1 -> currentSprite = player2Back;
+                        case 2 -> currentSprite = player2Left;
+                        case 3 -> currentSprite = player2Right;
                         default -> currentSprite = player2Front;
                     }
                     gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
@@ -497,8 +485,7 @@ public class GameController {
         for (int x = 0; x <= w; x++)
             gc.strokeLine(x*cellSize, 0, x*cellSize, h*cellSize);
 
-        // Ajoute un voile noir semi-transparent par-dessus
-        gc.setFill(new Color(0, 0, 0, 0.4)); // 50% de transparence
+        gc.setFill(new Color(0, 0, 0, 0.4));
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         return canvas;
