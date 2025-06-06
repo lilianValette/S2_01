@@ -47,18 +47,74 @@ public class GameController {
     // Image pour les bombes
     private Image bombImg;
 
+    // Images orientées pour le joueur 1
+    private Image player1Front;   // Face (bas)
+    private Image player1Back;    // Dos (haut)
+    private Image player1Left;    // Gauche
+    private Image player1Right;   // Droite
+
+    // Images orientées pour le joueur 2
+    private Image player2Front;   // Face (bas)
+    private Image player2Back;    // Dos (haut)
+    private Image player2Left;    // Gauche
+    private Image player2Right;   // Droite
+
+    // Direction actuelle du joueur 1 (pour mémoriser l'orientation)
+    private int player1Direction = 0; // 0=bas, 1=haut, 2=gauche, 3=droite
+    private int player2Direction = 0; // 0=bas, 1=haut, 2=gauche, 3=droite (corrigé)
+
     @FXML
     public void initialize() {
         game = new Game(15, 13, 2);
 
-        // Charge les images d'avatar et de murs (mets tes propres chemins si besoin)
+        // Charge les images d'avatar et de murs
         avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
         wallIndestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murIndestructible.png"));
         wallDestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murDestructible.png"));
-
-        // Charge l'image de la bombe
         bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
+
+        try {
+            // Chargement des images pour le joueur 1
+            player1Front = new Image(getClass().getResourceAsStream("/images/Player/joueur_face.png"));
+            player1Left = new Image(getClass().getResourceAsStream("/images/Player/joueur_gauche.png"));
+            player1Right = new Image(getClass().getResourceAsStream("/images/Player/joueur_droite.png"));
+            player1Back = new Image(getClass().getResourceAsStream("/images/Player/joueur_dos.png"));
+
+            // Si les images ne sont pas trouvées, on utilise l'avatar par défaut
+            if (player1Front.isError()) player1Front = avatarP1;
+            if (player1Left.isError()) player1Left = avatarP1;
+            if (player1Right.isError()) player1Right = avatarP1; // Corrigé
+            if (player1Back.isError()) player1Back = avatarP1;
+
+        } catch (Exception e) {
+            // En cas d'erreur, utilise l'avatar par défaut
+            player1Front = avatarP1;
+            player1Left = avatarP1;
+            player1Right = avatarP1;
+            player1Back = avatarP1;
+        }
+
+        try {
+            // Chargement des mêmes images pour le joueur 2 (même sprites que joueur 1)
+            player2Front = new Image(getClass().getResourceAsStream("/images/Player/joueur_face.png"));
+            player2Left = new Image(getClass().getResourceAsStream("/images/Player/joueur_gauche.png"));
+            player2Right = new Image(getClass().getResourceAsStream("/images/Player/joueur_droite.png"));
+            player2Back = new Image(getClass().getResourceAsStream("/images/Player/joueur_dos.png"));
+
+            // Si les images ne sont pas trouvées, on utilise l'avatar par défaut
+            if (player2Front.isError()) player2Front = avatarP2;
+            if (player2Left.isError()) player2Left = avatarP2;
+            if (player2Right.isError()) player2Right = avatarP2;
+            if (player2Back.isError()) player2Back = avatarP2;
+
+        } catch (Exception e) {
+            // En cas d'erreur, utilise l'avatar par défaut
+            player2Front = avatarP2;
+            player2Left = avatarP2;
+            player2Right = avatarP2;
+            player2Back = avatarP2;
+        }
 
         // Calcul dynamique des dimensions
         int gridWidth = game.getGrid().getWidth();
@@ -131,18 +187,58 @@ public class GameController {
         Player p2 = game.getPlayers().size() > 1 ? game.getPlayers().get(1) : null;
 
         switch (event.getCode()) {
-            // Joueur 1 (flèches + espace)
-            case UP    -> { if (p1.isAlive()) game.movePlayer(p1, 0, -1); }
-            case DOWN  -> { if (p1.isAlive()) game.movePlayer(p1, 0,  1); }
-            case LEFT  -> { if (p1.isAlive()) game.movePlayer(p1, -1, 0); }
-            case RIGHT -> { if (p1.isAlive()) game.movePlayer(p1, 1,  0); }
+            // Joueur 1 (flèches + espace) - avec mise à jour de l'orientation
+            case UP    -> {
+                if (p1.isAlive()) {
+                    player1Direction = 1; // haut
+                    game.movePlayer(p1, 0, -1);
+                }
+            }
+            case DOWN  -> {
+                if (p1.isAlive()) {
+                    player1Direction = 0; // bas
+                    game.movePlayer(p1, 0,  1);
+                }
+            }
+            case LEFT  -> {
+                if (p1.isAlive()) {
+                    player1Direction = 2; // gauche
+                    game.movePlayer(p1, -1, 0);
+                }
+            }
+            case RIGHT -> {
+                if (p1.isAlive()) {
+                    player1Direction = 3; // droite
+                    game.movePlayer(p1, 1,  0);
+                }
+            }
             case SPACE -> { if (p1.isAlive()) game.placeBomb(p1); }
 
             // Joueur 2 (ZQSD + SHIFT)
-            case Z -> { if (p2 != null && p2.isAlive()) game.movePlayer(p2, 0, -1); }
-            case S -> { if (p2 != null && p2.isAlive()) game.movePlayer(p2, 0,  1); }
-            case Q -> { if (p2 != null && p2.isAlive()) game.movePlayer(p2, -1, 0); }
-            case D -> { if (p2 != null && p2.isAlive()) game.movePlayer(p2, 1,  0); }
+            case Z    -> {
+                if (p2 != null && p2.isAlive()) {
+                    player2Direction = 1; // haut
+                    game.movePlayer(p2, 0, -1);
+                }
+            }
+            case S  -> {
+                if (p2 != null && p2.isAlive()) {
+                    player2Direction = 0; // bas
+                    game.movePlayer(p2, 0, 1);
+                }
+            }
+            case Q  -> {
+                if (p2 != null && p2.isAlive()) {
+                    player2Direction = 2; // gauche
+                    game.movePlayer(p2, -1, 0);
+                }
+            }
+            case D -> {
+                if (p2 != null && p2.isAlive()) {
+                    player2Direction = 3; // droite
+                    game.movePlayer(p2, 1, 0);
+                }
+            }
             case SHIFT -> { if (p2 != null && p2.isAlive()) game.placeBomb(p2); }
         }
         drawGrid();
@@ -309,14 +405,36 @@ public class GameController {
             double by = topUiHeight + borderPixel + b.getY() * CELL_SIZE;
             gc.drawImage(bombImg, bx, by, CELL_SIZE, CELL_SIZE);
         }
+
         // --- Dessine les joueurs ---
         for (Player p : game.getPlayers()) {
             if (p.isAlive()) {
-                double px = borderPixel + p.getX() * CELL_SIZE + 4;
-                double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE + 4;
-                gc.setFill(p.getId() == 1 ? Color.BLUE : Color.RED);
-                gc.fillOval(px, py, CELL_SIZE - 8, CELL_SIZE - 8);
-                // L'affichage des vies dans la grille est supprimé !
+                double px = borderPixel + p.getX() * CELL_SIZE;
+                double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE;
+
+                if (p.getId() == 1) {
+                    // Joueur 1 - utilise les sprites orientés
+                    Image currentSprite;
+                    switch (player1Direction) {
+                        case 0 -> currentSprite = player1Front; // bas
+                        case 1 -> currentSprite = player1Back;  // haut
+                        case 2 -> currentSprite = player1Left;  // gauche
+                        case 3 -> currentSprite = player1Right; // droite
+                        default -> currentSprite = player1Front;
+                    }
+                    gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
+                } else {
+                    // Joueur 2
+                    Image currentSprite;
+                    switch (player2Direction) {
+                        case 0 -> currentSprite = player2Front; // bas
+                        case 1 -> currentSprite = player2Back;  // haut
+                        case 2 -> currentSprite = player2Left;  // gauche
+                        case 3 -> currentSprite = player2Right; // droite
+                        default -> currentSprite = player2Front;
+                    }
+                    gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
+                }
             }
         }
 
