@@ -44,6 +44,9 @@ public class GameController {
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
 
+    // Image pour les bombes
+    private Image bombImg;
+
     @FXML
     public void initialize() {
         game = new Game(15, 13, 2);
@@ -53,6 +56,9 @@ public class GameController {
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
         wallIndestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murIndestructible.png"));
         wallDestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murDestructible.png"));
+
+        // Charge l'image de la bombe
+        bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
 
         // Calcul dynamique des dimensions
         int gridWidth = game.getGrid().getWidth();
@@ -297,12 +303,11 @@ public class GameController {
                 }
             }
         }
-        // --- Dessine les bombes (optionnel) ---
+        // --- Dessine les bombes avec l'image ---
         for (Bomb b : game.getBombs()) {
-            double bx = borderPixel + b.getX() * CELL_SIZE + 8;
-            double by = topUiHeight + borderPixel + b.getY() * CELL_SIZE + 8;
-            gc.setFill(Color.BLACK);
-            gc.fillOval(bx, by, CELL_SIZE - 16, CELL_SIZE - 16);
+            double bx = borderPixel + b.getX() * CELL_SIZE;
+            double by = topUiHeight + borderPixel + b.getY() * CELL_SIZE;
+            gc.drawImage(bombImg, bx, by, CELL_SIZE, CELL_SIZE);
         }
         // --- Dessine les joueurs ---
         for (Player p : game.getPlayers()) {
