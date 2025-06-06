@@ -1,6 +1,7 @@
 module com.bomberman {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.desktop;
 
     opens com.bomberman.controller to javafx.fxml;
     opens com.bomberman.model to javafx.fxml;
