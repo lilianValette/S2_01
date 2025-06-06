@@ -1,0 +1,8 @@
+- plusieurs langues
+- mode mort subite (blocks qui se posent dans le sens des aiguilles d'un montre, si ex aequo)
+- tapis roulant
+- blocks déplaçables
+- Choisir son personnage
+- créer des comptes sauvegardé
+  - Choisir son personnage
+  - choisir son nom
