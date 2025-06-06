@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Retro Bomberman-style menu buttons --- */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    /* Dégradé vertical orange-jaune-orange façon SNES */
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-effect: null; /* Pas d'effet */
+    -fx-padding: 6 20 6 24; /* moins d'espace vertical et à gauche */
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-min-width: 250px;
+    -fx-max-width: 250px;
+}
+
+/* Hover et focus : texte blanc avec légère ombre rétro */
+.menu-button:hover, .menu-button:focused {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+/* --- Conteneur boutons : alignement à gauche et espacement très réduit --- */
+.menu-buttons-box {
+    -fx-spacing: 0;
+    -fx-alignment: TOP_LEFT;
+}
+
+/* --- Copyright label --- */
+.copyright-label {
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 12px;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #000000, 2, 0.9, 2, 2);
+    -fx-padding: 10 10 10 10;
+    -fx-background-color: rgba(0,0,0,0.30);
+    -fx-background-radius: 5;
+}
