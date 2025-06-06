@@ -6,13 +6,15 @@ public class Player {
     private int y;
     private boolean alive;
     private int lives;
+    private boolean isHuman;
 
-    public Player(int id, int startX, int startY) {
+    public Player(int id, int startX, int startY, boolean isHuman) {
         this.id = id;
         this.x = startX;
         this.y = startY;
         this.lives = 3;
         this.alive = true;
+        this.isHuman = isHuman;
     }
 
     public int getId() { return id; }
@@ -20,6 +22,7 @@ public class Player {
     public int getY() { return y; }
     public boolean isAlive() { return alive; }
     public int getLives() { return lives; }
+    public boolean isHuman() { return isHuman; }
 
     public void kill() {
         this.alive = false;
@@ -35,7 +38,7 @@ public class Player {
     }
 
     public void move(int dx, int dy, Grid grid) {
-        if (!alive) return; // Empêche le déplacement si mort
+        if (!alive) return;
         int newX = x + dx;
         int newY = y + dy;
         if (grid.isInBounds(newX, newY) && grid.getCell(newX, newY) == Grid.CellType.EMPTY) {

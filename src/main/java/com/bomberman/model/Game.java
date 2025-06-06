@@ -12,7 +12,6 @@ public class Game {
 
     private List<Bomb> bombs = new ArrayList<>();
 
-    // Nouvelle structure pour garder les explosions visibles
     private static class Explosion {
         int x, y;
         int ticksRemaining;
@@ -24,46 +23,56 @@ public class Game {
     }
     private List<Explosion> explosions = new ArrayList<>();
 
-    public Game(int width, int height, int playerCount) {
-        this.grid = new Grid(width, height);
+    public Game(int width, int height, int playerCount, int iaCount, Theme theme) {
+        this.grid = new Grid(width, height, theme);
         this.players = new ArrayList<>();
         this.gameOver = false;
         this.winner = null;
-        initializePlayers(playerCount);
+        int totalPlayers = playerCount + iaCount;
+        initializePlayers(totalPlayers, playerCount);
     }
 
-    private void initializePlayers(int playerCount) {
+    // Sécurise le spawn : le joueur spawn toujours sur du sol, jamais sur un bloc, et toutes les cases autour (y compris diagonales) sont mises à EMPTY
+    private void initializePlayers(int totalPlayers, int humanCount) {
         int[][] startPositions = {
                 {1, 1},
                 {grid.getWidth() - 2, grid.getHeight() - 2},
                 {1, grid.getHeight() - 2},
                 {grid.getWidth() - 2, 1}
         };
-        for (int i = 0; i < playerCount && i < startPositions.length; i++) {
-            Player p = new Player(i + 1, startPositions[i][0], startPositions[i][1]);
+        for (int i = 0; i < totalPlayers && i < startPositions.length; i++) {
+            int x = startPositions[i][0];
+            int y = startPositions[i][1];
+
+            // S'assure que la case de spawn et les 8 alentours (croix + diagonales) sont du sol (EMPTY)
+            clearSpawnZoneWithDiagonals(x, y);
+
+            boolean isHuman = i < humanCount;
+            Player p = new Player(i + 1, x, y, isHuman);
             players.add(p);
         }
     }
 
-    public Grid getGrid() {
-        return grid;
+    // Met la case de spawn et toutes ses cases adjacentes (y compris diagonales) à EMPTY
+    private void clearSpawnZoneWithDiagonals(int x, int y) {
+        int[][] dirs = {
+                {0,0},
+                {0,1}, {0,-1}, {1,0}, {-1,0},
+                {1,1}, {1,-1}, {-1,1}, {-1,-1}
+        };
+        for (int[] d : dirs) {
+            int nx = x + d[0], ny = y + d[1];
+            if (grid.isInBounds(nx, ny)) {
+                grid.setCell(nx, ny, Grid.CellType.EMPTY);
+            }
+        }
     }
 
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public Player getWinner() {
-        return winner;
-    }
-
-    public List<Bomb> getBombs() {
-        return bombs;
-    }
+    public Grid getGrid() { return grid; }
+    public List<Player> getPlayers() { return players; }
+    public boolean isGameOver() { return gameOver; }
+    public Player getWinner() { return winner; }
+    public List<Bomb> getBombs() { return bombs; }
 
     public void updateGameState() {
         int aliveCount = 0;
@@ -87,16 +96,14 @@ public class Game {
     }
 
     public void placeBomb(Player player) {
-        if (!player.isAlive()) return; // Bloque la pose de bombe si joueur mort
-        // Vérifie s’il n’y a pas déjà une bombe sur la case
+        if (!player.isAlive()) return;
         for (Bomb b : bombs)
             if (b.getX() == player.getX() && b.getY() == player.getY()) return;
-        bombs.add(new Bomb(player.getX(), player.getY(), 3, 2)); // timer=3, range=2
+        bombs.add(new Bomb(player.getX(), player.getY(), 3, 2));
         grid.setCell(player.getX(), player.getY(), Grid.CellType.BOMB);
     }
 
     public void updateBombs() {
-        // Tick des bombes
         Iterator<Bomb> it = bombs.iterator();
         while (it.hasNext()) {
             Bomb b = it.next();
@@ -106,14 +113,11 @@ public class Game {
                 it.remove();
             }
         }
-
-        // Tick des explosions (pour qu'elles restent affichées au moins 1 tick)
         Iterator<Explosion> expIt = explosions.iterator();
         while (expIt.hasNext()) {
             Explosion exp = expIt.next();
             exp.ticksRemaining--;
             if (exp.ticksRemaining <= 0) {
-                // On nettoie la case
                 if (grid.getCell(exp.x, exp.y) == Grid.CellType.EXPLOSION) {
                     grid.setCell(exp.x, exp.y, Grid.CellType.EMPTY);
                 }
@@ -124,7 +128,7 @@ public class Game {
 
     private void addExplosion(int x, int y) {
         grid.setCell(x, y, Grid.CellType.EXPLOSION);
-        explosions.add(new Explosion(x, y, 2)); // 1 tick = visible pendant un cycle
+        explosions.add(new Explosion(x, y, 2));
     }
 
     private void explode(Bomb b) {

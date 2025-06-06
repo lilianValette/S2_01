@@ -39,9 +39,9 @@
 
         <!-- Retro menu buttons -->
         <VBox spacing="8" alignment="CENTER">
-            <Button fx:id="playButton" text="NORMAL GAME" styleClass="menu-button"/>
-            <Button fx:id="battleButton" text="BATTLE MODE" styleClass="menu-button"/>
-            <Button fx:id="passwordButton" text="PASSWORD" styleClass="menu-button"/>
+            <Button fx:id="playButton" text="PLAY" styleClass="menu-button"/>
+            <Button fx:id="accountButton" text="ACCOUNT" styleClass="menu-button"/>
+            <Button fx:id="settingsButton" text="SETTINGS" styleClass="menu-button"/>
             <Button fx:id="quitButton" text="QUIT" styleClass="menu-button"/>
         </VBox>
 
