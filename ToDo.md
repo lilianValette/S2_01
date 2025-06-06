@@ -1,4 +1,8 @@
 - plusieurs langues
+- plus de bonus
+- apparition de murs destructibles
+- apparition de bonus
+- animation
 - mode mort subite (blocks qui se posent dans le sens des aiguilles d'un montre, si ex aequo)
 - tapis roulant
 - blocks déplaçables
