@@ -115,6 +115,11 @@ public class Player {
                 .anyMatch(ab -> ab.getType() == ActiveBonus.Type.JACKET);
     }
 
+    public void addLife() {
+        lives++;
+    }
+
+
 
 
     /**

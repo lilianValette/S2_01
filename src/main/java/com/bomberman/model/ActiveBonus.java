@@ -1,11 +1,11 @@
 package com.bomberman.model;
 
 /**
- * Représente un bonus temporaire appliqué à un joueur,
+ * Représente un bonus appliqué à un joueur,
  * avec son type, sa valeur (extraRange) et sa durée restante en secondes.
  */
 public class ActiveBonus {
-    public enum Type { FLAME, JACKET }
+    public enum Type { FLAME, JACKET, LIFE }
 
     private final Type type;
     private final int extraValue;

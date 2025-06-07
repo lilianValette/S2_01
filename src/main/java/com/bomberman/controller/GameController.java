@@ -229,43 +229,35 @@ public class GameController {
 
         // Afficher le temps restant du bonus FLAME pour chaque joueur
         for (Player p : game.getPlayers()) {
+            double textX;
+            double baseY;
+            int bonusIndex = 0;
+
+            if (p.getId() == 1) {
+                textX = margin + iconSize + spacing + counterSize + 8;
+                baseY = topUiHeight * 0.6;
+            } else {
+                textX = canvasWidth - margin - iconSize - spacing - counterSize - 75;
+                baseY = topUiHeight * 0.6;
+            }
+
             for (ActiveBonus ab : p.getActiveBonuses()) {
-                if (ab.getType() == ActiveBonus.Type.FLAME) {
-                    String timeStr = ab.getSecondsRemaining() + "s";
-                    gc.setFill(Color.ORANGE);
-                    gc.setFont(Font.font("Consolas", iconSize * 0.4));
+                String suffix = switch (ab.getType()) {
+                    case FLAME -> " F";
+                    case JACKET -> " J";
+                    case LIFE -> " L";
+                };
 
-                    double textX, textY;
-                    if (p.getId() == 1) {
-                        // Sous l’avatar du joueur 1
-                        textX = margin + iconSize + spacing + counterSize + 8;
-                        textY = topUiHeight * 0.6;
-                    } else {
-                        // Sous l’avatar du joueur 2 (droite)
-                        textX = canvasWidth - margin - iconSize - spacing - counterSize - 40;
-                        textY = p2CounterY + counterSize + 16;
-                    }
-                    gc.fillText(timeStr, textX, textY);
-                }
+                String timeStr = ab.getSecondsRemaining() + "s" + suffix;
 
-                // afficher le bonus JACKET
-                else if (ab.getType() == ActiveBonus.Type.JACKET) {
-                    String timeStr = ab.getSecondsRemaining() + "s";
-                    gc.setFill(Color.RED);
-                    gc.setFont(Font.font("Consolas", iconSize * 0.4));
-
-                    double textX, textY;
-                    if (p.getId() == 1) {
-                        textX = margin + iconSize + spacing + counterSize + 8;
-                        textY = topUiHeight * 0.6 + 18;  // plus bas que le FLAME
-                    } else {
-                        textX = canvasWidth - margin - iconSize - spacing - counterSize - 40;
-                        textY = p2CounterY + counterSize + 34;  // plus bas que le FLAME
-                    }
-                    gc.fillText(timeStr, textX, textY);
-                }
+                gc.setFill(Color.WHITE);
+                gc.setFont(Font.font("Consolas", iconSize * 0.4));
+                double textY = baseY + bonusIndex * 18;
+                gc.fillText(timeStr, textX, textY);
+                bonusIndex++;
             }
         }
+
 
         // --- Timer centré, fond élargi 1.5x ---
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);

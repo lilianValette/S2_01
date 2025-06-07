@@ -57,6 +57,11 @@ public abstract class Bonus {
         return collected;
     }
 
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
+
+
     /** @return la coordonnée X (en tiles) du bonus */
     public int getX() {
         return x;

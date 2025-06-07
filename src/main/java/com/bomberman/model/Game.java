@@ -39,6 +39,8 @@ public class Game {
         bonuses.add(new FlameBonus(5, 3, 1));
         //ajout du bonus Jacket à un endroit fixe pour teste
         bonuses.add(new JacketBonus(3,5));
+        bonuses.add(new LifeBonus(5,5));
+
     }
 
     // Sécurise le spawn : le joueur spawn toujours sur du sol, jamais sur un bloc, et toutes les cases autour (y compris diagonales) sont mises à EMPTY
@@ -218,14 +220,16 @@ public class Game {
         if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
 
-            // AJOUT BONUS : 20 % de chances de faire apparaître un FlameBonus à cet endroit
             if (Math.random() < 0.2) {
                 bonuses.add(new FlameBonus(x, y, 1));
             }
-            // AJOUT BONUS : 10 % de chances de faire apparaître un JacketBonus à cet endroit
             if (Math.random() < 0.1) {
                 bonuses.add(new JacketBonus(x, y));
             }
+            if (Math.random() < 0.1) {
+                bonuses.add(new LifeBonus(x, y));
+            }
+
 
         }
     }
