@@ -1,0 +1,445 @@
+/* ===== FOND ET SECTIONS LAYOUT ===== */
+.header-section {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-border-color: #ffd700;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 15 20 15 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 10, 0, 0, 3);
+}
+
+.footer-section {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-border-color: #ffd700;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 10, 0, 0, -3);
+}
+
+.main-background {
+    -fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460);
+    -fx-min-height: 100vh;
+}
+
+/* ===== STYLES POUR LES CONTENEURS DE FORMULAIRE ===== */
+.form-container {
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+    -fx-border-color: rgba(255, 215, 0, 0.8);
+    -fx-border-width: 3;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 25, 0, 0, 8);
+    -fx-padding: 30;
+    -fx-max-width: 500px;
+}
+
+.form-fields {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(255, 215, 0, 0.5);
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-max-width: 400px;
+    -fx-padding: 25;
+    -fx-spacing: 20;
+    -fx-effect: inner-shadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
+}
+
+/* ===== STYLES POUR LES CHAMPS DE TEXTE ===== */
+.game-textfield {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: #ffd700;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 15 12 15;
+    -fx-pref-width: 280px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 6, 0, 0, 3);
+    -fx-transition-duration: 0.3s;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.game-textfield:focused {
+    -fx-border-color: #ffed4e;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(255, 237, 78, 0.9), 12, 0, 0, 0);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.game-textfield:hover {
+    -fx-background-color: white;
+    -fx-border-color: #ffed4e;
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.6), 8, 0, 0, 2);
+}
+
+.game-password-field {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: #ffd700;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 15 12 15;
+    -fx-pref-width: 280px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 6, 0, 0, 3);
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.game-password-field:focused {
+    -fx-border-color: #ffed4e;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(255, 237, 78, 0.9), 12, 0, 0, 0);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* ===== STYLES POUR LES LABELS ===== */
+.field-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffd700;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 3, 0, 1, 1);
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.message-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0 0 0;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0, 1, 1);
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.success-message {
+    -fx-text-fill: #4caf50;
+    -fx-background-color: rgba(76, 175, 80, 0.2);
+    -fx-border-color: #4caf50;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 15 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(76, 175, 80, 0.4), 8, 0, 0, 0);
+}
+
+.error-message {
+    -fx-text-fill: #f44336;
+    -fx-background-color: rgba(244, 67, 54, 0.2);
+    -fx-border-color: #f44336;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 15 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 0);
+}
+
+/* ===== STYLES POUR LES INFORMATIONS DE PROFIL ===== */
+.profile-info {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(255, 215, 0, 0.6);
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-max-width: 450px;
+    -fx-padding: 25;
+    -fx-spacing: 15;
+    -fx-effect: inner-shadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 0);
+}
+
+.profile-section {
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+    -fx-border-color: rgba(255, 215, 0, 0.7);
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 30;
+    -fx-spacing: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 20, 0, 0, 5);
+}
+
+.profile-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-min-width: 150px;
+    -fx-text-fill: #ffd700;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0, 1, 1);
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.profile-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0, 1, 1);
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.profile-row {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 15 20 15 20;
+    -fx-spacing: 20;
+    -fx-alignment: center-left;
+}
+
+.profile-row:hover {
+    -fx-background-color: rgba(255, 215, 0, 0.1);
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.3), 8, 0, 0, 0);
+}
+
+/* ===== STYLES POUR LES TITRES ===== */
+.page-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffd700;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 1), 5, 0, 2, 2);
+    -fx-padding: 20 0 30 0;
+    -fx-text-alignment: center;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffd700;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 4, 0, 1, 1);
+    -fx-padding: 0 0 20 0;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.subsection-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffed4e;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 3, 0, 1, 1);
+    -fx-padding: 15 0 10 0;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+/* ===== STYLES POUR LES BOUTONS - STYLE MENU UNIFORME ===== */
+.game-button-primary {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    /* Dégradé vertical orange-jaune-orange façon SNES */
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-effect: null;
+    -fx-padding: 15 30 15 30;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-min-width: 200px;
+}
+
+.game-button-primary:hover, .game-button-primary:focused {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+.game-button-primary:pressed {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 2, 0.9, 2, 3);
+}
+
+.game-button-primary:disabled {
+    -fx-text-fill: #666666;
+    -fx-effect: none;
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+}
+
+.game-button-secondary {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-effect: null;
+    -fx-padding: 12 25 12 25;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.game-button-secondary:hover, .game-button-secondary:focused {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+.game-button-secondary:pressed {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 2, 0.9, 2, 3);
+}
+
+.game-button-danger {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #f44336 0%,
+            #ff6659 40%,
+            #ff6659 60%,
+            #f44336 100%
+    );
+    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-effect: null;
+    -fx-padding: 12 25 12 25;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.game-button-danger:hover, .game-button-danger:focused {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #f44336, 1, 0.7, 1, 2);
+}
+
+.game-button-danger:pressed {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #f44336, 2, 0.9, 2, 3);
+}
+
+.game-button-small {
+    -fx-font-size: 12px;
+    -fx-padding: 8 20 8 20;
+    -fx-min-width: 120px;
+}
+
+.game-button-large {
+    -fx-font-size: 18px;
+    -fx-padding: 20 40 20 40;
+    -fx-min-width: 250px;
+}
+
+/* ===== STYLES POUR LES AVATARS ET IMAGES ===== */
+.avatar-container {
+    -fx-background-color: rgba(255, 215, 0, 0.2);
+    -fx-border-color: #ffd700;
+    -fx-border-width: 3;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 120px;
+    -fx-pref-height: 120px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 15, 0, 0, 5);
+}
+
+.avatar-image {
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+    -fx-effect: inner-shadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 0);
+}
+
+/* ===== STYLES POUR LES CARTES ET CONTENEURS ===== */
+.info-card {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-border-color: rgba(255, 215, 0, 0.6);
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 12, 0, 0, 4);
+}
+
+.info-card:hover {
+    -fx-border-color: rgba(255, 215, 0, 0.8);
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.4), 15, 0, 0, 0);
+}
+
+.stats-container {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-border-color: rgba(255, 215, 0, 0.4);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}
+
+/* ===== STYLES POUR LES SÉPARATEURS ===== */
+.divider {
+    -fx-background-color: rgba(255, 215, 0, 0.3);
+    -fx-pref-height: 2px;
+    -fx-margin: 20 0 20 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 3, 0, 0, 1);
+}
+
+.divider-vertical {
+    -fx-background-color: rgba(255, 215, 0, 0.3);
+    -fx-pref-width: 2px;
+    -fx-margin: 0 15 0 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 3, 0, 1, 0);
+}
+
+/* ===== ANIMATIONS ET TRANSITIONS ===== */
+.fade-in {
+    -fx-opacity: 0;
+    -fx-transition-duration: 0.5s;
+}
+
+.slide-up {
+    -fx-translate-y: 20;
+    -fx-opacity: 0;
+    -fx-transition-duration: 0.4s;
+}
+
+/* ===== STYLES RESPONSIFS ===== */
+.responsive-container {
+    -fx-max-width: 800px;
+    -fx-min-width: 400px;
+    -fx-alignment: center;
+    -fx-spacing: 30;
+}
+
+/* ===== STYLES POUR SCROLL PANE ===== */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: rgba(255, 215, 0, 0.2);
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.scroll-pane .scroll-bar .thumb {
+    -fx-background-color: rgba(255, 215, 0, 0.6);
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 215, 0, 0.8);
+}

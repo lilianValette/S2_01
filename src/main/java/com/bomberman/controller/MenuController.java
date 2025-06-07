@@ -122,17 +122,25 @@ public class MenuController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/game-setup.fxml"));
             Parent root = loader.load();
             GameSetupController controller = loader.getController();
-            controller.setStage(stage); // si besoin
+            controller.setStage(stage);
             stage.setScene(new Scene(root));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Fonctions placeholders pour Account et Settings
+    // Navigation vers la page des comptes
     private void onAccount() {
-        // À implémenter plus tard
-        System.out.println("Account button clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/account.fxml"));
+            Parent root = loader.load();
+            AccountControler accountController = loader.getController();
+            accountController.setStage(stage);
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du chargement de la page des comptes : " + e.getMessage());
+        }
     }
 
     private void onSettings() {

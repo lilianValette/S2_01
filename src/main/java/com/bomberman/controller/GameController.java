@@ -139,6 +139,9 @@ public class GameController {
         gameCanvas.setWidth(canvasWidth);
         gameCanvas.setHeight(canvasHeight);
 
+        // NOUVEAU: Redimensionner la fenêtre pour s'adapter au canvas
+        resizeWindowToFitGame(canvasWidth, canvasHeight);
+
         drawGrid();
 
         gameCanvas.setFocusTraversable(true);
@@ -161,6 +164,31 @@ public class GameController {
         timerTimeline.play();
     }
 
+    /**
+     * NOUVELLE MÉTHODE: Redimensionne la fenêtre pour s'adapter exactement au contenu du jeu
+     */
+    private void resizeWindowToFitGame(double canvasWidth, double canvasHeight) {
+        if (stage != null) {
+            // Marge pour les bordures de la fenêtre (titre, bordures système)
+            double windowDecorationWidth = 16;  // Marge pour les bordures gauche/droite
+            double windowDecorationHeight = 40; // Marge pour la barre de titre + bordures haut/bas
+
+            // Calcul de la nouvelle taille de la fenêtre
+            double newWidth = canvasWidth + windowDecorationWidth;
+            double newHeight = canvasHeight + windowDecorationHeight;
+
+            // Application de la nouvelle taille
+            stage.setWidth(newWidth);
+            stage.setHeight(newHeight);
+
+            // Centrer la fenêtre sur l'écran
+            stage.centerOnScreen();
+
+            // Rendre la fenêtre non-redimensionnable pour maintenir les proportions
+            stage.setResizable(false);
+        }
+    }
+
     private void returnToMenu() {
         if (timeline != null) timeline.stop();
         if (timerTimeline != null) timerTimeline.stop();
@@ -171,6 +199,8 @@ public class GameController {
             MenuController menuController = loader.getController();
             menuController.setStage(stage);
             if (stage != null) {
+                // Remettre la fenêtre redimensionnable avant de retourner au menu
+                stage.setResizable(true);
                 stage.setScene(new Scene(root));
             } else {
                 System.err.println("Impossible de trouver la fenêtre principale !");
