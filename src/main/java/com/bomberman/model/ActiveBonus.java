@@ -5,7 +5,7 @@ package com.bomberman.model;
  * avec son type, sa valeur (extraRange) et sa durée restante en secondes.
  */
 public class ActiveBonus {
-    public enum Type { FLAME /*, SPEED, … */ }
+    public enum Type { FLAME, JACKET }
 
     private final Type type;
     private final int extraValue;

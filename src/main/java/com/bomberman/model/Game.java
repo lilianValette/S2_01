@@ -37,6 +37,8 @@ public class Game {
 
         // AJOUT BONUS : on place déjà un bonus fixe pour tester
         bonuses.add(new FlameBonus(5, 3, 1));
+        //ajout du bonus Jacket à un endroit fixe pour teste
+        bonuses.add(new JacketBonus(3,5));
     }
 
     // Sécurise le spawn : le joueur spawn toujours sur du sol, jamais sur un bloc, et toutes les cases autour (y compris diagonales) sont mises à EMPTY
@@ -205,7 +207,9 @@ public class Game {
     private void damagePlayersAt(int x, int y) {
         for (Player p : players) {
             if (p.isAlive() && p.getX() == x && p.getY() == y) {
-                p.takeDamage();
+                if (!p.isInvincibleToBombs()) {
+                    p.takeDamage();
+                }
             }
         }
     }
@@ -218,6 +222,11 @@ public class Game {
             if (Math.random() < 0.2) {
                 bonuses.add(new FlameBonus(x, y, 1));
             }
+            // AJOUT BONUS : 10 % de chances de faire apparaître un JacketBonus à cet endroit
+            if (Math.random() < 0.1) {
+                bonuses.add(new JacketBonus(x, y));
+            }
+
         }
     }
 }

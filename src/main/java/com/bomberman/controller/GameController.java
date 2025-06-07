@@ -227,12 +227,12 @@ public class GameController {
             gc.fillText(p2LivesStr, p2TextX, p2TextY);
         }
 
-        // ─── Afficher le temps restant du bonus FLAME pour chaque joueur ─────────────────────────────────────
+        // Afficher le temps restant du bonus FLAME pour chaque joueur
         for (Player p : game.getPlayers()) {
             for (ActiveBonus ab : p.getActiveBonuses()) {
                 if (ab.getType() == ActiveBonus.Type.FLAME) {
                     String timeStr = ab.getSecondsRemaining() + "s";
-                    gc.setFill(Color.WHITE);
+                    gc.setFill(Color.ORANGE);
                     gc.setFont(Font.font("Consolas", iconSize * 0.4));
 
                     double textX, textY;
@@ -247,8 +247,26 @@ public class GameController {
                     }
                     gc.fillText(timeStr, textX, textY);
                 }
+
+                // afficher le bonus JACKET
+                else if (ab.getType() == ActiveBonus.Type.JACKET) {
+                    String timeStr = ab.getSecondsRemaining() + "s";
+                    gc.setFill(Color.RED);
+                    gc.setFont(Font.font("Consolas", iconSize * 0.4));
+
+                    double textX, textY;
+                    if (p.getId() == 1) {
+                        textX = margin + iconSize + spacing + counterSize + 8;
+                        textY = topUiHeight * 0.6 + 18;  // plus bas que le FLAME
+                    } else {
+                        textX = canvasWidth - margin - iconSize - spacing - counterSize - 40;
+                        textY = p2CounterY + counterSize + 34;  // plus bas que le FLAME
+                    }
+                    gc.fillText(timeStr, textX, textY);
+                }
             }
         }
+
         // ───────────────────────────────────────────────────────────────────────────────────────────────────
 
         // --- Timer centré, fond élargi 1.5x ---
