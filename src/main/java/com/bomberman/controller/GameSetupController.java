@@ -54,21 +54,21 @@ public class GameSetupController {
     }
 
     private void setupArrowsVisibility() {
-        // Ces bindings sont dynamiques et réagiront aux changements de valeurs
+        // Min joueur humain = 1 si IA > 0, sinon 2
         playerLeftArrow.visibleProperty().bind(Bindings.createBooleanBinding(
                 () -> playerCount.get() > (iaCount.get() == 0 ? 2 : 1),
                 playerCount, iaCount
         ));
+        // Max joueur humain = 2
         playerRightArrow.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> playerCount.get() + iaCount.get() < 4,
-                playerCount, iaCount
+                () -> playerCount.get() < 2,
+                playerCount
         ));
         iaLeftArrow.visibleProperty().bind(iaCount.greaterThan(0));
         iaRightArrow.visibleProperty().bind(Bindings.createBooleanBinding(
                 () -> playerCount.get() + iaCount.get() < 4,
                 playerCount, iaCount
         ));
-        // Les flèches de thème
         boolean hasMultipleThemes = levels.length > 1;
         themeLeftArrow.setVisible(hasMultipleThemes);
         themeRightArrow.setVisible(hasMultipleThemes);
