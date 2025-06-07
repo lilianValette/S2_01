@@ -175,7 +175,17 @@ public class MenuController {
      * Action sur le bouton "Compte".
      */
     private void onAccount() {
-        System.out.println("Account button clicked");
+        // Merge : Comportement par défaut = navigation vers l'écran compte si possible, sinon log
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/account.fxml"));
+            Parent root = loader.load();
+            AccountControler accountController = loader.getController();
+            accountController.setStage(stage);
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du chargement de la page des comptes : " + e.getMessage());
+        }
     }
 
     /**

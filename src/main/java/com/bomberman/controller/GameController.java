@@ -141,9 +141,6 @@ public class GameController {
         double canvasWidth = borderPixel * 2 + gridWidth * CELL_SIZE;
         double canvasHeight = topUiHeight + borderPixel * 2 + gridHeight * CELL_SIZE;
 
-        gameCanvas.setWidth(canvasWidth);
-        gameCanvas.setHeight(canvasHeight);
-
         // Adapter la taille de la fenêtre à la grille
         if (stage != null) {
             stage.setWidth(canvasWidth);
