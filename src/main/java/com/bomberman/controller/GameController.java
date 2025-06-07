@@ -4,6 +4,7 @@ import com.bomberman.model.Game;
 import com.bomberman.model.Player;
 import com.bomberman.model.Bomb;
 import com.bomberman.model.Level;
+import com.bomberman.model.Bonus;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -19,64 +20,72 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
-import com.bomberman.model.Bonus;
-import com.bomberman.model.ActiveBonus;
 
+/**
+ * Contrôleur principal du jeu Bomberman.
+ * Gère l'affichage, les entrées clavier et la logique de jeu,
+ * y compris la direction des sprites IA & joueurs, et le timer.
+ */
 public class GameController {
     @FXML
     private Canvas gameCanvas;
 
     private Stage stage;
 
-    public static final int WINDOW_WIDTH = 890;
-    public static final int WINDOW_HEIGHT = 760;
+    // Constantes d'affichage
     public static final int DEFAULT_CELL_SIZE = 48;
     private final int CELL_SIZE = DEFAULT_CELL_SIZE;
-
     private static final double BORDER_PIXEL_RATIO = 0.5;
     private static final double TOP_UI_HEIGHT_RATIO = 2.5;
 
+    // Données du jeu
     private Game game;
-    private Timeline timeline;
+    private Timeline gameTimeline;
     private Timeline timerTimeline;
-    private int timerSeconds = 120;
+    private int timerSeconds = 180; // 3 minutes
 
+    // Ressources graphiques
     private static final String[] AVATAR_PATHS = {
             "/images/avatarsJoueurs/PBlanc-icon.png",
             "/images/avatarsJoueurs/PBleuCiel-icon.png",
             "/images/avatarsJoueurs/PRose-icon.png",
             "/images/avatarsJoueurs/PRouge-icon.png"
     };
-    private Image[] avatarsJoueurs = new Image[4];
+    private final Image[] avatarsJoueurs = new Image[4];
 
+    // Sprites directionnels pour chaque joueur : [playerIndex][direction]
+    // Directions : 0=bas, 1=haut, 2=gauche, 3=droite
     private static final String[][] PLAYER_SPRITE_PATHS = {
-            { // PBlanc
+            {
                     "/images/Player/PBlanc/PBlanc-face.png",
                     "/images/Player/PBlanc/PBlanc-dos.png",
                     "/images/Player/PBlanc/PBlanc-gauche.png",
                     "/images/Player/PBlanc/PBlanc-droite.png"
             },
-            { // PBleuCiel
+            {
                     "/images/Player/PBleuCiel/PBleuCiel-face.png",
                     "/images/Player/PBleuCiel/PBleuCiel-dos.png",
                     "/images/Player/PBleuCiel/PBleuCiel-gauche.png",
                     "/images/Player/PBleuCiel/PBleuCiel-droite.png"
             },
-            { // PRose
+            {
                     "/images/Player/PRose/PRose-face.png",
                     "/images/Player/PRose/PRose-dos.png",
                     "/images/Player/PRose/PRose-gauche.png",
                     "/images/Player/PRose/PRose-droite.png"
             },
-            { // PRouge
+            {
                     "/images/Player/PRouge/PRouge-face.png",
                     "/images/Player/PRouge/PRouge-dos.png",
                     "/images/Player/PRouge/PRouge-gauche.png",
                     "/images/Player/PRouge/PRouge-droite.png"
             }
     };
-    // [playerId][0=face,1=dos,2=gauche,3=droite]
-    private Image[][] playerSprites = new Image[4][4];
+    private final Image[][] playerSprites = new Image[4][4];
+
+    // Pour la direction d'affichage de chaque joueur/IA (0=bas, 1=haut, 2=gauche, 3=droite)
+    // Indexé sur la position dans game.getPlayers()
+    private int[] playerDirections = new int[4];
 
     private Level level;
     private int playerCount;
@@ -87,37 +96,22 @@ public class GameController {
     private Image solImg;
     private Image bombImg;
 
-    // Directions des joueurs (0=bas, 1=haut, 2=gauche, 3=droite)
-    private int[] playerDirections = {0, 0, 0, 0};
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-        if (stage != null) {
-            stage.setResizable(false);
-            stage.setWidth(WINDOW_WIDTH);
-            stage.setHeight(WINDOW_HEIGHT);
-            stage.setMinWidth(WINDOW_WIDTH);
-            stage.setMinHeight(WINDOW_HEIGHT);
-            stage.setMaxWidth(WINDOW_WIDTH);
-            stage.setMaxHeight(WINDOW_WIDTH);
-        }
-    }
-
+    public void setStage(Stage stage) { this.stage = stage; }
     public void setLevel(Level level) { this.level = level; }
     public void setPlayerCount(int playerCount) { this.playerCount = playerCount; }
     public void setIaCount(int iaCount) { this.iaCount = iaCount; }
 
     @FXML
-    public void initialize() { }
+    public void initialize() {}
 
     public void startGame() {
+        // 1. Initialisation du modèle
         game = new Game(15, 13, playerCount, iaCount, level);
 
-        // Load player icons for the top bar
+        // 2. Chargement des ressources
         for (int i = 0; i < avatarsJoueurs.length; i++) {
             avatarsJoueurs[i] = new Image(getClass().getResourceAsStream(AVATAR_PATHS[i]));
         }
-        // Load dynamic skins for all players
         for (int i = 0; i < 4; i++) {
             for (int d = 0; d < 4; d++) {
                 try {
@@ -131,94 +125,150 @@ public class GameController {
         wallIndestructibleImg = new Image(getClass().getResourceAsStream(level.getWallIndestructibleImagePath()));
         wallDestructibleImg   = new Image(getClass().getResourceAsStream(level.getWallDestructibleImagePath()));
         solImg                = new Image(getClass().getResourceAsStream(level.getGroundImagePath()));
-        bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
+        bombImg               = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
 
-        // Calcule la largeur de la grille pour adapter la barre supérieure et le canvas
+        // 3. Taille du canvas/fenêtre
         int gridWidth = game.getGrid().getWidth();
         int gridHeight = game.getGrid().getHeight();
         double borderPixel = CELL_SIZE * BORDER_PIXEL_RATIO;
         double topUiHeight = CELL_SIZE * TOP_UI_HEIGHT_RATIO;
         double canvasWidth = borderPixel * 2 + gridWidth * CELL_SIZE;
         double canvasHeight = topUiHeight + borderPixel * 2 + gridHeight * CELL_SIZE;
-
-        // Adapter la taille de la fenêtre à la grille
+        gameCanvas.setWidth(canvasWidth);
+        gameCanvas.setHeight(canvasHeight);
         if (stage != null) {
             stage.setWidth(canvasWidth);
-            stage.setHeight(canvasHeight + 40); // +40 pour la barre de titre
+            stage.setHeight(canvasHeight + 40);
             stage.setMinWidth(canvasWidth);
             stage.setMinHeight(canvasHeight + 40);
             stage.setMaxWidth(canvasWidth);
             stage.setMaxHeight(canvasHeight + 40);
         }
 
+        // 4. Directions initiales : tous vers le bas
+        playerDirections = new int[game.getPlayers().size()];
+        for (int i = 0; i < playerDirections.length; i++) playerDirections[i] = 0;
+
+        // 5. Premier affichage
         drawGrid();
 
+        // 6. Ecoute clavier
         gameCanvas.setFocusTraversable(true);
         gameCanvas.setOnKeyPressed(this::handleKeyPressed);
 
-        // Tick rapide
-        double tickDurationSeconds = 0.2;
+        // 7. Game tick (IA, bombes, etc) avec gestion de direction des IA
+        if (gameTimeline != null) gameTimeline.stop();
+        gameTimeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> updateIAAndGame()));
+        gameTimeline.setCycleCount(Timeline.INDEFINITE);
+        gameTimeline.play();
 
-        // Compteur pour IA
-        final int[] iaTickCounter = {0};
-        timeline = new Timeline(new KeyFrame(Duration.seconds(tickDurationSeconds), e -> {
-            iaTickCounter[0]++;
-            if (iaTickCounter[0] % 3 == 0 || iaTickCounter[0] % 3 == 2) {
-                game.updateAIs();
+        // 8. Timer décompte (3 minutes)
+        if (timerTimeline != null) timerTimeline.stop();
+        timerSeconds = 180;
+        timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            timerSeconds--;
+            if (timerSeconds <= 0) {
+                timerTimeline.stop();
+                gameTimeline.stop();
+                returnToMenu();
             }
-            game.updateBombs();
             drawGrid();
         }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        timerTimeline.setCycleCount(Timeline.INDEFINITE);
+        timerTimeline.play();
     }
 
+    /**
+     * Tick du jeu : met à jour IA, bombes et directions des IA.
+     */
+    private void updateIAAndGame() {
+        // Mémorise les positions avant
+        int nbPlayers = game.getPlayers().size();
+        int[] prevX = new int[nbPlayers];
+        int[] prevY = new int[nbPlayers];
+        for (int i = 0; i < nbPlayers; i++) {
+            Player p = game.getPlayers().get(i);
+            prevX[i] = p.getX();
+            prevY[i] = p.getY();
+        }
+
+        // Tick IA et bombes
+        game.updateAIs();
+        game.updateBombs();
+
+        // Met à jour direction des IA (pour tous les joueurs non humains)
+        for (int i = 0; i < nbPlayers; i++) {
+            Player p = game.getPlayers().get(i);
+            if (!p.isHuman()) {
+                int dx = p.getX() - prevX[i];
+                int dy = p.getY() - prevY[i];
+                if      (dx ==  1) playerDirections[i] = 3; // droite
+                else if (dx == -1) playerDirections[i] = 2; // gauche
+                else if (dy ==  1) playerDirections[i] = 0; // bas
+                else if (dy == -1) playerDirections[i] = 1; // haut
+                // sinon : direction inchangée
+            }
+        }
+        drawGrid();
+    }
+
+    /** Retour au menu principal */
     private void returnToMenu() {
-        if (timeline != null) timeline.stop();
+        if (gameTimeline != null) gameTimeline.stop();
         if (timerTimeline != null) timerTimeline.stop();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/menu.fxml"));
             Parent root = loader.load();
             MenuController menuController = loader.getController();
-            menuController.setStage(stage); // Laisser le menu décider de la taille, il adapte selon l'image
-            if (stage != null) {
-                // La taille sera pilotée par le MenuController (plus de valeurs codées ici !)
-                stage.setScene(new Scene(root));
-            }
+            menuController.setStage(stage);
+            if (stage != null) stage.setScene(new Scene(root));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
+    /** Fin de partie si un joueur est mort */
     private void checkGameOver() {
         boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
         if (someoneDead) {
-            if (timeline != null) timeline.stop();
+            if (gameTimeline != null) gameTimeline.stop();
             if (timerTimeline != null) timerTimeline.stop();
             returnToMenu();
         }
     }
 
+    /** Entrées clavier joueurs humains : gère aussi leur direction */
     private void handleKeyPressed(KeyEvent event) {
         if (game.getPlayers().isEmpty()) return;
-        Player p1 = game.getPlayers().get(0);
-        Player p2 = game.getPlayers().size() > 1 ? game.getPlayers().get(1) : null;
-        // Directions: 0=bas, 1=haut, 2=gauche, 3=droite
-        switch (event.getCode()) {
-            case UP    -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 1; game.movePlayer(p1, 0, -1); } }
-            case DOWN  -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 0; game.movePlayer(p1, 0,  1); } }
-            case LEFT  -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 2; game.movePlayer(p1, -1, 0); } }
-            case RIGHT -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 3; game.movePlayer(p1, 1,  0); } }
-            case SPACE -> { if (p1.isAlive() && p1.isHuman()) game.placeBomb(p1); }
-            case Z     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 1; game.movePlayer(p2, 0, -1); } }
-            case S     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 0; game.movePlayer(p2, 0, 1); } }
-            case Q     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 2; game.movePlayer(p2, -1, 0); } }
-            case D     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 3; game.movePlayer(p2, 1, 0); } }
-            case SHIFT -> { if (p2 != null && p2.isAlive() && p2.isHuman()) game.placeBomb(p2); }
+        for (int idx = 0; idx < game.getPlayers().size(); idx++) {
+            Player p = game.getPlayers().get(idx);
+            if (!p.isAlive() || !p.isHuman()) continue;
+            switch (idx) {
+                case 0 -> { // Joueur 1 : flèches + espace
+                    switch (event.getCode()) {
+                        case UP    -> { playerDirections[0] = 1; game.movePlayer(p, 0, -1); }
+                        case DOWN  -> { playerDirections[0] = 0; game.movePlayer(p, 0, 1); }
+                        case LEFT  -> { playerDirections[0] = 2; game.movePlayer(p, -1, 0); }
+                        case RIGHT -> { playerDirections[0] = 3; game.movePlayer(p, 1, 0); }
+                        case SPACE -> game.placeBomb(p);
+                    }
+                }
+                case 1 -> { // Joueur 2 : ZQSD + shift
+                    switch (event.getCode()) {
+                        case Z     -> { playerDirections[1] = 1; game.movePlayer(p, 0, -1); }
+                        case S     -> { playerDirections[1] = 0; game.movePlayer(p, 0, 1); }
+                        case Q     -> { playerDirections[1] = 2; game.movePlayer(p, -1, 0); }
+                        case D     -> { playerDirections[1] = 3; game.movePlayer(p, 1, 0); }
+                        case SHIFT -> game.placeBomb(p);
+                    }
+                }
+                // Ajoutez ici les mappings pour joueurs 3/4 si besoin
+            }
         }
         drawGrid();
     }
 
+    /** Affichage principal du plateau, des joueurs, du timer, etc. */
     private void drawGrid() {
         if (game == null || game.getPlayers().isEmpty()) return;
 
@@ -231,13 +281,11 @@ public class GameController {
         double canvasWidth = borderPixel * 2 + gridWidth * CELL_SIZE;
         double canvasHeight = topUiHeight + borderPixel * 2 + gridHeight * CELL_SIZE;
 
-        // --- BARRE DU HAUT ADAPTÉE À LA GRILLE ---
+        // --- Barre du haut ---
         gc.setFill(Color.ORANGE);
         gc.fillRect(0, 0, canvasWidth, topUiHeight);
 
         int totalPlayers = game.getPlayers().size();
-
-        // Proportions idéales (adaptées à la grille, pas à la fenêtre !)
         double desiredSpacing = topUiHeight * 0.08;
         double minSpacing = 8;
         double iconSize = topUiHeight * 0.65;
@@ -265,7 +313,7 @@ public class GameController {
         gc.setLineWidth(2);
         gc.strokeRoundRect(timerX, timerY, timerWidth, timerHeight, 16, 16);
 
-        String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
+        String timerStr = String.format("%d:%02d", Math.max(timerSeconds, 0) / 60, Math.max(timerSeconds, 0) % 60);
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Consolas", timerHeight * 0.55));
         Text timerText = new Text(timerStr);
@@ -284,8 +332,7 @@ public class GameController {
             x += iconSize + counterSize + spacing;
         }
 
-        // --- Plateau, bonus, bombes, joueurs, etc. ---
-
+        // --- Plateau, bonus, bombes, joueurs, etc ---
         // Fonds noirs sur les rebords
         gc.setFill(Color.rgb(34, 34, 34));
         gc.fillRect(0, topUiHeight, canvasWidth, borderPixel);
@@ -293,7 +340,7 @@ public class GameController {
         gc.fillRect(0, topUiHeight, borderPixel, borderPixel + gridHeight * CELL_SIZE);
         gc.fillRect(borderPixel + gridWidth * CELL_SIZE, topUiHeight, borderPixel, borderPixel + gridHeight * CELL_SIZE);
 
-        // Affichage des cases (aucun strokeRect, aucune ligne noire !)
+        // Affichage des cases
         for (int y = 0; y < gridHeight; y++) {
             for (int xg = 0; xg < gridWidth; xg++) {
                 double drawX = borderPixel + xg * CELL_SIZE;
@@ -315,24 +362,26 @@ public class GameController {
             }
         }
 
+        // Affichage des bonus
         for (Bonus bonus : game.getBonuses()) {
             double bx = borderPixel + bonus.getX() * CELL_SIZE;
             double by = topUiHeight  + borderPixel + bonus.getY() * CELL_SIZE;
             gc.drawImage(bonus.getSprite(), bx, by, CELL_SIZE, CELL_SIZE);
         }
+        // Affichage des bombes
         for (Bomb b : game.getBombs()) {
             double bx = borderPixel + b.getX() * CELL_SIZE;
             double by = topUiHeight + borderPixel + b.getY() * CELL_SIZE;
             gc.drawImage(bombImg, bx, by, CELL_SIZE, CELL_SIZE);
         }
-        // --- Affichage des joueurs avec skin dynamique ---
-        for (Player p : game.getPlayers()) {
+        // Affichage des joueurs (humains ET IA) avec sprite directionnel
+        for (int idx = 0; idx < game.getPlayers().size(); idx++) {
+            Player p = game.getPlayers().get(idx);
             if (p.isAlive()) {
                 double px = borderPixel + p.getX() * CELL_SIZE;
                 double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE;
-                int playerId = p.getId() - 1;
-                int direction = playerDirections[playerId];
-                Image currentSprite = playerSprites[playerId][direction];
+                int direction = playerDirections[idx];
+                Image currentSprite = playerSprites[idx][direction];
                 gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
             }
         }
@@ -340,9 +389,9 @@ public class GameController {
         checkGameOver();
     }
 
+    /** Affiche l'avatar d'un joueur, ses vies, et s'il est IA. */
     private void drawPlayerBlock(GraphicsContext gc, Player player, Image avatar, double x, double y, double iconSize, double counterSize) {
         gc.drawImage(avatar, x, y, iconSize, iconSize);
-
         double counterX = x + iconSize;
         double counterY = y + (iconSize - counterSize) / 2;
         gc.setFill(Color.BLACK);
@@ -369,6 +418,7 @@ public class GameController {
         }
     }
 
+    /** Génère un canvas de preview pour l'écran de sélection de niveau. */
     public static Canvas createLevelPreviewCanvas(Level level, int cellSize) {
         int[][] preview = level.getLayout();
         int w = preview[0].length;
@@ -392,8 +442,6 @@ public class GameController {
                 }
             }
         }
-
-        // Plus de lignes de grille !
         gc.setFill(new Color(0, 0, 0, 0.4));
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         return canvas;

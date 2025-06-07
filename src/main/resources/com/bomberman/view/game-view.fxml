@@ -7,6 +7,11 @@
             fx:controller="com.bomberman.controller.GameController"
             style="-fx-background-color: #222222;">
     <children>
-        <Canvas fx:id="gameCanvas" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+        <!-- Pas de width/height ici : c'est le contrôleur qui pilote -->
+        <Canvas fx:id="gameCanvas"
+                AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0"
+                AnchorPane.topAnchor="0.0"
+                AnchorPane.bottomAnchor="0.0"/>
     </children>
 </AnchorPane>

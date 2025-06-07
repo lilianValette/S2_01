@@ -39,7 +39,6 @@ public class GameSetupController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        // On tente d'adapter la taille dès que possible
         Platform.runLater(this::adaptStageToPreview);
     }
 
@@ -50,6 +49,15 @@ public class GameSetupController {
         playTextLabel.setOnMouseClicked(e -> startGame());
         playTextLabel.setOnMouseEntered(e -> { selectedField = 3; updateHighlight(); });
 
+        // Flèches cliquables en plus du clavier (UX bonus)
+        playerLeftArrow.setOnMouseClicked(e -> { selectedField = 0; decrementSelected(); });
+        playerRightArrow.setOnMouseClicked(e -> { selectedField = 0; incrementSelected(); });
+        iaLeftArrow.setOnMouseClicked(e -> { selectedField = 1; decrementSelected(); });
+        iaRightArrow.setOnMouseClicked(e -> { selectedField = 1; incrementSelected(); });
+        themeLeftArrow.setOnMouseClicked(e -> { selectedField = 2; decrementSelected(); });
+        themeRightArrow.setOnMouseClicked(e -> { selectedField = 2; incrementSelected(); });
+
+        // Clavier partout sur la scène
         playerCountLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleArrowKey);
@@ -111,33 +119,24 @@ public class GameSetupController {
         themePreviewPane.getChildren().clear();
         Canvas preview = GameController.createLevelPreviewCanvas(level, GameController.getCellSize());
 
-        // Bind le canvas pour qu'il occupe tout l'espace du StackPane
         preview.widthProperty().addListener((obs, oldW, newW) -> adaptStageToPreview());
         preview.heightProperty().addListener((obs, oldH, newH) -> adaptStageToPreview());
 
-        // S'assurer que le canvas n'a pas de marge et est bien positionné
         StackPane.setAlignment(preview, javafx.geometry.Pos.CENTER);
         StackPane.setMargin(preview, javafx.geometry.Insets.EMPTY);
 
         themePreviewPane.getChildren().add(0, preview);
 
-        // On attend la fin du layout pour ajuster la taille de la fenêtre exactement (évite les coupes)
         Platform.runLater(this::adaptStageToPreview);
     }
 
-    /**
-     * Adapte la taille de la fenêtre exactement à celle du canvas de fond.
-     * Utilise runLater pour être sûr d'agir après le layout.
-     */
     private void adaptStageToPreview() {
         if (stage != null && !themePreviewPane.getChildren().isEmpty()) {
             Canvas preview = (Canvas) themePreviewPane.getChildren().get(0);
             double w = preview.getWidth();
             double h = preview.getHeight();
 
-            // Ajoute une petite marge de sécurité si besoin (dépend du rendu, à ajuster si nécessaire)
-            double fudge = 0.5; // Corrige les problèmes de découpe liés au rendu pixel-perfect
-
+            double fudge = 0.5;
             if (w > 0 && h > 0) {
                 stage.setMinWidth(w + fudge);
                 stage.setMinHeight(h + fudge);

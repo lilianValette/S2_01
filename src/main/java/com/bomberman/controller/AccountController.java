@@ -15,7 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class AccountControler {
+public class AccountController {
     @FXML private StackPane rootPane;
     @FXML private ImageView backgroundImage;
 

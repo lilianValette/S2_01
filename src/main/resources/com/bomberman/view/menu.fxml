@@ -11,7 +11,7 @@
            fx:id="rootPane"
            stylesheets="@style/menu-style.css">
 
-    <!-- Fond du menu (format compressé vintage ici !) -->
+    <!-- Fond du menu -->
     <ImageView fx:id="backgroundImage"
                fitWidth="800"
                fitHeight="600"

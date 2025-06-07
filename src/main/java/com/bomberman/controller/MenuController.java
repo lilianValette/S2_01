@@ -175,12 +175,15 @@ public class MenuController {
      * Action sur le bouton "Compte".
      */
     private void onAccount() {
-        // Merge : Comportement par défaut = navigation vers l'écran compte si possible, sinon log
+        // Comportement par défaut = navigation vers l'écran compte si possible, sinon log
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/account.fxml"));
             Parent root = loader.load();
-            AccountControler accountController = loader.getController();
-            accountController.setStage(stage);
+            // Si tu as un AccountController, corrige ici le nom (attention à la faute !)
+            Object controller = loader.getController();
+            if (controller instanceof AccountController accountController) {
+                accountController.setStage(stage);
+            }
             stage.setScene(new Scene(root));
         } catch (Exception e) {
             e.printStackTrace();

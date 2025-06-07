@@ -8,7 +8,7 @@
 
 <StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/11.0.1"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.bomberman.controller.AccountControler"
+           fx:controller="com.bomberman.controller.AccountController"
            styleClass="main-background"
            stylesheets="@style/account-style.css">
     <!-- Image de fond -->
