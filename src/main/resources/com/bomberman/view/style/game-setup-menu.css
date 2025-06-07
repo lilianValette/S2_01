@@ -1,92 +1,74 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Applique la police pixel à tout */
-.root, .stack-pane, .vbox, .hbox, .label, .button {
-    -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
-}
-
-/* Labels principaux */
-.label {
-    -fx-font-size: 18px;
-    -fx-text-fill: #fff;
-    -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
-    -fx-effect: dropshadow(gaussian, #222, 2,0.5,0,0);
-    -fx-padding: 0 8 0 0;
-    -fx-label-padding: 0 8 0 0;
-    -fx-font-smoothing-type: lcd;
+/* --- Style général pour tous les labels (texte non sélectionné) --- */
+.menu-label, .menu-play-label {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;      /* ← taille réduite */
     -fx-font-weight: bold;
+    -fx-effect: null;
+    -fx-padding: 4 12 4 12;
+    -fx-alignment: CENTER_LEFT;
     letter-spacing: 1px;
 }
 
-/* Label pour le bouton PLAY */
-#playButton, .button#playButton {
-    -fx-background-color: transparent;
-    -fx-text-fill: #fff;
-    -fx-font-size: 36px;
-    -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
-    -fx-font-weight: bold;
-    -fx-padding: 8 44 8 44;
-    -fx-effect: dropshadow(gaussian, #000, 6, 0.7, 2, 2);
-    -fx-border-width: 0;
-    -fx-cursor: hand;
-    letter-spacing: 2px;
+/* --- Surlignage clavier (identique hover/focus bouton menu principal) --- */
+.menu-label.menu-highlighted, .menu-play-label.menu-highlighted {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
 }
 
-/* Centrer le texte du bouton PLAY */
-.button#playButton .text {
-    -fx-text-alignment: center;
-}
-
-/* Flèches et boutons de navigation */
-.button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #FFA34D;
-    -fx-font-size: 26px;
-    -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
-    -fx-font-weight: bold;
-    -fx-padding: 2 16 2 16;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, #000, 2, 0.5, 0, 0);
-}
-
-/* Les flèches gauche/droite sont oranges */
-.button[text="◀"], .button[text="▶"], .button[text="❮"], .button[text="❯"] {
-    -fx-background-color: transparent;
-    -fx-text-fill: #FFA34D;
-    -fx-font-size: 30px;
-    -fx-padding: 2 12 2 12;
-}
-
-/* Label central noir pour la valeur */
-#playerCountLabel, #iaCountLabel, #themeLabel {
+/* --- Labels de valeur (nombre ou nom de thème) --- */
+.value-label {
     -fx-background-color: #111;
     -fx-text-fill: #fff;
-    -fx-padding: 4 32 4 32;
-    -fx-background-radius: 4;
-    -fx-font-size: 18px;
-    -fx-min-width: 80px;
+    -fx-padding: 4 24 4 24;   /* ← taille adaptée à la police réduite */
+    -fx-background-radius: 6;
+    -fx-font-size: 18px;      /* ← taille réduite */
+    -fx-min-width: 60px;
     -fx-alignment: center;
     -fx-effect: dropshadow(gaussian, #000, 4, 0.8, 0, 1);
     -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
 }
 
-/* Couleur du texte du background (pour la preview) : voile noir */
+/* Surlignage valeur sélectionnée (change juste texte/ombre) */
+.value-label.value-highlighted {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+/* --- Flèches --- */
+.arrow {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFA34D;
+    -fx-font-size: 22px;
+    -fx-padding: 2 8 2 8;
+    -fx-effect: dropshadow(gaussian, #000, 2, 0.5, 0, 0);
+    -fx-cursor: default;
+    -fx-opacity: 1;
+    -fx-user-select: none;
+}
+.arrow.inactive {
+    -fx-opacity: 0.2;
+}
+
 #themePreviewPane {
     -fx-background-color: rgba(0,0,0,0.45);
     -fx-background-radius: 8;
     -fx-effect: dropshadow(gaussian, #000, 16, 0.3, 0, 2);
 }
 
-/* Espacement général et largeur max des HBox et VBox */
 .hbox, .vbox {
-    -fx-spacing: 18;
+    -fx-spacing: 14;
     -fx-alignment: center;
     -fx-max-width: 420px;
-    -fx-pref-width: 420px;
-}
-
-/* Pour le focus sur les boutons : pas de cadre bleu */
-.button:focused {
-    -fx-border-color: transparent;
-    -fx-background-color: transparent;
 }

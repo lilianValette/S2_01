@@ -175,6 +175,7 @@ public class MenuController {
      * Action sur le bouton "Compte".
      */
     private void onAccount() {
+        // Merge : Comportement par défaut = navigation vers l'écran compte si possible, sinon log
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/account.fxml"));
             Parent root = loader.load();

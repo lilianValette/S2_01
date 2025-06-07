@@ -13,12 +13,12 @@ public class Grid {
     private final int height;
     private final CellType[][] cells;
 
-    public Grid(int width, int height, Theme theme) {
+    public Grid(int width, int height, Level level) {
         this.width = width;
         this.height = height;
         cells = new CellType[width][height];
 
-        int[][] layout = theme != null ? theme.getLayout() : null; // <-- Ici
+        int[][] layout = level != null ? level.getLayout() : null; // <-- Ici
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (layout != null && y < layout.length && x < layout[0].length) {
