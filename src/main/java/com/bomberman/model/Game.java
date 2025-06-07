@@ -3,8 +3,7 @@ package com.bomberman.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import com.bomberman.model.Bonus;      // AJOUT BONUS : import de la classe abstraite
-import com.bomberman.model.FlameBonus; // AJOUT BONUS : import du bonus concret
+
 
 public class Game {
     private Grid grid;
@@ -27,8 +26,8 @@ public class Game {
     }
     private List<Explosion> explosions = new ArrayList<>();
 
-    public Game(int width, int height, int playerCount, int iaCount, Theme theme) {
-        this.grid = new Grid(width, height, theme);
+    public Game(int width, int height, int playerCount, int iaCount, Level level) {
+        this.grid = new Grid(width, height, level);
         this.players = new ArrayList<>();
         this.gameOver = false;
         this.winner = null;

@@ -14,23 +14,23 @@
     <StackPane fx:id="themePreviewPane" maxWidth="256" maxHeight="192"/>
     <VBox alignment="CENTER" spacing="20">
         <HBox alignment="CENTER" spacing="16">
-            <Label text="SELECT PLAYER" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
-            <Button text="◀" fx:id="playerLeft"/>
-            <Label fx:id="playerCountLabel" text="2" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
-            <Button text="▶" fx:id="playerRight"/>
+            <Label fx:id="playerTextLabel" text="SELECT PLAYER" styleClass="menu-label"/>
+            <Label fx:id="playerLeftArrow" text="◀" styleClass="arrow"/>
+            <Label fx:id="playerCountLabel"  styleClass="value-label"/>
+            <Label fx:id="playerRightArrow" text="▶" styleClass="arrow"/>
         </HBox>
         <HBox alignment="CENTER" spacing="16">
-            <Label text="SELECT IA" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
-            <Button text="◀" fx:id="iaLeft"/>
-            <Label fx:id="iaCountLabel" text="0" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
-            <Button text="▶" fx:id="iaRight"/>
+            <Label fx:id="iaTextLabel" text="SELECT IA" styleClass="menu-label"/>
+            <Label fx:id="iaLeftArrow" text="◀" styleClass="arrow"/>
+            <Label fx:id="iaCountLabel" styleClass="value-label"/>
+            <Label fx:id="iaRightArrow" text="▶" styleClass="arrow"/>
         </HBox>
         <HBox alignment="CENTER" spacing="16">
-            <Label text="THEME" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
-            <Button text="◀" fx:id="themeLeft"/>
-            <Label fx:id="themeLabel" text="FACTORY" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
-            <Button text="▶" fx:id="themeRight"/>
+            <Label fx:id="themeTextLabel" text="LEVEL" styleClass="menu-label"/>
+            <Label fx:id="themeLeftArrow" text="◀" styleClass="arrow"/>
+            <Label fx:id="themeLabel" styleClass="value-label"/>
+            <Label fx:id="themeRightArrow" text="▶" styleClass="arrow"/>
         </HBox>
-        <Button text="PLAY" fx:id="playButton" style="-fx-font-size: 18px;"/>
+        <Label fx:id="playTextLabel" text="PLAY" styleClass="menu-play-label"/>
     </VBox>
 </StackPane>

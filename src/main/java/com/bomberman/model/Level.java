@@ -1,13 +1,13 @@
 package com.bomberman.model;
 
-public class Theme {
+public class Level {
     private final String name;
     private final String solImagePath;
     private final String murImagePath;
     private final String destructibleImagePath;
     private final int[][] layout; // Nommé "layout" car c'est maintenant la vraie map
 
-    public Theme(String name, String solImagePath, String murImagePath, String destructibleImagePath, int[][] layout) {
+    public Level(String name, String solImagePath, String murImagePath, String destructibleImagePath, int[][] layout) {
         this.name = name;
         this.solImagePath = solImagePath;
         this.murImagePath = murImagePath;
@@ -21,9 +21,9 @@ public class Theme {
     public String getDestructibleImagePath() { return destructibleImagePath; }
     public int[][] getLayout() { return layout; }
 
-    public static Theme[] getPredefinedThemes() {
-        return new Theme[] {
-                new Theme("Test1",
+    public static Level[] getPredefinedThemes() {
+        return new Level[] {
+                new Level("Test1",
                         "/images/elementsMap/herbe.png",
                         "/images/elementsMap/murIndestructible.png",
                         "/images/elementsMap/murDestructible.png",
@@ -43,7 +43,7 @@ public class Theme {
                                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                         }
                 ),
-                new Theme("Plage",
+                new Level("Plage",
                         "/images/elementsMap/fondSable.png",
                         "/images/elementsMap/sandCastle.png",
                         "/images/elementsMap/water.png",

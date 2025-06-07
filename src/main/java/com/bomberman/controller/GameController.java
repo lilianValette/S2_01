@@ -3,7 +3,7 @@ package com.bomberman.controller;
 import com.bomberman.model.Game;
 import com.bomberman.model.Player;
 import com.bomberman.model.Bomb;
-import com.bomberman.model.Theme;
+import com.bomberman.model.Level;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -44,11 +44,11 @@ public class GameController {
     private Image avatarP1;
     private Image avatarP2;
 
-    private Theme theme;
+    private Level level;
     private int playerCount;
     private int iaCount;
 
-    public void setTheme(Theme theme) { this.theme = theme; }
+    public void setTheme(Level level) { this.level = level; }
     public void setPlayerCount(int playerCount) { this.playerCount = playerCount; }
     public void setIaCount(int iaCount) { this.iaCount = iaCount; }
 
@@ -80,15 +80,15 @@ public class GameController {
 
     // À appeler explicitement après avoir injecté les paramètres
     public void startGame() {
-        Theme theme1 = theme;
-        game = new Game(15, 13, playerCount, iaCount, theme1);
+        Level level1 = level;
+        game = new Game(15, 13, playerCount, iaCount, level1);
 
         // Charge les images d'avatar et images du thème sélectionné
         avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
-        wallIndestructibleImg = new Image(getClass().getResourceAsStream(theme.getMurImagePath()));
-        wallDestructibleImg   = new Image(getClass().getResourceAsStream(theme.getDestructibleImagePath()));
-        solImg                = new Image(getClass().getResourceAsStream(theme.getSolImagePath()));
+        wallIndestructibleImg = new Image(getClass().getResourceAsStream(level.getMurImagePath()));
+        wallDestructibleImg   = new Image(getClass().getResourceAsStream(level.getDestructibleImagePath()));
+        solImg                = new Image(getClass().getResourceAsStream(level.getSolImagePath()));
         bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
 
         try {
@@ -457,17 +457,17 @@ public class GameController {
         checkGameOver();
     }
 
-    public static Canvas createThemePreviewCanvas(Theme theme, int cellSize) {
-        int[][] preview = theme.getLayout();
+    public static Canvas createThemePreviewCanvas(Level level, int cellSize) {
+        int[][] preview = level.getLayout();
         int w = preview[0].length;
         int h = preview.length;
 
         Canvas canvas = new Canvas(w * cellSize, h * cellSize);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        Image solImg = new Image(GameController.class.getResourceAsStream(theme.getSolImagePath()));
-        Image murImg = new Image(GameController.class.getResourceAsStream(theme.getMurImagePath()));
-        Image blocImg = new Image(GameController.class.getResourceAsStream(theme.getDestructibleImagePath()));
+        Image solImg = new Image(GameController.class.getResourceAsStream(level.getSolImagePath()));
+        Image murImg = new Image(GameController.class.getResourceAsStream(level.getMurImagePath()));
+        Image blocImg = new Image(GameController.class.getResourceAsStream(level.getDestructibleImagePath()));
 
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
