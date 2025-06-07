@@ -9,7 +9,7 @@
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.bomberman.controller.GameSetupController"
            style="-fx-background-color: transparent;"
-           stylesheets="@style/game-setup-menu.css">
+           stylesheets="@style/game-setup-style.css">
 
     <StackPane fx:id="themePreviewPane" maxWidth="256" maxHeight="192"/>
     <VBox alignment="CENTER" spacing="20">

@@ -6,9 +6,15 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.ImageView?>
 
-<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bomberman.controller.AccountControler" styleClass="main-background" stylesheets="@../css/account.css">
+<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/11.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.bomberman.controller.AccountControler"
+           styleClass="main-background"
+           stylesheets="@style/account-style.css">
     <!-- Image de fond -->
-    <ImageView fx:id="backgroundImage" fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="false" />
+    <ImageView fx:id="backgroundImage"
+               fitHeight="600.0" fitWidth="800.0"
+               pickOnBounds="true" preserveRatio="false" />
 
     <!-- Interface principale -->
     <BorderPane>
@@ -16,7 +22,11 @@
         <top>
             <VBox alignment="CENTER" spacing="20.0" styleClass="header-section">
                 <children>
-                    <Text styleClass="page-title" text="GESTION DES COMPTES" textAlignment="CENTER" />
+                    <!-- TITRE PRINCIPAL BLANC -->
+                    <Text styleClass="page-title"
+                          text="GESTION DES COMPTES"
+                          textAlignment="CENTER"
+                          fill="WHITE"/>
                 </children>
                 <padding>
                     <Insets bottom="20.0" top="30.0" />
@@ -31,8 +41,10 @@
                 <StackPane fx:id="loginContainer" visible="true">
                     <VBox alignment="CENTER" spacing="30.0" styleClass="form-container">
                         <children>
-                            <Text styleClass="section-title" text="CONNEXION" />
-
+                            <!-- SOUS-TITRE BLANC -->
+                            <Text styleClass="section-title"
+                                  text="CONNEXION"
+                                  fill="WHITE"/>
                             <VBox alignment="CENTER" spacing="15.0" styleClass="form-fields">
                                 <children>
                                     <VBox spacing="5.0">
@@ -51,7 +63,6 @@
                                     <Label fx:id="loginMessage" styleClass="message-label" />
                                 </children>
                             </VBox>
-
                             <!-- Bouton pour basculer vers création -->
                             <VBox alignment="CENTER" spacing="10.0">
                                 <children>
@@ -70,8 +81,10 @@
                 <StackPane fx:id="createContainer" visible="false">
                     <VBox alignment="CENTER" spacing="30.0" styleClass="form-container">
                         <children>
-                            <Text styleClass="section-title" text="CRÉER UN COMPTE" />
-
+                            <!-- SOUS-TITRE BLANC -->
+                            <Text styleClass="section-title"
+                                  text="CRÉER UN COMPTE"
+                                  fill="WHITE"/>
                             <VBox alignment="CENTER" spacing="15.0" styleClass="form-fields">
                                 <children>
                                     <VBox spacing="5.0">
@@ -96,7 +109,6 @@
                                     <Label fx:id="createMessage" styleClass="message-label" />
                                 </children>
                             </VBox>
-
                             <!-- Bouton pour basculer vers connexion -->
                             <VBox alignment="CENTER" spacing="10.0">
                                 <children>
@@ -115,8 +127,9 @@
                 <StackPane fx:id="profileContainer" visible="false">
                     <VBox alignment="CENTER" spacing="30.0" styleClass="form-container">
                         <children>
-                            <Text styleClass="section-title" text="MON PROFIL" />
-
+                            <Text styleClass="section-title"
+                                  text="MON PROFIL"
+                                  fill="WHITE"/>
                             <VBox alignment="CENTER" spacing="15.0" styleClass="profile-info">
                                 <children>
                                     <HBox alignment="CENTER" spacing="20.0" styleClass="profile-row">
@@ -149,10 +162,8 @@
                                             <Label fx:id="profileTotalScore" styleClass="profile-value" />
                                         </children>
                                     </HBox>
-
                                     <!-- Séparateur -->
                                     <Region styleClass="divider" />
-
                                     <Button fx:id="logoutButton" styleClass="game-button-danger" text="SE DÉCONNECTER" />
                                 </children>
                             </VBox>
