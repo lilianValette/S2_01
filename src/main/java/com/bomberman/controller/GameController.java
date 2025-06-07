@@ -49,6 +49,35 @@ public class GameController {
     };
     private Image[] avatarsJoueurs = new Image[4];
 
+    private static final String[][] PLAYER_SPRITE_PATHS = {
+            { // PBlanc
+                    "/images/Player/PBlanc/PBlanc-face.png",
+                    "/images/Player/PBlanc/PBlanc-dos.png",
+                    "/images/Player/PBlanc/PBlanc-gauche.png",
+                    "/images/Player/PBlanc/PBlanc-droite.png"
+            },
+            { // PBleuCiel
+                    "/images/Player/PBleuCiel/PBleuCiel-face.png",
+                    "/images/Player/PBleuCiel/PBleuCiel-dos.png",
+                    "/images/Player/PBleuCiel/PBleuCiel-gauche.png",
+                    "/images/Player/PBleuCiel/PBleuCiel-droite.png"
+            },
+            { // PRose
+                    "/images/Player/PRose/PRose-face.png",
+                    "/images/Player/PRose/PRose-dos.png",
+                    "/images/Player/PRose/PRose-gauche.png",
+                    "/images/Player/PRose/PRose-droite.png"
+            },
+            { // PRouge
+                    "/images/Player/PRouge/PRouge-face.png",
+                    "/images/Player/PRouge/PRouge-dos.png",
+                    "/images/Player/PRouge/PRouge-gauche.png",
+                    "/images/Player/PRouge/PRouge-droite.png"
+            }
+    };
+    // [playerId][0=face,1=dos,2=gauche,3=droite]
+    private Image[][] playerSprites = new Image[4][4];
+
     private Level level;
     private int playerCount;
     private int iaCount;
@@ -58,11 +87,8 @@ public class GameController {
     private Image solImg;
     private Image bombImg;
 
-    // Sprites joueurs (orientation)
-    private Image player1Front, player1Back, player1Left, player1Right;
-    private Image player2Front, player2Back, player2Left, player2Right;
-    private int player1Direction = 0; // 0=bas, 1=haut, 2=gauche, 3=droite
-    private int player2Direction = 0;
+    // Directions des joueurs (0=bas, 1=haut, 2=gauche, 3=droite)
+    private int[] playerDirections = {0, 0, 0, 0};
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -73,7 +99,7 @@ public class GameController {
             stage.setMinWidth(WINDOW_WIDTH);
             stage.setMinHeight(WINDOW_HEIGHT);
             stage.setMaxWidth(WINDOW_WIDTH);
-            stage.setMaxHeight(WINDOW_HEIGHT);
+            stage.setMaxHeight(WINDOW_WIDTH);
         }
     }
 
@@ -87,38 +113,25 @@ public class GameController {
     public void startGame() {
         game = new Game(15, 13, playerCount, iaCount, level);
 
+        // Load player icons for the top bar
         for (int i = 0; i < avatarsJoueurs.length; i++) {
             avatarsJoueurs[i] = new Image(getClass().getResourceAsStream(AVATAR_PATHS[i]));
+        }
+        // Load dynamic skins for all players
+        for (int i = 0; i < 4; i++) {
+            for (int d = 0; d < 4; d++) {
+                try {
+                    playerSprites[i][d] = new Image(getClass().getResourceAsStream(PLAYER_SPRITE_PATHS[i][d]));
+                    if (playerSprites[i][d].isError()) playerSprites[i][d] = avatarsJoueurs[i];
+                } catch (Exception e) {
+                    playerSprites[i][d] = avatarsJoueurs[i];
+                }
+            }
         }
         wallIndestructibleImg = new Image(getClass().getResourceAsStream(level.getWallIndestructibleImagePath()));
         wallDestructibleImg   = new Image(getClass().getResourceAsStream(level.getWallDestructibleImagePath()));
         solImg                = new Image(getClass().getResourceAsStream(level.getGroundImagePath()));
         bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
-
-        try {
-            player1Front = new Image(getClass().getResourceAsStream("/images/Player/joueur_face.png"));
-            player1Left  = new Image(getClass().getResourceAsStream("/images/Player/joueur_gauche.png"));
-            player1Right = new Image(getClass().getResourceAsStream("/images/Player/joueur_droite.png"));
-            player1Back  = new Image(getClass().getResourceAsStream("/images/Player/joueur_dos.png"));
-            if (player1Front.isError()) player1Front = avatarsJoueurs[0];
-            if (player1Left.isError())  player1Left  = avatarsJoueurs[0];
-            if (player1Right.isError()) player1Right = avatarsJoueurs[0];
-            if (player1Back.isError())  player1Back  = avatarsJoueurs[0];
-        } catch (Exception e) {
-            player1Front = player1Left = player1Right = player1Back = avatarsJoueurs[0];
-        }
-        try {
-            player2Front = new Image(getClass().getResourceAsStream("/images/Player/joueur_face.png"));
-            player2Left  = new Image(getClass().getResourceAsStream("/images/Player/joueur_gauche.png"));
-            player2Right = new Image(getClass().getResourceAsStream("/images/Player/joueur_droite.png"));
-            player2Back  = new Image(getClass().getResourceAsStream("/images/Player/joueur_dos.png"));
-            if (player2Front.isError()) player2Front = avatarsJoueurs[1];
-            if (player2Left.isError())  player2Left  = avatarsJoueurs[1];
-            if (player2Right.isError()) player2Right = avatarsJoueurs[1];
-            if (player2Back.isError())  player2Back  = avatarsJoueurs[1];
-        } catch (Exception e) {
-            player2Front = player2Left = player2Right = player2Back = avatarsJoueurs[1];
-        }
 
         // Calcule la largeur de la grille pour adapter la barre supérieure et le canvas
         int gridWidth = game.getGrid().getWidth();
@@ -193,16 +206,17 @@ public class GameController {
         if (game.getPlayers().isEmpty()) return;
         Player p1 = game.getPlayers().get(0);
         Player p2 = game.getPlayers().size() > 1 ? game.getPlayers().get(1) : null;
+        // Directions: 0=bas, 1=haut, 2=gauche, 3=droite
         switch (event.getCode()) {
-            case UP    -> { if (p1.isAlive()) { player1Direction = 1; game.movePlayer(p1, 0, -1); } }
-            case DOWN  -> { if (p1.isAlive()) { player1Direction = 0; game.movePlayer(p1, 0,  1); } }
-            case LEFT  -> { if (p1.isAlive()) { player1Direction = 2; game.movePlayer(p1, -1, 0); } }
-            case RIGHT -> { if (p1.isAlive()) { player1Direction = 3; game.movePlayer(p1, 1,  0); } }
+            case UP    -> { if (p1.isAlive()) { playerDirections[0] = 1; game.movePlayer(p1, 0, -1); } }
+            case DOWN  -> { if (p1.isAlive()) { playerDirections[0] = 0; game.movePlayer(p1, 0,  1); } }
+            case LEFT  -> { if (p1.isAlive()) { playerDirections[0] = 2; game.movePlayer(p1, -1, 0); } }
+            case RIGHT -> { if (p1.isAlive()) { playerDirections[0] = 3; game.movePlayer(p1, 1,  0); } }
             case SPACE -> { if (p1.isAlive()) game.placeBomb(p1); }
-            case Z     -> { if (p2 != null && p2.isAlive()) { player2Direction = 1; game.movePlayer(p2, 0, -1); } }
-            case S     -> { if (p2 != null && p2.isAlive()) { player2Direction = 0; game.movePlayer(p2, 0, 1); } }
-            case Q     -> { if (p2 != null && p2.isAlive()) { player2Direction = 2; game.movePlayer(p2, -1, 0); } }
-            case D     -> { if (p2 != null && p2.isAlive()) { player2Direction = 3; game.movePlayer(p2, 1, 0); } }
+            case Z     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 1; game.movePlayer(p2, 0, -1); } }
+            case S     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 0; game.movePlayer(p2, 0, 1); } }
+            case Q     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 2; game.movePlayer(p2, -1, 0); } }
+            case D     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 3; game.movePlayer(p2, 1, 0); } }
             case SHIFT -> { if (p2 != null && p2.isAlive()) game.placeBomb(p2); }
         }
         drawGrid();
@@ -301,7 +315,6 @@ public class GameController {
                     }
                     default -> gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                 }
-                // Plus AUCUN strokeRect ici !
             }
         }
 
@@ -315,11 +328,14 @@ public class GameController {
             double by = topUiHeight + borderPixel + b.getY() * CELL_SIZE;
             gc.drawImage(bombImg, bx, by, CELL_SIZE, CELL_SIZE);
         }
+        // --- Affichage des joueurs avec skin dynamique ---
         for (Player p : game.getPlayers()) {
             if (p.isAlive()) {
                 double px = borderPixel + p.getX() * CELL_SIZE;
                 double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE;
-                Image currentSprite = avatarsJoueurs[p.getId() - 1];
+                int playerId = p.getId() - 1;
+                int direction = playerDirections[playerId];
+                Image currentSprite = playerSprites[playerId][direction];
                 gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
             }
         }
