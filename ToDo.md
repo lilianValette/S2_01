@@ -10,3 +10,5 @@
 - créer des comptes sauvegardé
   - Choisir son personnage
   - choisir son nom
+- ecran apres fin de la partie
+- ne pas finir la partie tant que tout les personnage a part un ne sont pas mort
