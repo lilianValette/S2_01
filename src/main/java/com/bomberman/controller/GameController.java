@@ -159,21 +159,21 @@ public class GameController {
         gameCanvas.setFocusTraversable(true);
         gameCanvas.setOnKeyPressed(this::handleKeyPressed);
 
-        timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> {
+        // Tick rapide
+        double tickDurationSeconds = 0.2;
+
+        // Compteur pour IA
+        final int[] iaTickCounter = {0};
+        timeline = new Timeline(new KeyFrame(Duration.seconds(tickDurationSeconds), e -> {
+            iaTickCounter[0]++;
+            if (iaTickCounter[0] % 3 == 0 || iaTickCounter[0] % 3 == 2) {
+                game.updateAIs();
+            }
             game.updateBombs();
             drawGrid();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
-
-        timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            if (timerSeconds > 0) {
-                timerSeconds--;
-                drawGrid();
-            }
-        }));
-        timerTimeline.setCycleCount(Timeline.INDEFINITE);
-        timerTimeline.play();
     }
 
     private void returnToMenu() {
@@ -208,16 +208,16 @@ public class GameController {
         Player p2 = game.getPlayers().size() > 1 ? game.getPlayers().get(1) : null;
         // Directions: 0=bas, 1=haut, 2=gauche, 3=droite
         switch (event.getCode()) {
-            case UP    -> { if (p1.isAlive()) { playerDirections[0] = 1; game.movePlayer(p1, 0, -1); } }
-            case DOWN  -> { if (p1.isAlive()) { playerDirections[0] = 0; game.movePlayer(p1, 0,  1); } }
-            case LEFT  -> { if (p1.isAlive()) { playerDirections[0] = 2; game.movePlayer(p1, -1, 0); } }
-            case RIGHT -> { if (p1.isAlive()) { playerDirections[0] = 3; game.movePlayer(p1, 1,  0); } }
-            case SPACE -> { if (p1.isAlive()) game.placeBomb(p1); }
-            case Z     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 1; game.movePlayer(p2, 0, -1); } }
-            case S     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 0; game.movePlayer(p2, 0, 1); } }
-            case Q     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 2; game.movePlayer(p2, -1, 0); } }
-            case D     -> { if (p2 != null && p2.isAlive()) { playerDirections[1] = 3; game.movePlayer(p2, 1, 0); } }
-            case SHIFT -> { if (p2 != null && p2.isAlive()) game.placeBomb(p2); }
+            case UP    -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 1; game.movePlayer(p1, 0, -1); } }
+            case DOWN  -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 0; game.movePlayer(p1, 0,  1); } }
+            case LEFT  -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 2; game.movePlayer(p1, -1, 0); } }
+            case RIGHT -> { if (p1.isAlive() && p1.isHuman()) { playerDirections[0] = 3; game.movePlayer(p1, 1,  0); } }
+            case SPACE -> { if (p1.isAlive() && p1.isHuman()) game.placeBomb(p1); }
+            case Z     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 1; game.movePlayer(p2, 0, -1); } }
+            case S     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 0; game.movePlayer(p2, 0, 1); } }
+            case Q     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 2; game.movePlayer(p2, -1, 0); } }
+            case D     -> { if (p2 != null && p2.isAlive() && p2.isHuman()) { playerDirections[1] = 3; game.movePlayer(p2, 1, 0); } }
+            case SHIFT -> { if (p2 != null && p2.isAlive() && p2.isHuman()) game.placeBomb(p2); }
         }
         drawGrid();
     }

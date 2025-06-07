@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
+/**
+ * Classe principale du jeu Bomberman.
+ * Gère la grille, les joueurs (humains et IA), les bombes, les explosions et les bonus.
+ */
 public class Game {
     private Grid grid;
     private List<Player> players;
@@ -12,7 +15,6 @@ public class Game {
     private Player winner;
 
     private List<Bomb> bombs = new ArrayList<>();
-    // AJOUT BONUS : liste des bonus présents sur la map
     private List<Bonus> bonuses = new ArrayList<>();
 
     private static class Explosion {
@@ -31,34 +33,47 @@ public class Game {
         this.players = new ArrayList<>();
         this.gameOver = false;
         this.winner = null;
-        int totalPlayers = playerCount + iaCount;
-        initializePlayers(totalPlayers, playerCount);
+        initializePlayers(playerCount, iaCount);
 
-        // AJOUT BONUS : on place déjà un bonus fixe pour tester
+        // Exemple de bonus fixe pour test, à adapter selon besoins
         bonuses.add(new FlameBonus(5, 3, 1));
     }
 
-    // Sécurise le spawn : le joueur spawn toujours sur du sol, jamais sur un bloc, et toutes les cases autour (y compris diagonales) sont mises à EMPTY
-    private void initializePlayers(int totalPlayers, int humanCount) {
+    /**
+     * Initialise les joueurs humains et les IA aux positions de départ.
+     */
+    private void initializePlayers(int humanCount, int iaCount) {
         int[][] startPositions = {
                 {1, 1},
                 {grid.getWidth() - 2, grid.getHeight() - 2},
                 {1, grid.getHeight() - 2},
                 {grid.getWidth() - 2, 1}
         };
-        for (int i = 0; i < totalPlayers && i < startPositions.length; i++) {
-            int x = startPositions[i][0];
-            int y = startPositions[i][1];
+        int totalPlayers = humanCount + iaCount;
+        int index = 0;
 
-            // S'assure que la case de spawn et les 8 alentours (croix + diagonales) sont du sol (EMPTY)
+        // Humains
+        for (int i = 0; i < humanCount && index < startPositions.length; i++, index++) {
+            int x = startPositions[index][0];
+            int y = startPositions[index][1];
             clearSpawnZoneOnly(x, y);
+            Player player = new Player(index + 1, x, y, true);
+            players.add(player);
+        }
 
-            boolean isHuman = i < humanCount;
-            Player p = new Player(i + 1, x, y, isHuman);
-            players.add(p);
+        // IA
+        for (int i = 0; i < iaCount && index < startPositions.length; i++, index++) {
+            int x = startPositions[index][0];
+            int y = startPositions[index][1];
+            clearSpawnZoneOnly(x, y);
+            PlayerAI ia = new PlayerAI(index + 1, x, y);
+            players.add(ia);
         }
     }
 
+    /**
+     * S'assure que la case de spawn et ses alentours sont libérés.
+     */
     private void clearSpawnZoneOnly(int x, int y) {
         if (grid.isInBounds(x, y)) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
@@ -71,11 +86,23 @@ public class Game {
     public Player getWinner() { return winner; }
     public List<Bomb> getBombs() { return bombs; }
 
-    /** AJOUT BONUS : permet au controller de récupérer la liste des bonus pour le dessin */
-    public List<Bonus> getBonuses() {
-        return bonuses;
+    public List<Bonus> getBonuses() { return bonuses; }
+
+    /**
+     * Met à jour la logique IA de tous les joueurs IA à chaque tick (à appeler dans le contrôleur).
+     */
+    public void updateAIs() {
+        for (Player p : players) {
+            if (p instanceof PlayerAI ai) {
+                ai.updateAI(grid, bombs);
+            }
+        }
     }
 
+    /**
+     * Met à jour l'état général du jeu (bombes, explosions, bonus, joueurs).
+     * À appeler à chaque tick.
+     */
     public void updateGameState() {
         int aliveCount = 0;
         Player lastAlive = null;
@@ -106,14 +133,18 @@ public class Game {
             }
         }
 
-        Bomb newBomb = player.dropBomb(3, bombs);
+        Bomb newBomb = new Bomb(player.getX(), player.getY(), Bomb.DEFAULT_TIMER, player.getBombRange(), player);
         if (newBomb != null) {
             bombs.add(newBomb);
             grid.setCell(player.getX(), player.getY(), Grid.CellType.BOMB);
         }
     }
 
+    /**
+     * Met à jour les bombes, explosions et les bonus à chaque tick.
+     */
     public void updateBombs() {
+        // Mise à jour des bombes
         Iterator<Bomb> it = bombs.iterator();
         while (it.hasNext()) {
             Bomb b = it.next();
@@ -124,6 +155,7 @@ public class Game {
             }
         }
 
+        // Mise à jour des explosions
         Iterator<Explosion> expIt = explosions.iterator();
         while (expIt.hasNext()) {
             Explosion exp = expIt.next();
@@ -136,7 +168,7 @@ public class Game {
             }
         }
 
-        // 2) Ramassage des bonus au sol
+        // Ramassage des bonus
         for (Player p : players) {
             if (!p.isAlive()) continue;
             Iterator<Bonus> bonusIt = bonuses.iterator();
@@ -153,22 +185,28 @@ public class Game {
             }
         }
 
-        // 3) Mise à jour des bonus actifs (durée en secondes)
+        // Mise à jour des bonus actifs (durée)
         for (Player p : players) {
             if (p.isAlive()) {
                 p.updateActiveBonuses();
             }
         }
 
-        // 4) Mise à jour du statut de fin de partie
+        // Vérifie fin de partie
         updateGameState();
     }
 
+    /**
+     * Ajoute une explosion à la grille.
+     */
     private void addExplosion(int x, int y) {
         grid.setCell(x, y, Grid.CellType.EXPLOSION);
         explosions.add(new Explosion(x, y, 2));
     }
 
+    /**
+     * Gère l'explosion d'une bombe (dommages aux joueurs et murs).
+     */
     private void explode(Bomb b) {
         int x = b.getX(), y = b.getY(), range = b.getRange();
         addExplosion(x, y);
@@ -192,6 +230,9 @@ public class Game {
         }
     }
 
+    /**
+     * Inflige des dégâts aux joueurs présents sur une case.
+     */
     private void damagePlayersAt(int x, int y) {
         for (Player p : players) {
             if (p.isAlive() && p.getX() == x && p.getY() == y) {
@@ -200,11 +241,14 @@ public class Game {
         }
     }
 
+    /**
+     * Détruit un mur destructible, avec une chance d'apparition de bonus.
+     */
     private void destroyWall(int x, int y) {
         if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
 
-            // AJOUT BONUS : 20 % de chances de faire apparaître un FlameBonus à cet endroit
+            // 20 % de chances de bonus
             if (Math.random() < 0.2) {
                 bonuses.add(new FlameBonus(x, y, 1));
             }
