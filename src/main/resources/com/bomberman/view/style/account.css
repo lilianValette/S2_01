@@ -1,3 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Retro Bomberman-style menu buttons --- */
+.account-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    /* Dégradé vertical orange-jaune-orange façon SNES */
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-effect: null; /* Pas d'effet */
+    -fx-padding: 6 20 6 24; /* moins d'espace vertical et à gauche */
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-min-width: 250px;
+    -fx-max-width: 250px;
+}
+
+/* Hover et focus : texte blanc avec légère ombre rétro */
+.account-button:hover, .account-button:focused {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
 /* ===== FOND ET SECTIONS LAYOUT ===== */
 .header-section {
     -fx-background-color: rgba(0, 0, 0, 0.7);
@@ -65,12 +99,6 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 237, 78, 0.9), 12, 0, 0, 0);
     -fx-scale-x: 1.02;
     -fx-scale-y: 1.02;
-}
-
-.game-textfield:hover {
-    -fx-background-color: white;
-    -fx-border-color: #ffed4e;
-    -fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.6), 8, 0, 0, 2);
 }
 
 .game-password-field {
@@ -230,7 +258,7 @@
             #FFD700 60%,
             #FF9900 100%
     );
-    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-effect: null;
@@ -240,6 +268,7 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-min-width: 250px;
+    -fx-max-width: 250px;
 }
 
 .game-button-primary:hover, .game-button-primary:focused {
@@ -270,7 +299,7 @@
             #FFD700 60%,
             #FF9900 100%
     );
-    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-effect: null;
@@ -280,6 +309,7 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-min-width: 250px;
+    -fx-max-width: 250px;
 }
 
 .game-button-secondary:hover, .game-button-secondary:focused {
@@ -303,7 +333,7 @@
             #ff6659 60%,
             #f44336 100%
     );
-    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-effect: null;
@@ -313,6 +343,7 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-min-width: 250px;
+    -fx-max-width: 250px;
 }
 
 .game-button-danger:hover, .game-button-danger:focused {
