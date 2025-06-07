@@ -43,6 +43,7 @@ public class GameController {
     // Images pour les murs
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
+    private Image wallDamagedImg;
 
     // Image pour les bombes
     private Image bombImg;
@@ -72,6 +73,7 @@ public class GameController {
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
         wallIndestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murIndestructible.png"));
         wallDestructibleImg = new Image(getClass().getResourceAsStream("/images/elementsMap/murDestructible.png"));
+        wallDamagedImg = new Image(getClass().getResourceAsStream("/images/elementsMap/n-bricks.png")); // Chargement de l'image n-bricks
         bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
 
         try {
@@ -84,7 +86,7 @@ public class GameController {
             // Si les images ne sont pas trouvées, on utilise l'avatar par défaut
             if (player1Front.isError()) player1Front = avatarP1;
             if (player1Left.isError()) player1Left = avatarP1;
-            if (player1Right.isError()) player1Right = avatarP1; // Corrigé
+            if (player1Right.isError()) player1Right = avatarP1;
             if (player1Back.isError()) player1Back = avatarP1;
 
         } catch (Exception e) {
@@ -364,6 +366,7 @@ public class GameController {
                 switch (grid.getCell(x, y)) {
                     case INDESTRUCTIBLE -> gc.drawImage(wallIndestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case DESTRUCTIBLE   -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    case DESTRUCTIBLE_DAMAGED -> gc.drawImage(wallDamagedImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case BOMB           -> {
                         // On dessine d'abord le sol, puis la bombe plus bas
                         gc.setFill(Color.rgb(0, 128, 64));
@@ -393,7 +396,8 @@ public class GameController {
                 }
                 // Si ce n'est pas un mur, on dessine la grille noire
                 if (grid.getCell(x, y) != com.bomberman.model.Grid.CellType.INDESTRUCTIBLE
-                        && grid.getCell(x, y) != com.bomberman.model.Grid.CellType.DESTRUCTIBLE) {
+                        && grid.getCell(x, y) != com.bomberman.model.Grid.CellType.DESTRUCTIBLE
+                        && grid.getCell(x, y) != com.bomberman.model.Grid.CellType.DESTRUCTIBLE_DAMAGED) {
                     gc.setStroke(Color.BLACK);
                     gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
                 }

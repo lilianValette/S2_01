@@ -24,6 +24,18 @@ public class Game {
     }
     private List<Explosion> explosions = new ArrayList<>();
 
+    // Nouvelle structure pour gérer les briques endommagées
+    private static class DamagedBrick {
+        int x, y;
+        int ticksRemaining;
+        DamagedBrick(int x, int y, int ticksRemaining) {
+            this.x = x;
+            this.y = y;
+            this.ticksRemaining = ticksRemaining;
+        }
+    }
+    private List<DamagedBrick> damagedBricks = new ArrayList<>();
+
     public Game(int width, int height, int playerCount) {
         this.grid = new Grid(width, height);
         this.players = new ArrayList<>();
@@ -88,7 +100,7 @@ public class Game {
 
     public void placeBomb(Player player) {
         if (!player.isAlive()) return; // Bloque la pose de bombe si joueur mort
-        // Vérifie s’il n’y a pas déjà une bombe sur la case
+        // Vérifie s'il n'y a pas déjà une bombe sur la case
         for (Bomb b : bombs)
             if (b.getX() == player.getX() && b.getY() == player.getY()) return;
         bombs.add(new Bomb(player.getX(), player.getY(), 3, 2)); // timer=3, range=2
@@ -120,11 +132,34 @@ public class Game {
                 expIt.remove();
             }
         }
+
+        // Tick des briques endommagées
+        Iterator<DamagedBrick> damagedIt = damagedBricks.iterator();
+        while (damagedIt.hasNext()) {
+            DamagedBrick damaged = damagedIt.next();
+            damaged.ticksRemaining--;
+            if (damaged.ticksRemaining <= 0) {
+                // Détruit définitivement la brique
+                if (grid.getCell(damaged.x, damaged.y) == Grid.CellType.DESTRUCTIBLE_DAMAGED) {
+                    grid.setCell(damaged.x, damaged.y, Grid.CellType.EMPTY);
+                }
+                damagedIt.remove();
+            }
+        }
     }
 
     private void addExplosion(int x, int y) {
-        grid.setCell(x, y, Grid.CellType.EXPLOSION);
-        explosions.add(new Explosion(x, y, 2)); // 1 tick = visible pendant un cycle
+        if (grid.getCell(x, y) != Grid.CellType.DESTRUCTIBLE_DAMAGED) {
+            grid.setCell(x, y, Grid.CellType.EXPLOSION);
+            explosions.add(new Explosion(x, y, 2)); // 1 tick = visible pendant un cycle
+        }
+    }
+
+    private void damageBrick(int x, int y) {
+        if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
+            grid.setCell(x, y, Grid.CellType.DESTRUCTIBLE_DAMAGED);
+            damagedBricks.add(new DamagedBrick(x, y, 2));
+        }
     }
 
     private void explode(Bomb b) {
@@ -140,11 +175,22 @@ public class Game {
                 if (!grid.isInBounds(nx, ny)) break;
                 Grid.CellType c = grid.getCell(nx, ny);
                 if (c == Grid.CellType.INDESTRUCTIBLE) break;
-                addExplosion(nx, ny);
+
+                // Toujours endommager les joueurs
                 damagePlayersAt(nx, ny);
+
                 if (c == Grid.CellType.DESTRUCTIBLE) {
+                    // Brique normale : on l'endommage SANS explosion
+                    damageBrick(nx, ny);
+                    break;
+                } else if (c == Grid.CellType.DESTRUCTIBLE_DAMAGED) {
+                    // Brique déjà endommagée : on la détruit avec explosion
+                    addExplosion(nx, ny);
                     destroyWall(nx, ny);
                     break;
+                } else {
+                    // Case vide ou autres : explosion normale
+                    addExplosion(nx, ny);
                 }
             }
         }
@@ -159,7 +205,11 @@ public class Game {
     }
 
     private void destroyWall(int x, int y) {
-        if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE)
+        Grid.CellType cellType = grid.getCell(x, y);
+        if (cellType == Grid.CellType.DESTRUCTIBLE || cellType == Grid.CellType.DESTRUCTIBLE_DAMAGED) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
+            // Supprime la brique de la liste des briques endommagées si elle y était
+            damagedBricks.removeIf(damaged -> damaged.x == x && damaged.y == y);
+        }
     }
 }

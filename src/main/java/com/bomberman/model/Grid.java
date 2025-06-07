@@ -5,6 +5,7 @@ public class Grid {
         EMPTY,             // Case vide
         INDESTRUCTIBLE,    // Mur indestructible (bordure ou obstacle central)
         DESTRUCTIBLE,      // Mur destructible (peut être détruit par une bombe)
+        DESTRUCTIBLE_DAMAGED, // Mur destructible endommagé (n-bricks)
         BOMB,              // Bombe présente sur la case
         EXPLOSION,         // Explosion temporaire (pour l'affichage)
         PLAYER1,           // Optionnel : présence d'un joueur (pour affichage)
