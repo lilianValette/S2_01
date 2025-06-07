@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Représente un joueur (humain ou IA) dans le jeu Bomberman.
+ */
 public class Player {
     private int id;
     private int x;
@@ -15,6 +18,13 @@ public class Player {
     private List<ActiveBonus> activeBonuses = new ArrayList<>();
     private boolean isHuman;
 
+    /**
+     * Crée un joueur.
+     * @param id identifiant du joueur (1, 2, ...)
+     * @param startX position X initiale
+     * @param startY position Y initiale
+     * @param isHuman true si humain, false si IA
+     */
     public Player(int id, int startX, int startY, boolean isHuman) {
         this.id = id;
         this.x = startX;
@@ -30,6 +40,11 @@ public class Player {
     public boolean isAlive() { return alive; }
     public int getLives() { return lives; }
     public boolean isHuman() { return isHuman; }
+
+    /**
+     * Renvoie true si ce joueur est une IA.
+     */
+    public boolean isAI() { return !isHuman; }
 
     public void kill() {
         this.alive = false;
@@ -59,25 +74,11 @@ public class Player {
     public void moveLeft(Grid grid)  { move(-1, 0, grid); }
     public void moveRight(Grid grid) { move(1,  0, grid); }
 
-    public int getBombRange() {
-        return bombRange;
-    }
-
-    public void setBombRange(int bombRange) {
-        this.bombRange = bombRange;
-    }
-
-    public int getMaxBombs() {
-        return maxBombs;
-    }
-
-    public void setMaxBombs(int maxBombs) {
-        this.maxBombs = maxBombs;
-    }
-
-    public List<ActiveBonus> getActiveBonuses() {
-        return activeBonuses;
-    }
+    public int getBombRange() { return bombRange; }
+    public void setBombRange(int bombRange) { this.bombRange = bombRange; }
+    public int getMaxBombs() { return maxBombs; }
+    public void setMaxBombs(int maxBombs) { this.maxBombs = maxBombs; }
+    public List<ActiveBonus> getActiveBonuses() { return activeBonuses; }
 
     public Bomb dropBomb(int timer, List<Bomb> activeBombs) {
         if (activeBombs.size() < maxBombs) {
