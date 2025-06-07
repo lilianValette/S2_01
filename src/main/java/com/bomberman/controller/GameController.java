@@ -267,8 +267,6 @@ public class GameController {
             }
         }
 
-        // ───────────────────────────────────────────────────────────────────────────────────────────────────
-
         // --- Timer centré, fond élargi 1.5x ---
         String timerStr = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60);
         gc.setFont(Font.font("Consolas", topUiHeight * 0.4));
