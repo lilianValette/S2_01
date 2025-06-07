@@ -4,7 +4,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.bomberman.controller.GameController">
+            fx:controller="com.bomberman.controller.GameController"
+            style="-fx-background-color: #222222;">
     <children>
         <Canvas fx:id="gameCanvas" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
     </children>

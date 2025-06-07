@@ -1,27 +1,33 @@
 package com.bomberman.model;
 
+/**
+ * Représente un niveau (layout, images, nom) pour Bomberman.
+ */
 public class Level {
     private final String name;
-    private final String solImagePath;
-    private final String murImagePath;
-    private final String destructibleImagePath;
-    private final int[][] layout; // Nommé "layout" car c'est maintenant la vraie map
+    private final String groundImagePath;
+    private final String wallIndestructibleImagePath;
+    private final String wallDestructibleImagePath;
+    private final int[][] layout; // 0: sol, 1: mur indestructible, 2: destructible
 
-    public Level(String name, String solImagePath, String murImagePath, String destructibleImagePath, int[][] layout) {
+    public Level(String name, String groundImagePath, String wallIndestructibleImagePath, String wallDestructibleImagePath, int[][] layout) {
         this.name = name;
-        this.solImagePath = solImagePath;
-        this.murImagePath = murImagePath;
-        this.destructibleImagePath = destructibleImagePath;
+        this.groundImagePath = groundImagePath;
+        this.wallIndestructibleImagePath = wallIndestructibleImagePath;
+        this.wallDestructibleImagePath = wallDestructibleImagePath;
         this.layout = layout;
     }
 
     public String getName() { return name; }
-    public String getSolImagePath() { return solImagePath; }
-    public String getMurImagePath() { return murImagePath; }
-    public String getDestructibleImagePath() { return destructibleImagePath; }
+    public String getGroundImagePath() { return groundImagePath; }
+    public String getWallIndestructibleImagePath() { return wallIndestructibleImagePath; }
+    public String getWallDestructibleImagePath() { return wallDestructibleImagePath; }
     public int[][] getLayout() { return layout; }
 
-    public static Level[] getPredefinedThemes() {
+    /**
+     * Renvoie les niveaux prédéfinis disponibles.
+     */
+    public static Level[] getPredefinedLevels() {
         return new Level[] {
                 new Level("Classic",
                         "/images/elementsMap/herbe.png",
@@ -63,7 +69,6 @@ public class Level {
                                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                         }
                 ),
-
                 new Level("Beach",
                         "/images/elementsMap/fondSable.png",
                         "/images/elementsMap/water.png",
