@@ -403,11 +403,6 @@ public class GameController {
                         gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                 }
-                if (grid.getCell(x, y) != com.bomberman.model.Grid.CellType.INDESTRUCTIBLE
-                        && grid.getCell(x, y) != com.bomberman.model.Grid.CellType.DESTRUCTIBLE) {
-                    gc.setStroke(Color.BLACK);
-                    gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
-                }
             }
         }
         // dessiner chaque bonus
