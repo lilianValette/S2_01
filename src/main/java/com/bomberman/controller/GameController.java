@@ -46,10 +46,10 @@ public class GameController {
 
     // Ressources graphiques
     private static final String[] AVATAR_PATHS = {
-            "/images/avatarsJoueurs/PBlanc-icon.png",
-            "/images/avatarsJoueurs/PBleuCiel-icon.png",
-            "/images/avatarsJoueurs/PRose-icon.png",
-            "/images/avatarsJoueurs/PRouge-icon.png"
+            "/images/Player/PBlanc/PBlanc-icon.png",
+            "/images/Player/PBleuCiel/PBleuCiel-icon.png",
+            "/images/Player/PRose/PRose-icon.png",
+            "/images/Player/PRouge/PRouge-icon.png"
     };
     private final Image[] avatarsJoueurs = new Image[4];
 

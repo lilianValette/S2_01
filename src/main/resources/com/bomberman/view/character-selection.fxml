@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bomberman.controller.CharacterSelectionController">
+    <children>
+        <!-- Image de fond -->
+        <ImageView fx:id="backgroundImage" fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="false" />
+
+        <!-- Contenu principal -->
+        <VBox alignment="CENTER" spacing="30.0" styleClass="main-container">
+            <children>
+                <!-- Titre -->
+                <Label fx:id="titleLabel" styleClass="title-label" text="CHOISIR UN PERSONNAGE" />
+
+                <!-- Conteneur du personnage sélectionné -->
+                <VBox alignment="CENTER" spacing="15.0" styleClass="selected-character-container">
+                    <children>
+                        <ImageView fx:id="selectedCharacterPreview" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="characterNameLabel" styleClass="character-name-label" text="Bomberman Classic" />
+                    </children>
+                </VBox>
+
+                <!-- Grille des personnages -->
+                <HBox alignment="CENTER" spacing="30.0" styleClass="characters-grid">
+                    <children>
+                        <!-- Personnage 1 -->
+                        <VBox alignment="CENTER" spacing="10.0" styleClass="character-option">
+                            <children>
+                                <ImageView fx:id="character1Image" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+                                <Button fx:id="selectCharacter1Button" styleClass="character-button" text="Classic" />
+                            </children>
+                        </VBox>
+
+                        <!-- Personnage 2 -->
+                        <VBox alignment="CENTER" spacing="10.0" styleClass="character-option">
+                            <children>
+                                <ImageView fx:id="character2Image" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+                                <Button fx:id="selectCharacter2Button" styleClass="character-button" text="Blue" />
+                            </children>
+                        </VBox>
+
+                        <!-- Personnage 3 -->
+                        <VBox alignment="CENTER" spacing="10.0" styleClass="character-option">
+                            <children>
+                                <ImageView fx:id="character3Image" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+                                <Button fx:id="selectCharacter3Button" styleClass="character-button" text="Pink" />
+                            </children>
+                        </VBox>
+
+                        <!-- Personnage 4 -->
+                        <VBox alignment="CENTER" spacing="10.0" styleClass="character-option">
+                            <children>
+                                <ImageView fx:id="character4Image" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+                                <Button fx:id="selectCharacter4Button" styleClass="character-button" text="Red" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- Boutons d'action -->
+                <HBox alignment="CENTER" spacing="20.0" styleClass="action-buttons">
+                    <children>
+                        <Button fx:id="backButton" styleClass="game-button-secondary" text="Retour" />
+                        <Button fx:id="confirmButton" styleClass="game-button-primary" text="Confirmer" />
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+            </padding>
+        </VBox>
+    </children>
+</StackPane>

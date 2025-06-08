@@ -42,6 +42,7 @@
                     <VBox alignment="CENTER" spacing="30.0" styleClass="form-container">
                         <children>
                             <!-- SOUS-TITRE BLANC -->
+
                             <Text styleClass="section-title"
                                   text="CONNEXION"
                                   fill="WHITE"/>

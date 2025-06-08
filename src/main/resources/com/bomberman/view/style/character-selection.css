@@ -1,0 +1,154 @@
+/* Styles pour la sélection des personnages */
+
+/* Conteneur principal */
+.root {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-background-color: transparent;
+}
+
+/* Titre principal */
+.title-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFD700;
+    -fx-effect: dropshadow(gaussian, #000000, 3, 0.5, 2, 2);
+}
+
+/* Labels de section */
+.section-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, #000000, 2, 0.5, 1, 1);
+}
+
+/* Nom du personnage sélectionné */
+.character-name-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFD700;
+    -fx-effect: dropshadow(gaussian, #000000, 2, 0.5, 1, 1);
+}
+
+/* Boutons de sélection de personnage */
+.character-button {
+    -fx-background-color: linear-gradient(to bottom, #4A90E2, #357ABD);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20 10 20;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #2C5AA0;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.5, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 140px;
+}
+
+.character-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5BA0F2, #4A90E2);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.character-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #357ABD, #2C5AA0);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* Bouton de personnage sélectionné */
+.character-button-selected {
+    -fx-background-color: linear-gradient(to bottom, #FFD700, #FFA500);
+    -fx-text-fill: #000000;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20 10 20;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #FF8C00;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(255,215,0,0.6), 8, 0.7, 0, 0);
+    -fx-cursor: hand;
+    -fx-min-width: 140px;
+}
+
+.character-button-selected:hover {
+    -fx-background-color: linear-gradient(to bottom, #FFED4E, #FFD700);
+}
+
+.character-button-selected:pressed {
+    -fx-background-color: linear-gradient(to bottom, #FFA500, #FF8C00);
+}
+
+/* Boutons d'action principaux */
+.game-button-primary {
+    -fx-background-color: linear-gradient(to bottom, #28A745, #1E7E34);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24 12 24;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #155724;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.5, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 120px;
+}
+
+.game-button-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #34CE57, #28A745);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.game-button-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom, #1E7E34, #155724);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* Boutons d'action secondaires */
+.game-button-secondary {
+    -fx-background-color: linear-gradient(to bottom, #6C757D, #495057);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24 12 24;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #343A40;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.5, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 120px;
+}
+
+.game-button-secondary:hover {
+    -fx-background-color: linear-gradient(to bottom, #7C868D, #6C757D);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.game-button-secondary:pressed {
+    -fx-background-color: linear-gradient(to bottom, #495057, #343A40);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* Animations pour les transitions */
+.character-button, .character-button-selected, .game-button-primary, .game-button-secondary {
+    -fx-transition: all 0.2s ease;
+}
+
+/* Effets pour les images de personnages */
+.character-image {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0.5, 0, 1);
+}
+
+/* Aperçu du personnage sélectionné */
+.selected-character-preview {
+    -fx-effect: dropshadow(gaussian, rgba(255,215,0,0.5), 5, 0.7, 0, 0);
+}

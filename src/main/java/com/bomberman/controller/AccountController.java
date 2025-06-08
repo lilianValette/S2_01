@@ -1,4 +1,3 @@
-
 package com.bomberman.controller;
 
 import com.bomberman.model.User;
@@ -47,6 +46,9 @@ public class AccountController {
     @FXML private Label profileGamesWon;
     @FXML private Label profileWinRate;
     @FXML private Label profileTotalScore;
+    @FXML private Label profileSelectedCharacter;
+    @FXML private ImageView profileCharacterIcon;
+    @FXML private Button changeCharacterButton;
     @FXML private Button logoutButton;
 
     // Bouton de retour
@@ -70,7 +72,6 @@ public class AccountController {
         // Charger le fichier CSS après que la scène soit définie
         Platform.runLater(() -> {
             loadStylesheet();
-            // Re-appliquer les styles des boutons après le chargement du CSS
             setupButtonStyles();
         });
     }
@@ -83,42 +84,65 @@ public class AccountController {
         loadBackgroundImage();
 
         // Configuration des boutons
-        loginButton.setOnAction(e -> handleLogin());
-        createButton.setOnAction(e -> handleCreateAccount());
-        logoutButton.setOnAction(e -> handleLogout());
-        backButton.setOnAction(e -> returnToMenu());
-
-        // Boutons de navigation
-        showCreateButton.setOnAction(e -> showCreateView());
-        showLoginButton.setOnAction(e -> showLoginView());
+        setupButtonActions();
 
         // Mise à jour de l'affichage selon l'état de connexion
         updateUI();
 
         // Listeners pour validation en temps réel
+        setupValidationListeners();
+
+        // Appliquer les styles des boutons après l'initialisation
+        Platform.runLater(() -> {
+            setupButtonStyles();
+            // S'assurer que le bouton de changement de personnage est visible
+            ensureChangeCharacterButtonVisible();
+        });
+    }
+
+    private void setupButtonActions() {
+        loginButton.setOnAction(e -> handleLogin());
+        createButton.setOnAction(e -> handleCreateAccount());
+        logoutButton.setOnAction(e -> handleLogout());
+        backButton.setOnAction(e -> returnToMenu());
+
+        // Bouton pour changer de personnage - S'assurer qu'il est configuré
+        if (changeCharacterButton != null) {
+            changeCharacterButton.setOnAction(e -> openCharacterSelection());
+            changeCharacterButton.setText("Changer de personnage");
+        }
+
+        // Boutons de navigation
+        showCreateButton.setOnAction(e -> showCreateView());
+        showLoginButton.setOnAction(e -> showLoginView());
+    }
+
+    private void setupValidationListeners() {
         createUsername.textProperty().addListener((obs, oldVal, newVal) -> validateCreateForm());
         createPassword.textProperty().addListener((obs, oldVal, newVal) -> validateCreateForm());
         confirmPassword.textProperty().addListener((obs, oldVal, newVal) -> validateCreateForm());
+    }
 
-        // Appliquer les styles des boutons après l'initialisation
-        Platform.runLater(() -> setupButtonStyles());
+    private void ensureChangeCharacterButtonVisible() {
+        if (changeCharacterButton != null && userManager.isLoggedIn()) {
+            changeCharacterButton.setVisible(true);
+            changeCharacterButton.setManaged(true);
+            System.out.println("Bouton de changement de personnage rendu visible");
+        }
     }
 
     private void loadStylesheet() {
         try {
-            // Charger le fichier CSS principal du jeu
-            java.net.URL cssUrl = getClass().getResource("/css/style.css");
+            java.net.URL cssUrl = getClass().getResource("/css/account-style.css");
             if (cssUrl != null) {
                 String cssPath = cssUrl.toExternalForm();
                 if (stage.getScene() != null) {
-                    stage.getScene().getStylesheets().clear(); // Nettoyer les anciens styles
+                    stage.getScene().getStylesheets().clear();
                     stage.getScene().getStylesheets().add(cssPath);
                     System.out.println("CSS chargé avec succès : " + cssPath);
-                } else {
-                    System.err.println("Scene est null, impossible de charger le CSS");
                 }
             } else {
-                System.err.println("Fichier CSS non trouvé : /css/style.css");
+                System.err.println("Fichier CSS non trouvé : /css/account-style.css");
             }
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement du CSS : " + e.getMessage());
@@ -127,15 +151,17 @@ public class AccountController {
     }
 
     private void setupButtonStyles() {
-        // Attendre que la scène soit prête
         Platform.runLater(() -> {
-            // Supprimer les classes par défaut et appliquer les bonnes classes CSS
-            setupButtonStyle(loginButton, "account-button");
-            setupButtonStyle(createButton, "account-button");
-            setupButtonStyle(showCreateButton, "account-button");
-            setupButtonStyle(showLoginButton, "account-button");
+            setupButtonStyle(loginButton, "game-button-primary");
+            setupButtonStyle(createButton, "game-button-primary");
+            setupButtonStyle(showCreateButton, "game-button-secondary");
+            setupButtonStyle(showLoginButton, "game-button-secondary");
             setupButtonStyle(logoutButton, "game-button-danger");
             setupButtonStyle(backButton, "game-button-secondary");
+
+            if (changeCharacterButton != null) {
+                setupButtonStyle(changeCharacterButton, "game-button-primary");
+            }
 
             // Forcer la mise à jour des styles
             if (stage.getScene() != null && stage.getScene().getRoot() != null) {
@@ -146,19 +172,9 @@ public class AccountController {
 
     private void setupButtonStyle(Button button, String styleClass) {
         if (button != null) {
-            // Debug : afficher les classes actuelles
-            System.out.println("Avant - Bouton " + button.getId() + " classes : " + button.getStyleClass());
-
-            // Nettoyer toutes les classes existantes sauf "button" si nécessaire
-            button.getStyleClass().removeAll("button", "account-button", "game-button-danger", "game-button-secondary");
-
-            // Ajouter la classe spécifique
+            button.getStyleClass().removeAll("button", "account-button", "game-button-primary",
+                    "game-button-danger", "game-button-secondary");
             button.getStyleClass().add(styleClass);
-
-            // Debug : afficher les classes après modification
-            System.out.println("Après - Bouton " + button.getId() + " classes : " + button.getStyleClass());
-
-            // Forcer la mise à jour du style
             button.applyCss();
         }
     }
@@ -195,6 +211,7 @@ public class AccountController {
     private void showProfileView() {
         setContainerVisibility(false, false, true);
         updateProfileInfo();
+        ensureChangeCharacterButtonVisible();
     }
 
     private void setContainerVisibility(boolean login, boolean create, boolean profile) {
@@ -212,13 +229,11 @@ public class AccountController {
             return;
         }
 
-        // Désactiver le bouton pendant la connexion
         loginButton.setDisable(true);
 
         if (userManager.login(username, password)) {
             showLoginMessage("Connexion réussie ! Bienvenue " + username, false);
 
-            // Utiliser un Task pour gérer le délai sans bloquer l'UI
             Task<Void> delayTask = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
@@ -256,7 +271,6 @@ public class AccountController {
         if (userManager.createAccount(username, password)) {
             showCreateMessage("Compte créé avec succès ! Vous pouvez maintenant vous connecter.", false);
 
-            // Utiliser un Task pour gérer le délai
             Task<Void> delayTask = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
@@ -342,9 +356,68 @@ public class AccountController {
             profileGamesWon.setText(String.valueOf(user.getGamesWon()));
             profileWinRate.setText(String.format("%.1f%%", user.getWinRate()));
             profileTotalScore.setText(String.valueOf(user.getTotalScore()));
+
+            // Mettre à jour les informations du personnage
+            if (profileSelectedCharacter != null) {
+                profileSelectedCharacter.setText(user.getSelectedCharacter().getDisplayName());
+            }
+
+            // Charger l'icône du personnage
+            if (profileCharacterIcon != null) {
+                loadCharacterIcon(user.getSelectedCharacter());
+            }
         }
     }
 
+    private void loadCharacterIcon(com.bomberman.model.Character character) {
+        try {
+            java.net.URL url = getClass().getResource(character.getIconImagePath());
+            if (url != null) {
+                Image image = new Image(url.toExternalForm());
+                profileCharacterIcon.setImage(image);
+                profileCharacterIcon.setFitWidth(48);
+                profileCharacterIcon.setFitHeight(48);
+                profileCharacterIcon.setPreserveRatio(true);
+            } else {
+                System.err.println("Icône du personnage non trouvée : " + character.getIconImagePath());
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de l'icône du personnage : " + e.getMessage());
+        }
+    }
+
+    private void openCharacterSelection() {
+        try {
+            System.out.println("Ouverture de la sélection de personnage...");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/character-selection.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+
+            // Appliquer le CSS
+            try {
+                java.net.URL cssUrl = getClass().getResource("/css/character-selection-style.css");
+                if (cssUrl != null) {
+                    String cssPath = cssUrl.toExternalForm();
+                    scene.getStylesheets().add(cssPath);
+                    System.out.println("CSS de sélection de personnage appliqué");
+                }
+            } catch (Exception e) {
+                System.err.println("Erreur lors du chargement du CSS pour la sélection de personnage : " + e.getMessage());
+            }
+
+            CharacterSelectionController characterController = loader.getController();
+            stage.setScene(scene);
+            characterController.setStage(stage);
+
+        } catch (Exception ex) {
+            System.err.println("Erreur lors de l'ouverture de la sélection de personnage : " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    // Méthodes utilitaires pour les messages
     private void showLoginMessage(String message, boolean isError) {
         setMessageStyle(loginMessage, message, isError);
     }
@@ -363,6 +436,7 @@ public class AccountController {
         }
     }
 
+    // Méthodes de nettoyage des formulaires
     private void clearMessages() {
         clearMessage(loginMessage);
         clearMessage(createMessage);
@@ -383,8 +457,7 @@ public class AccountController {
         createPassword.clear();
         confirmPassword.clear();
         clearMessage(createMessage);
-        // Réactiver le bouton si il était désactivé
-        createButton.setDisable(true); // Il sera réactivé par la validation
+        createButton.setDisable(true);
     }
 
     private void clearAllForms() {
@@ -398,7 +471,6 @@ public class AccountController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/menu.fxml"));
             Parent root = loader.load();
 
-            // Créer une nouvelle scène avec le CSS
             Scene scene = new Scene(root);
 
             // Appliquer le CSS à la nouvelle scène
@@ -408,8 +480,6 @@ public class AccountController {
                     String cssPath = cssUrl.toExternalForm();
                     scene.getStylesheets().add(cssPath);
                     System.out.println("CSS appliqué au menu : " + cssPath);
-                } else {
-                    System.err.println("CSS non trouvé pour le menu");
                 }
             } catch (Exception e) {
                 System.err.println("Erreur lors du chargement du CSS pour le menu : " + e.getMessage());

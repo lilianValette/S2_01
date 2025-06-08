@@ -139,4 +139,24 @@ public class UserManager {
             saveUsers();
         }
     }
+
+    /**
+     * Met à jour le personnage sélectionné par l'utilisateur actuel et sauvegarde.
+     */
+    public void updateCurrentUserCharacter(Character character) {
+        if (currentUser != null) {
+            currentUser.setSelectedCharacter(character);
+            saveUsers();
+        }
+    }
+
+    /**
+     * Retourne le personnage sélectionné par l'utilisateur actuel.
+     */
+    public Character getCurrentUserCharacter() {
+        if (currentUser != null) {
+            return currentUser.getSelectedCharacter();
+        }
+        return Character.BOMBERMAN_1; // Par défaut
+    }
 }

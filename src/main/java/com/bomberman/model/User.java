@@ -1,3 +1,4 @@
+
 package com.bomberman.model;
 
 public class User {
@@ -6,6 +7,8 @@ public class User {
     private int gamesPlayed;
     private int gamesWon;
     private int totalScore;
+    private Character selectedCharacter;
+    private String character;
 
     public User(String username, String password) {
         this.username = username;
@@ -13,15 +16,17 @@ public class User {
         this.gamesPlayed = 0;
         this.gamesWon = 0;
         this.totalScore = 0;
+        this.selectedCharacter = Character.BOMBERMAN_1; // Personnage par défaut
     }
 
     // Constructeur complet pour charger depuis fichier
-    public User(String username, String password, int gamesPlayed, int gamesWon, int totalScore) {
+    public User(String username, String password, int gamesPlayed, int gamesWon, int totalScore, Character selectedCharacter) {
         this.username = username;
         this.password = password;
         this.gamesPlayed = gamesPlayed;
         this.gamesWon = gamesWon;
         this.totalScore = totalScore;
+        this.selectedCharacter = selectedCharacter != null ? selectedCharacter : Character.BOMBERMAN_1;
     }
 
     public String getUsername() {
@@ -44,6 +49,14 @@ public class User {
         return totalScore;
     }
 
+    public Character getSelectedCharacter() {
+        return selectedCharacter;
+    }
+
+    public void setSelectedCharacter(Character selectedCharacter) {
+        this.selectedCharacter = selectedCharacter;
+    }
+
     public void incrementGamesPlayed() {
         this.gamesPlayed++;
     }
@@ -63,19 +76,25 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%d,%d,%d",
-                username, password, gamesPlayed, gamesWon, totalScore);
+        return String.format("%s,%s,%d,%d,%d,%s",
+                username, password, gamesPlayed, gamesWon, totalScore,
+                selectedCharacter.name());
     }
 
     public static User fromString(String line) {
         String[] parts = line.split(",");
-        if (parts.length == 5) {
+        if (parts.length >= 5) {
+            Character character = Character.BOMBERMAN_1; // Par défaut
+            if (parts.length >= 6) {
+                character = Character.fromString(parts[5]);
+            }
             return new User(
                     parts[0],
                     parts[1],
                     Integer.parseInt(parts[2]),
                     Integer.parseInt(parts[3]),
-                    Integer.parseInt(parts[4])
+                    Integer.parseInt(parts[4]),
+                    character
             );
         }
         return null;
