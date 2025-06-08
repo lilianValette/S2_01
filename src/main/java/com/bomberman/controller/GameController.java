@@ -1,5 +1,6 @@
 package com.bomberman.controller;
 
+import com.bomberman.model.UserManager;
 import com.bomberman.model.Game;
 import com.bomberman.model.Player;
 import com.bomberman.model.Bomb;
@@ -216,6 +217,10 @@ public class GameController {
         if (someoneDead) {
             if (timeline != null) timeline.stop();
             if (timerTimeline != null) timerTimeline.stop();
+
+            // NOUVEAU : Mise à jour des statistiques
+            updateUserStats();
+
             returnToMenu();
         }
     }
@@ -329,6 +334,7 @@ public class GameController {
 
         double p2CounterX = 0;
         double p2CounterY = 0;
+
         // --- Joueur 2 (droite) ---
         if (game.getPlayers().size() > 1) {
             double p2AvatarX = canvasWidth - margin - iconSize;
@@ -521,4 +527,40 @@ public class GameController {
 
         return canvas;
     }
-}
+    private void updateUserStats() {
+        UserManager userManager = UserManager.getInstance();
+
+        if (userManager.isLoggedIn()) {
+            // Détermine si l'utilisateur a gagné
+            boolean hasWon = false;
+
+            // CORRECTION : Vérifier si le joueur humain est le gagnant de la partie
+            Player winner = game.getWinner();
+            Player humanPlayer = null;
+
+            // Trouve le joueur humain
+            for (Player player : game.getPlayers()) {
+                if (player.isHuman()) {
+                    humanPlayer = player;
+                    break;
+                }
+            }
+
+            // Le joueur humain a gagné seulement si :
+            // 1. Il y a un gagnant ET
+            // 2. Le gagnant est le joueur humain
+            if (winner != null && humanPlayer != null && winner.getId() == humanPlayer.getId()) {
+                hasWon = true;
+
+            // Met à jour les statistiques
+            userManager.updateCurrentUserStats(hasWon);
+
+            System.out.println("Statistiques mises à jour - Gagné: " + hasWon );
+            if (winner != null) {
+                System.out.println("Gagnant: Joueur " + winner.getId() + (winner.isHuman() ? " (Humain)" : " (IA)"));
+            } else {
+                System.out.println("Aucun gagnant (match nul)");
+            }
+        }
+    }
+}}

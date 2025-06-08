@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.ImageView?>
 
-<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bomberman.controller.AccountControler" styleClass="main-background" stylesheets="@../css/account.css">
+<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bomberman.controller.AccountControler" styleClass="main-background" stylesheets="@style/account.css">
     <!-- Image de fond -->
     <ImageView fx:id="backgroundImage" fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="false" />
 
@@ -144,10 +144,6 @@
                                         </children>
                                     </HBox>
                                     <HBox alignment="CENTER" spacing="20.0" styleClass="profile-row">
-                                        <children>
-                                            <Label styleClass="profile-label" text="Score total :" />
-                                            <Label fx:id="profileTotalScore" styleClass="profile-value" />
-                                        </children>
                                     </HBox>
 
                                     <!-- Séparateur -->

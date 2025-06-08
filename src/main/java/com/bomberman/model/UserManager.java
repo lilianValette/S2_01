@@ -128,14 +128,14 @@ public class UserManager {
 
     /**
      * Met à jour les statistiques de l'utilisateur actuel et sauvegarde.
+     * MODIFIÉ : Suppression du paramètre score
      */
-    public void updateCurrentUserStats(boolean won, int score) {
+    public void updateCurrentUserStats(boolean won) {
         if (currentUser != null) {
             currentUser.incrementGamesPlayed();
             if (won) {
                 currentUser.incrementGamesWon();
             }
-            currentUser.addScore(score);
             saveUsers();
         }
     }
