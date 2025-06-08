@@ -34,13 +34,6 @@ public class Game {
         this.winner = null;
         int totalPlayers = playerCount + iaCount;
         initializePlayers(totalPlayers, playerCount);
-
-        // AJOUT BONUS : on place déjà un bonus fixe pour tester
-        bonuses.add(new FlameBonus(5, 3, 1));
-        //ajout du bonus Jacket à un endroit fixe pour teste
-        bonuses.add(new JacketBonus(3,5));
-        bonuses.add(new LifeBonus(5,5));
-
     }
 
     // Sécurise le spawn : le joueur spawn toujours sur du sol, jamais sur un bloc, et toutes les cases autour (y compris diagonales) sont mises à EMPTY

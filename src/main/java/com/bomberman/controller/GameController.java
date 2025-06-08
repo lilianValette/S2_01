@@ -6,6 +6,7 @@ import com.bomberman.model.Bomb;
 import com.bomberman.model.Theme;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -21,11 +23,17 @@ import javafx.util.Duration;
 import javafx.scene.image.Image;
 import com.bomberman.model.Bonus;
 import com.bomberman.model.ActiveBonus;
+import java.io.IOException;
+import java.net.URL;
 
 
 public class GameController {
     @FXML
     private Canvas gameCanvas;
+
+    @FXML
+    private StackPane rootPane;
+
 
     private Stage stage;
 
@@ -55,6 +63,9 @@ public class GameController {
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
     private Image bombImg;
+
+    private boolean gameEnded = false;
+
 
     @FXML
     public void initialize() {
@@ -94,14 +105,21 @@ public class GameController {
         timeline.play();
 
         timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            if (timerSeconds > 0) {
-                timerSeconds--;
-                drawGrid();
+            timerSeconds--;
+            drawGrid();
+
+            if (timerSeconds <= 0) {
+                timerTimeline.stop();
+                showEndGameScreen("Temps écoulé !");
             }
+
+
         }));
+
         timerTimeline.setCycleCount(Timeline.INDEFINITE);
         timerTimeline.play();
     }
+
 
     private void returnToMenu() {
         if (timeline != null) timeline.stop();
@@ -122,15 +140,56 @@ public class GameController {
         }
     }
 
+    private void showEndGameScreen(String message) {
+        if (timeline != null) timeline.stop();
+        if (timerTimeline != null) timerTimeline.stop();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/EndGameScreen.fxml"));
+            Parent root = loader.load();
+
+            if (stage != null) {
+                stage.setScene(new Scene(root));
+                stage.show();
+                System.out.println("Scene changée, stage : " + stage);
+            } else {
+                System.err.println("Stage est null, impossible de changer de scène");
+            }
+
+            EndGameScreenController controller = loader.getController();
+            controller.setMessage(message);
+            controller.setOnReturnCallback(() -> returnToMenu());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
     private void checkGameOver() {
         boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
 
-        if (someoneDead) {
-            if (timeline != null) timeline.stop();
-            if (timerTimeline != null) timerTimeline.stop();
-            returnToMenu();
+        if (someoneDead && !gameEnded) {
+            gameEnded = true;
+            Player winner = game.getPlayers().stream()
+                    .filter(Player::isAlive)
+                    .findFirst()
+                    .orElse(null);
+
+            String message;
+            if (winner != null) {
+                message = "Le joueur " + winner.getId() + " a gagné !";
+            } else {
+                message = "Match nul !";
+            }
+
+            showEndGameScreen(message);
         }
     }
+
 
     private void handleKeyPressed(KeyEvent event) {
         // Toujours vérifier que la liste n'est pas vide
