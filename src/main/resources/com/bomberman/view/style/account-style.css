@@ -229,3 +229,16 @@
     );
     -fx-text-fill: #666666;
 }
+
+
+.editor-grid-cell {
+    -fx-background-color: #222;
+    -fx-border-color: #FFD700;
+    -fx-border-width: 1;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;
+}
+.palette-toggle:selected, .palette-toggle:focused {
+    -fx-background-color: #FFD700;
+    -fx-text-fill: #222;
+}
