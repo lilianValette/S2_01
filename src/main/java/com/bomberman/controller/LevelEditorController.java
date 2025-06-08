@@ -1,5 +1,6 @@
 package com.bomberman.controller;
 
+import com.bomberman.model.LevelEditor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,21 +12,26 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/**
- * Contrôleur de la page des paramètres (Settings).
- * Modulaire : chaque paramètre (bouton, toggle...) peut être ajouté facilement.
- */
-public class SettingsController {
+public class LevelEditorController {
+
     @FXML private StackPane rootPane;
     @FXML private ImageView backgroundImage;
-    @FXML private Button levelEditorButton;
+    @FXML private Button saveButton;
+    @FXML private Button clearButton;
     @FXML private Button backButton;
 
+    // Exemple d'intégration de la grille (à compléter avec une GridPane, etc.)
+    // @FXML private GridPane gridPane;
+
     private Stage stage;
+    private LevelEditor levelEditor;
+
+    // Dimensions par défaut, à adapter si besoin
+    private static final int DEFAULT_WIDTH = 13;
+    private static final int DEFAULT_HEIGHT = 11;
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        // Taille fixe cohérente
         stage.setWidth(800);
         stage.setHeight(600);
         stage.setMinWidth(800);
@@ -35,20 +41,24 @@ public class SettingsController {
         stage.setResizable(false);
         stage.centerOnScreen();
 
-        // Charger le CSS après initialisation
         Platform.runLater(this::loadStylesheet);
     }
 
     @FXML
     public void initialize() {
-        // Fond identique au menu/account
+        // Chargement image de fond
         loadBackgroundImage();
 
-        // Actions des boutons
-        backButton.setOnAction(e -> returnToMenu());
-        levelEditorButton.setOnAction(e -> openLevelEditor());
+        // Initialise le modèle d'édition de niveau
+        levelEditor = new LevelEditor(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-        // Prévoir ici l'ajout d'autres paramètres ou listeners
+        // Brancher les boutons
+        saveButton.setOnAction(e -> saveLevel());
+        clearButton.setOnAction(e -> clearLevel());
+        backButton.setOnAction(e -> returnToSettings());
+
+        // À compléter : initialisation de la grille dans l'UI
+        // initializeGridUI();
     }
 
     private void loadBackgroundImage() {
@@ -80,52 +90,42 @@ public class SettingsController {
         }
     }
 
-    private void returnToMenu() {
+    private void saveLevel() {
+        // Exemple : sauvegarder sous un nom fixe ou avec un FileChooser (à compléter)
+        String filename = "custom_level.lvl";
+        levelEditor.saveLevel(filename);
+        // Feedback utilisateur à ajouter (popup, label…)
+        System.out.println("Niveau sauvegardé sous : " + filename);
+    }
+
+    private void clearLevel() {
+        levelEditor.clear();
+        // À compléter : réinitialiser la grille graphique
+        System.out.println("Niveau effacé.");
+    }
+
+    private void returnToSettings() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/menu.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/settings.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
-            // Appliquer le CSS
             java.net.URL cssUrl = getClass().getResource("/css/style.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
             }
 
-            MenuController menuController = loader.getController();
-            stage.setScene(scene);
-            menuController.setStage(stage);
+            SettingsController settingsController = loader.getController();
+            settingsController.setStage(stage);
 
+            stage.setScene(scene);
         } catch (Exception ex) {
-            System.err.println("Erreur lors du retour au menu : " + ex.getMessage());
+            System.err.println("Erreur lors du retour aux paramètres : " + ex.getMessage());
             ex.printStackTrace();
         }
     }
 
-    private void openLevelEditor() {
-        // À adapter : charger la vue de l’éditeur de niveau
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/level-editor.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            // Appliquer le CSS si besoin
-            java.net.URL cssUrl = getClass().getResource("/css/style.css");
-            if (cssUrl != null) {
-                scene.getStylesheets().add(cssUrl.toExternalForm());
-            }
-
-            // Si tu crées un LevelEditorController, pense à transmettre le stage
-            Object ctrl = loader.getController();
-            if (ctrl instanceof LevelEditorController lec) {
-                lec.setStage(stage);
-            }
-
-            stage.setScene(scene);
-
-        } catch (Exception ex) {
-            System.err.println("Erreur lors de l'ouverture de l’éditeur de niveau : " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
+    // À compléter : méthode pour interagir avec la grille
+    // private void initializeGridUI() { ... }
+    // private void handleCellClick(int x, int y) { ... }
 }

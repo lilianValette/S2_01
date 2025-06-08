@@ -175,11 +175,9 @@ public class MenuController {
      * Action sur le bouton "Compte".
      */
     private void onAccount() {
-        // Comportement par défaut = navigation vers l'écran compte si possible, sinon log
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/account.fxml"));
             Parent root = loader.load();
-            // Si tu as un AccountController, corrige ici le nom (attention à la faute !)
             Object controller = loader.getController();
             if (controller instanceof AccountController accountController) {
                 accountController.setStage(stage);
@@ -195,7 +193,25 @@ public class MenuController {
      * Action sur le bouton "Paramètres".
      */
     private void onSettings() {
-        System.out.println("Settings button clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/settings.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            // Appliquer le CSS principal si besoin
+            java.net.URL cssUrl = getClass().getResource("/css/style.css");
+            if (cssUrl != null) {
+                scene.getStylesheets().add(cssUrl.toExternalForm());
+            }
+
+            SettingsController controller = loader.getController();
+            controller.setStage(stage);
+
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du chargement de la page des paramètres : " + e.getMessage());
+        }
     }
 
     /**
