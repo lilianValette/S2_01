@@ -210,20 +210,17 @@ public class Game {
     }
 
     private void destroyWall(int x, int y) {
-        if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
-            grid.setCell(x, y, Grid.CellType.EMPTY);
-
+            // 20 % de chance de faire apparaître un bonus
             if (Math.random() < 0.2) {
-                bonuses.add(new FlameBonus(x, y, 1));
+                int bonusType = (int) (Math.random() * 3);
+                switch (bonusType) {
+                    case 0 -> bonuses.add(new FlameBonus(x, y, 1));
+                    case 1 -> bonuses.add(new JacketBonus(x, y));
+                    case 2 -> bonuses.add(new LifeBonus(x, y));
+                }
             }
-            if (Math.random() < 0.1) {
-                bonuses.add(new JacketBonus(x, y));
-            }
-            if (Math.random() < 0.1) {
-                bonuses.add(new LifeBonus(x, y));
-            }
-
 
         }
-    }
 }
+
+
