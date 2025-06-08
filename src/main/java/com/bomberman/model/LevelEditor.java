@@ -68,12 +68,42 @@ public class LevelEditor {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    // Placeholder pour sauvegarde/chargement (à implémenter selon le format choisi)
-    public void saveLevel(String filename) {
-        // TODO: implémenter la sauvegarde de la grille dans un fichier
+    // Conversion vers int[][] compatible avec Level
+    public int[][] toIntLayout() {
+        int[][] layout = new int[height][width];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                layout[y][x] = switch (grid.get(y).get(x)) {
+                    case WALL -> 1;
+                    case BREAKABLE -> 2;
+                    default -> 0;
+                };
+            }
+        }
+        return layout;
     }
 
-    public void loadLevel(String filename) {
-        // TODO: implémenter le chargement d'une grille depuis un fichier
+    // Conversion depuis int[][] (Level -> LevelEditor)
+    public void fromIntLayout(int[][] layout) {
+        for (int y = 0; y < height && y < layout.length; y++) {
+            for (int x = 0; x < width && x < layout[y].length; x++) {
+                grid.get(y).set(x, switch (layout[y][x]) {
+                    case 1 -> CellType.WALL;
+                    case 2 -> CellType.BREAKABLE;
+                    default -> CellType.EMPTY;
+                });
+            }
+        }
+    }
+
+    // Optionnel : créer un Level à partir de l'éditeur
+    public Level toLevel(String name, String groundImg, String wallIndImg, String wallDesImg) {
+        return new Level(name, groundImg, wallIndImg, wallDesImg, toIntLayout());
+    }
+
+    // Optionnel : charger l'état de l'éditeur depuis un Level
+    public void loadFromLevel(Level level) {
+        fromIntLayout(level.getLayout());
+        // Gère ici les images si besoin
     }
 }

@@ -21,6 +21,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 
+import java.io.InputStream;
+
 /**
  * Contrôleur principal du jeu Bomberman.
  * Gère l'affichage, les entrées clavier et la logique de jeu,
@@ -110,22 +112,22 @@ public class GameController {
 
         // 2. Chargement des ressources
         for (int i = 0; i < avatarsJoueurs.length; i++) {
-            avatarsJoueurs[i] = new Image(getClass().getResourceAsStream(AVATAR_PATHS[i]));
+            avatarsJoueurs[i] = safeImageFromResource(AVATAR_PATHS[i]);
         }
         for (int i = 0; i < 4; i++) {
             for (int d = 0; d < 4; d++) {
                 try {
-                    playerSprites[i][d] = new Image(getClass().getResourceAsStream(PLAYER_SPRITE_PATHS[i][d]));
+                    playerSprites[i][d] = safeImageFromResource(PLAYER_SPRITE_PATHS[i][d]);
                     if (playerSprites[i][d].isError()) playerSprites[i][d] = avatarsJoueurs[i];
                 } catch (Exception e) {
                     playerSprites[i][d] = avatarsJoueurs[i];
                 }
             }
         }
-        wallIndestructibleImg = new Image(getClass().getResourceAsStream(level.getWallIndestructibleImagePath()));
-        wallDestructibleImg   = new Image(getClass().getResourceAsStream(level.getWallDestructibleImagePath()));
-        solImg                = new Image(getClass().getResourceAsStream(level.getGroundImagePath()));
-        bombImg               = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
+        wallIndestructibleImg = safeImageFromResource(level.getWallIndestructibleImagePath());
+        wallDestructibleImg   = safeImageFromResource(level.getWallDestructibleImagePath());
+        solImg                = safeImageFromResource(level.getGroundImagePath());
+        bombImg               = safeImageFromResource("/images/items/bombe.png");
 
         // 3. Taille du canvas/fenêtre
         int gridWidth = game.getGrid().getWidth();
@@ -418,6 +420,23 @@ public class GameController {
         }
     }
 
+    /** DRY : charge une image depuis un chemin ressource ou disque, toujours chemin relatif ressource. */
+    public static Image safeImageFromResource(String path) {
+        String fixedPath = path;
+        if (fixedPath != null && (fixedPath.contains(":\\") || fixedPath.contains(":/") || fixedPath.startsWith("\\") || fixedPath.startsWith("/"))) {
+            // On cherche le dossier "images" dans le chemin...
+            int idx = fixedPath.lastIndexOf("images");
+            if (idx != -1) {
+                fixedPath = "/" + fixedPath.substring(idx).replace("\\", "/");
+            }
+        }
+        InputStream is = GameController.class.getResourceAsStream(fixedPath);
+        if (is == null) {
+            throw new IllegalArgumentException("Image not found in resources: " + fixedPath + " (original: " + path + ")");
+        }
+        return new Image(is);
+    }
+
     /** Génère un canvas de preview pour l'écran de sélection de niveau. */
     public static Canvas createLevelPreviewCanvas(Level level, int cellSize) {
         int[][] preview = level.getLayout();
@@ -427,9 +446,9 @@ public class GameController {
         Canvas canvas = new Canvas(w * cellSize, h * cellSize);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        Image solImg = new Image(GameController.class.getResourceAsStream(level.getGroundImagePath()));
-        Image murImg = new Image(GameController.class.getResourceAsStream(level.getWallIndestructibleImagePath()));
-        Image blocImg = new Image(GameController.class.getResourceAsStream(level.getWallDestructibleImagePath()));
+        Image solImg = safeImageFromResource(level.getGroundImagePath());
+        Image murImg = safeImageFromResource(level.getWallIndestructibleImagePath());
+        Image blocImg = safeImageFromResource(level.getWallDestructibleImagePath());
 
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {

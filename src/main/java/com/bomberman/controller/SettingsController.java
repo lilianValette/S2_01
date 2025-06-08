@@ -103,7 +103,6 @@ public class SettingsController {
     }
 
     private void openLevelEditor() {
-        // À adapter : charger la vue de l’éditeur de niveau
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/level-editor.fxml"));
             Parent root = loader.load();

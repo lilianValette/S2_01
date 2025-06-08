@@ -1,0 +1,207 @@
+/* --------------------------------------------------
+   BOMBERMAN LEVEL EDITOR - STYLE GLOBAL
+   Fusion des styles palette/visuels/effets grid + UI
+   -------------------------------------------------- */
+
+/* --------- BACKGROUND --------- */
+.main-background {
+    -fx-background-color: #0450e3;
+}
+
+/* --------- TITRES ET LABELS --------- */
+.section-title, .page-title {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
+    -fx-effect: dropshadow(two-pass-box, #000, 3, 0, 2, 2);
+    -fx-letter-spacing: 2px;
+}
+.page-title {
+    -fx-font-size: 34px;
+    -fx-effect: dropshadow(two-pass-box, #000, 6, 0, 3, 3);
+    -fx-letter-spacing: 3px;
+}
+.label, .editor-label {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 13px;
+    -fx-text-fill: #17f8ff;
+    -fx-padding: 0 0 4 0;
+    -fx-effect: dropshadow(two-pass-box, #000, 2, 0, 1, 1);
+}
+
+.palette-label {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 16px;
+    -fx-text-fill: #FFD700;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(two-pass-box, #222, 3, 0, 2, 2);
+    -fx-padding: 4 0 6 0;
+}
+
+/* --------- PALETTE TOGGLE BUTTONS --------- */
+
+.palette-toggle {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-background-color: linear-gradient(#373737 85%, #222 100%);
+    -fx-text-fill: #fff;
+    -fx-padding: 7 18 7 18;
+    -fx-border-color: #fff;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(two-pass-box, #000, 2, 0, 1, 1);
+    -fx-alignment: CENTER;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.palette-toggle:selected, .palette-toggle:focused {
+    -fx-background-color: #FFD700;
+    -fx-text-fill: #222;
+    -fx-border-color: #222;
+}
+#emptyButton.palette-toggle:selected {
+    -fx-background-color: #FFD700;
+    -fx-text-fill: #222;
+}
+#wallButton.palette-toggle:selected {
+    -fx-background-color: #aaa;
+    -fx-text-fill: #222;
+}
+#breakableButton.palette-toggle:selected {
+    -fx-background-color: #e27209;
+    -fx-text-fill: #222;
+}
+
+/* --------- BOUTONS CHOIX IMAGE --------- */
+#chooseGroundBtn, #chooseIndestructibleBtn, #chooseDestructibleBtn {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 13px;
+    -fx-background-radius: 6;
+    -fx-background-color: linear-gradient(#fafafa 75%, #bbbbbb 100%);
+    -fx-border-radius: 6;
+    -fx-border-width: 2;
+    -fx-border-color: #686868;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+    -fx-text-fill: #333;
+    -fx-effect: dropshadow(two-pass-box, #000, 1, 0, 1, 1);
+    -fx-transition: all 0.2s;
+}
+
+#chooseGroundBtn:hover, #chooseIndestructibleBtn:hover, #chooseDestructibleBtn:hover {
+    -fx-background-color: linear-gradient(#ffe773 80%, #ffe773 100%);
+    -fx-border-color: #e8b800;
+    -fx-text-fill: #222;
+}
+
+/* --------- PREVIEW IMAGES --------- */
+#groundPreview, #indestructiblePreview, #destructiblePreview {
+    -fx-effect: dropshadow(two-pass-box, #000, 4, 0, 1, 1);
+    -fx-border-color: #FFD700;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-background-color: #222;
+    -fx-padding: 2;
+}
+
+/* --------- SEPARATEUR --------- */
+.separator {
+    -fx-background-color: #fff;
+    -fx-opacity: 0.8;
+    -fx-padding: 0 0 0 0;
+    -fx-pref-height: 2;
+}
+
+/* --------- GRILLE D'ÉDITION --------- */
+
+.editor-grid-cell {
+    -fx-background-color: #222;
+    -fx-border-color: #FFD700;
+    -fx-border-width: 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-cursor: pointer;
+    -fx-effect: dropshadow(two-pass-box, #000, 2, 0, 0.5, 0.5);
+    -fx-transition: background-color 0.1s;
+}
+
+/* Effet sur hover pour la grille */
+.editor-grid-cell:hover {
+    -fx-background-color: #FFD70088;
+    -fx-border-width: 2;
+}
+
+/* --------- BOUTONS BAS (Déjà stylés, amélioration hover) --------- */
+
+.game-button-primary, .game-button-secondary {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 10 24 10 24;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(two-pass-box, #000, 2, 0, 1, 1);
+    -fx-letter-spacing: 1.2px;
+}
+
+.game-button-primary {
+    -fx-background-color: linear-gradient(#FFD700, #e8b800 85%);
+    -fx-text-fill: #222;
+    -fx-border-color: #fff;
+    -fx-border-width: 3;
+}
+
+.game-button-primary:hover {
+    -fx-background-color: linear-gradient(#fff995, #FFD700 90%);
+    -fx-text-fill: #111;
+    -fx-border-color: #222;
+}
+
+.game-button-secondary {
+    -fx-background-color: #222;
+    -fx-text-fill: #FFD700;
+    -fx-border-color: #FFD700;
+    -fx-border-width: 3;
+}
+
+.game-button-secondary:hover {
+    -fx-background-color: #FFD700;
+    -fx-text-fill: #222;
+    -fx-border-color: #222;
+}
+
+/* --------- SCROLLPANE & AUTRES (optionnel) --------- */
+.scroll-pane {
+    -fx-background: #232323;
+    -fx-background-color: #232323;
+    -fx-border-color: #FFD700;
+}
+
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: #222;
+    -fx-border-color: #FFD700;
+}
+
+/* --------- DIALOGUES (bonus UX) ---------- */
+.dialog-pane {
+    -fx-background-color: #101010;
+    -fx-border-color: #FFD700;
+    -fx-border-width: 3;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: #FFD700;
+    -fx-font-size: 18px;
+}
+
+/* --------- FIN --------- */

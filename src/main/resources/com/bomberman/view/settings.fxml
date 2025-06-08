@@ -36,7 +36,7 @@
             <VBox alignment="CENTER" spacing="30.0">
                 <!-- Bloc pour chaque paramètre -->
                 <VBox spacing="18.0" alignment="CENTER" styleClass="form-container" maxWidth="400">
-                    <!-- Exemple : Accès éditeur de niveaux -->
+                    <!-- Accès éditeur de niveaux -->
                     <Button fx:id="levelEditorButton"
                             text="LEVEL EDITOR"
                             styleClass="game-button-primary"

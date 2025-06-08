@@ -15,6 +15,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Contrôleur de l'écran de configuration de la partie.
  * Affiche un aperçu du niveau en fond et adapte parfaitement la taille de la fenêtre à l'aperçu.
@@ -32,7 +36,31 @@ public class GameSetupController {
     private final IntegerProperty playerCount = new SimpleIntegerProperty(2);
     private final IntegerProperty iaCount = new SimpleIntegerProperty(0);
     private final IntegerProperty levelIndex = new SimpleIntegerProperty(0);
-    private final Level[] levels = Level.getPredefinedLevels();
+    private final Level[] levels = loadAllLevels();
+
+    /**
+     * Charge tous les niveaux depuis les dossiers predefined ET custom
+     */
+    private Level[] loadAllLevels() {
+        List<Level> allLevels = new ArrayList<>();
+        try {
+            // Charge les niveaux prédéfinis
+            allLevels.addAll(Level.loadLevelsFromDirectory(
+                    Path.of("src/main/resources/levels/predefined")
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            // Charge les niveaux custom créés par l'utilisateur
+            allLevels.addAll(Level.loadLevelsFromDirectory(
+                    Path.of("src/main/resources/levels/custom")
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allLevels.toArray(new Level[0]);
+    }
 
     private Stage stage;
     private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY
@@ -108,6 +136,11 @@ public class GameSetupController {
     }
 
     private void updateUI() {
+        if (levels.length == 0) {
+            themeLabel.setText("AUCUN NIVEAU");
+            themePreviewPane.getChildren().clear();
+            return;
+        }
         playerCountLabel.setText(String.valueOf(playerCount.get()));
         iaCountLabel.setText(String.valueOf(iaCount.get()));
         themeLabel.setText(levels[levelIndex.get()].getName().toUpperCase());
@@ -196,6 +229,7 @@ public class GameSetupController {
                 }
             }
             case 2 -> {
+                if (levels.length == 0) return;
                 levelIndex.set((levelIndex.get() - 1 + levels.length) % levels.length);
                 updateUI();
             }
@@ -217,6 +251,7 @@ public class GameSetupController {
                 }
             }
             case 2 -> {
+                if (levels.length == 0) return;
                 levelIndex.set((levelIndex.get() + 1) % levels.length);
                 updateUI();
             }
