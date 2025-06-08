@@ -16,10 +16,21 @@ public class EndGameScreenController {
     private ImageView backgroundImage;
 
     @FXML
+    private ImageView ballonImage;
+
+    @FXML
+    private ImageView planeImage;
+
+    @FXML
     public void initialize() {
         // Charge l'image depuis le dossier resources
         Image img = new Image(getClass().getResourceAsStream("/images/menu/Bomber_fond.jpg"));
         backgroundImage.setImage(img);
+        Image img2 = new Image(getClass().getResourceAsStream("/images/menu/Bomber_balloon-removebg-preview.png"));
+        ballonImage.setImage(img2);
+        Image img3 = new Image(getClass().getResourceAsStream("/images/menu/Bomber_plane-removebg-preview.png"));
+        planeImage.setImage(img3);
+
     }
 
 

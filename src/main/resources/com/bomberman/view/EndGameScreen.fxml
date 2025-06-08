@@ -17,6 +17,16 @@
                fitHeight="600"
                StackPane.alignment="CENTER"/>
 
+    <ImageView fx:id="ballonImage"
+               fitWidth="200"
+               fitHeight="150"
+               StackPane.alignment="TOP_RIGHT"/>
+
+    <ImageView fx:id="planeImage"
+               fitWidth="200"
+               fitHeight="150"
+               StackPane.alignment="TOP_LEFT"/>
+
 
     <VBox spacing="24" alignment="CENTER">
         <Label fx:id="messageLabel"
