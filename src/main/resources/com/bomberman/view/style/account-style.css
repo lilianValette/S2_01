@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Fond principal --- */
+.main-background {
+    -fx-background-color: linear-gradient(to bottom, #332200 0%, #1c1c17 100%);
+}
+
+/* --- En-tête --- */
+.header-section {
+    -fx-background-color: transparent;
+}
+
+.page-title {
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #000000, 6, 0.9, 1, 2);
+    -fx-padding: 0 0 0 0;
+    -fx-alignment: center;
+    -fx-letter-spacing: 2px;
+}
+
+/* --- Titres de section (connexion, inscription, profil) --- */
+.section-title {
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #000000, 4, 0.9, 2, 2);
+    -fx-padding: 0 0 8 0;
+    -fx-alignment: center;
+    -fx-letter-spacing: 1px;
+}
+
+/* --- Champs de formulaire --- */
+.form-container {
+    -fx-background-color: rgba(34, 24, 8, 0.88);
+    -fx-background-radius: 16;
+    -fx-padding: 32 32 32 32;
+    -fx-effect: dropshadow(one-pass-box, #00000088, 12, 0.7, 0, 4);
+}
+
+.form-fields, .profile-info {
+    -fx-background-color: transparent;
+}
+
+.field-label {
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 13px;
+    -fx-text-fill: #FFCC66;
+    -fx-padding: 0 0 0 0;
+}
+
+.game-textfield, .game-password-field {
+    -fx-background-color: #29281f, #14130e;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 4;
+    -fx-text-fill: #FFD700;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 13px;
+    -fx-border-color: #FFD700;
+    -fx-border-radius: 4;
+    -fx-padding: 4 8 4 8;
+    -fx-effect: null;
+}
+.game-textfield:focused, .game-password-field:focused {
+    -fx-border-color: #FF9900;
+    -fx-background-color: #29281f, #2b2410;
+}
+
+/* --- Boutons principaux pour formulaire compte --- */
+.account-button,
+.game-button-primary {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 60%,
+            #FFD700 100%
+    );
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-border-color: #FF9900;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #332200;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 2, 0.5, 0, 1);
+}
+.account-button:hover,
+.game-button-primary:hover,
+.account-button:focused,
+.game-button-primary:focused {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FFD700 0%,
+            #FF9900 60%,
+            #FFD700 100%
+    );
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 7, 0.8, 0, 2);
+}
+
+/* --- Bouton secondaire (gris) --- */
+.game-button-secondary {
+    -fx-background-color: #424242;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-border-color: #A09070;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 13px;
+    -fx-text-fill: #FFD700;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(one-pass-box, #000000, 2, 0.5, 0, 1);
+}
+.game-button-secondary:hover, .game-button-secondary:focused {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FFD70099 0%,
+            #A09070 100%
+    );
+    -fx-text-fill: #222;
+}
+
+/* --- Bouton danger (déconnexion) --- */
+.game-button-danger {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #B90000 0%,
+            #670000 100%
+    );
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-border-color: #FFD700;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 13px;
+    -fx-text-fill: #FFD700;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(one-pass-box, #B90000, 2, 0.7, 0, 2);
+}
+.game-button-danger:hover, .game-button-danger:focused {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF5A36 0%,
+            #B90000 100%
+    );
+    -fx-text-fill: #FFF;
+    -fx-effect: dropshadow(one-pass-box, #B90000, 8, 0.7, 0, 2);
+}
+
+/* --- Labels de message (succès/erreur) --- */
+.message-label {
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 12px;
+    -fx-padding: 2 0 2 0;
+}
+.success-message {
+    -fx-text-fill: #00DE66;
+    -fx-font-weight: bold;
+}
+.error-message {
+    -fx-text-fill: #FF4747;
+    -fx-font-weight: bold;
+}
+
+/* --- Profil --- */
+.profile-label {
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 13px;
+    -fx-text-fill: #FFD700;
+}
+.profile-value {
+    -fx-font-family: 'Consolas', 'monospace';
+    -fx-font-size: 14px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+.profile-row {
+    -fx-background-color: transparent;
+}
+.divider {
+    -fx-background-color: #FFD70033;
+    -fx-min-height: 16px;
+    -fx-max-height: 20px;
+}
+
+/* --- Pied de page --- */
+.footer-section {
+    -fx-background-color: transparent;
+}
+
+/* --- Responsive (si jamais tu veux du padding sur mobile/tablette) --- */
+@media screen and (max-width: 600px) {
+    .form-container {
+        -fx-padding: 16 8 16 8;
+    }
+    .page-title {
+        -fx-font-size: 18px;
+    }
+}
+
+.account-button:hover,
+.game-button-primary:hover,
+.account-button:focused,
+.game-button-primary:focused {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FFD700 0%,
+            #FF9900 60%,
+            #FFD700 100%
+    );
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 7, 0.8, 0, 2);
+}
+
+.account-button:disabled,
+.game-button-primary:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #CCCCCC 0%,
+            #AAAAAA 60%,
+            #CCCCCC 100%
+    );
+    -fx-text-fill: #666666;
+}
