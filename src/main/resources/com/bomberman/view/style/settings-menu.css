@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Fond principal --- */
+.main-background {
+    -fx-background-color: linear-gradient(to bottom, #332200 0%, #1c1c17 100%);
+}
+
+/* --- En-tête --- */
+.header-section {
+    -fx-background-color: transparent;
+}
+.page-title {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 3px;
+    -fx-effect: none;
+    -fx-fill: linear-gradient(to bottom, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+}
+
+/* --- Bloc principal settings --- */
+.settings-menu-container {
+    -fx-background-color: rgba(34, 24, 8, 0.88);
+    -fx-background-radius: 24;
+    -fx-padding: 42 54 38 54;
+    -fx-effect: dropshadow(gaussian, #00000099, 20, 0.22, 0, 7);
+    -fx-spacing: 32;
+    -fx-alignment: center;
+}
+
+/* --- Style menu label (ex: LEVEL, NIVEAU DES IA) --- */
+.menu-label {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-effect: null;
+    -fx-padding: 4 12 4 12;
+    -fx-alignment: CENTER_LEFT;
+    letter-spacing: 1px;
+}
+.menu-label.menu-highlighted {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+/* --- Label de valeur (niveau IA) --- */
+.value-label {
+    -fx-background-color: #111;
+    -fx-text-fill: #fff;
+    -fx-padding: 4 24 4 24;
+    -fx-background-radius: 16;
+    -fx-font-size: 18px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, #000, 4, 0.8, 0, 1);
+    -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
+}
+.value-label.value-highlighted {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+/* --- Flèches --- */
+.arrow {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFA34D;
+    -fx-font-size: 22px;
+    -fx-padding: 2 8 2 8;
+    -fx-effect: dropshadow(gaussian, #000, 2, 0.5, 0, 0);
+    -fx-cursor: hand;
+    -fx-opacity: 1;
+    -fx-user-select: none;
+}
+.arrow.inactive {
+    -fx-opacity: 0.2;
+}
+
+/* --- Style bouton principal --- */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FF9900 0%,
+            #FFD700 40%,
+            #FFD700 60%,
+            #FF9900 100%
+    );
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-effect: null;
+    -fx-padding: 6 20 6 24;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    /* SUPPRIMEZ ces deux lignes pour permettre l'élargissement */
+    /* -fx-min-width: 250px; */
+    /* -fx-max-width: 250px; */
+}
+
+/* Focus clavier / hover : texte blanc rétro */
+.menu-button:focused, .menu-button:hover {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
+}
+
+/* --- Bouton secondaire (retour) --- */
+.game-button-secondary {
+    -fx-background-color: #424242;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-border-color: #A09070;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 13px;
+    -fx-text-fill: #FFD700;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(one-pass-box, #000000, 2, 0.5, 0, 1);
+}
+.game-button-secondary:hover, .game-button-secondary:focused {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 0% 100%,
+            #FFD70099 0%,
+            #A09070 100%
+    );
+    -fx-text-fill: #222;
+}
+
+/* --- Alignements HBox/VBox --- */
+.hbox, .vbox {
+    -fx-spacing: 14;
+    -fx-alignment: center;
+}
+
+/* --- Footer --- */
+.footer-section {
+    -fx-background-color: transparent;
+}

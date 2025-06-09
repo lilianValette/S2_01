@@ -1,5 +1,7 @@
 package com.bomberman.controller;
 
+import com.bomberman.model.AIDifficulty;
+import com.bomberman.model.GameSettings;
 import com.bomberman.model.Level;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -19,10 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Contrôleur de l'écran de configuration de la partie.
- * Affiche un aperçu du niveau en fond et adapte parfaitement la taille de la fenêtre à l'aperçu.
- */
 public class GameSetupController {
 
     @FXML private StackPane themePreviewPane;
@@ -39,32 +37,23 @@ public class GameSetupController {
     private final IntegerProperty levelIndex = new SimpleIntegerProperty(0);
     private final Level[] levels = loadAllLevels();
 
-    /**
-     * Charge tous les niveaux depuis les dossiers predefined ET custom
-     */
+    private Stage stage;
+    private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY, 4 = BACK
+
     private Level[] loadAllLevels() {
         List<Level> allLevels = new ArrayList<>();
         try {
-            // Charge les niveaux prédéfinis
             allLevels.addAll(Level.loadLevelsFromDirectory(
                     Path.of("src/main/resources/levels/predefined")
             ));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         try {
-            // Charge les niveaux custom créés par l'utilisateur
             allLevels.addAll(Level.loadLevelsFromDirectory(
                     Path.of("src/main/resources/levels/custom")
             ));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return allLevels.toArray(new Level[0]);
     }
-
-    private Stage stage;
-    private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY, 4 = BACK
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -90,7 +79,6 @@ public class GameSetupController {
         themeLeftArrow.setOnMouseClicked(e -> { selectedField = 2; decrementSelected(); });
         themeRightArrow.setOnMouseClicked(e -> { selectedField = 2; incrementSelected(); });
 
-        // Clavier partout sur la scène
         playerCountLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleArrowKey);
@@ -215,6 +203,8 @@ public class GameSetupController {
             gameController.setLevel(levels[levelIndex.get()]);
             gameController.setPlayerCount(playerCount.get());
             gameController.setIaCount(iaCount.get());
+            // Utilise la difficulté IA GLOBALE
+            gameController.setAIDifficulty(GameSettings.getSelectedAIDifficulty());
             gameController.startGame();
             stage.setScene(new Scene(root));
         } catch (Exception ex) {
@@ -224,15 +214,15 @@ public class GameSetupController {
 
     private void handleArrowKey(KeyEvent event) {
         switch (event.getCode()) {
-            case UP    -> { selectedField = (selectedField + 4) % 5; updateHighlight(); } // Modifié pour 5 champs
-            case DOWN  -> { selectedField = (selectedField + 1) % 5; updateHighlight(); } // Modifié pour 5 champs
+            case UP    -> { selectedField = (selectedField + 4) % 5; updateHighlight(); }
+            case DOWN  -> { selectedField = (selectedField + 1) % 5; updateHighlight(); }
             case LEFT  -> { if (selectedField < 3) decrementSelected(); }
             case RIGHT -> { if (selectedField < 3) incrementSelected(); }
             case ENTER, SPACE -> {
                 if (selectedField == 3) startGame();
-                else if (selectedField == 4) goBackToMenu(); // Nouveau
+                else if (selectedField == 4) goBackToMenu();
             }
-            case ESCAPE -> goBackToMenu(); // Touche ESC pour retour rapide
+            case ESCAPE -> goBackToMenu();
             default -> { return; }
         }
         event.consume();

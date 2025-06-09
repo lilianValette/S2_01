@@ -13,9 +13,10 @@ public class Game {
     private List<Player> players;
     private boolean gameOver;
     private Player winner;
-
     private List<Bomb> bombs = new ArrayList<>();
     private List<Bonus> bonuses = new ArrayList<>();
+    private List<Explosion> explosions = new ArrayList<>();
+    private final AIDifficulty aiDifficulty; // Ajouté
 
     private static class Explosion {
         int x, y;
@@ -26,22 +27,19 @@ public class Game {
             this.ticksRemaining = ticksRemaining;
         }
     }
-    private List<Explosion> explosions = new ArrayList<>();
 
-    public Game(int width, int height, int playerCount, int iaCount, Level level) {
+    public Game(int width, int height, int playerCount, int iaCount, Level level, AIDifficulty aiDifficulty) {
         this.grid = new Grid(width, height, level);
         this.players = new ArrayList<>();
         this.gameOver = false;
         this.winner = null;
+        this.aiDifficulty = aiDifficulty;
         initializePlayers(playerCount, iaCount);
 
         // Exemple de bonus fixe pour test, à adapter selon besoins
         bonuses.add(new FlameBonus(5, 3, 1));
     }
 
-    /**
-     * Initialise les joueurs humains et les IA aux positions de départ.
-     */
     private void initializePlayers(int humanCount, int iaCount) {
         int[][] startPositions = {
                 {1, 1},
@@ -66,14 +64,11 @@ public class Game {
             int x = startPositions[index][0];
             int y = startPositions[index][1];
             clearSpawnZoneOnly(x, y);
-            PlayerAI ia = new PlayerAI(index + 1, x, y);
+            PlayerAI ia = new PlayerAI(index + 1, x, y, aiDifficulty); // Passe la difficulté ici
             players.add(ia);
         }
     }
 
-    /**
-     * S'assure que la case de spawn et ses alentours sont libérés.
-     */
     private void clearSpawnZoneOnly(int x, int y) {
         if (grid.isInBounds(x, y)) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
@@ -85,24 +80,16 @@ public class Game {
     public boolean isGameOver() { return gameOver; }
     public Player getWinner() { return winner; }
     public List<Bomb> getBombs() { return bombs; }
-
     public List<Bonus> getBonuses() { return bonuses; }
 
-    /**
-     * Met à jour la logique IA de tous les joueurs IA à chaque tick (à appeler dans le contrôleur).
-     */
     public void updateAIs() {
         for (Player p : players) {
             if (p instanceof PlayerAI ai) {
-                ai.updateAI(grid, bombs);
+                ai.updateAI(grid, bombs, players); // Passe la liste des joueurs pour comportement avancé
             }
         }
     }
 
-    /**
-     * Met à jour l'état général du jeu (bombes, explosions, bonus, joueurs).
-     * À appeler à chaque tick.
-     */
     public void updateGameState() {
         int aliveCount = 0;
         Player lastAlive = null;
@@ -126,13 +113,11 @@ public class Game {
 
     public void placeBomb(Player player) {
         if (!player.isAlive()) return;
-
         for (Bomb b : bombs) {
             if (b.getX() == player.getX() && b.getY() == player.getY()) {
                 return;
             }
         }
-
         Bomb newBomb = new Bomb(player.getX(), player.getY(), Bomb.DEFAULT_TIMER, player.getBombRange(), player);
         if (newBomb != null) {
             bombs.add(newBomb);
@@ -140,11 +125,7 @@ public class Game {
         }
     }
 
-    /**
-     * Met à jour les bombes, explosions et les bonus à chaque tick.
-     */
     public void updateBombs() {
-        // Mise à jour des bombes
         Iterator<Bomb> it = bombs.iterator();
         while (it.hasNext()) {
             Bomb b = it.next();
@@ -154,8 +135,6 @@ public class Game {
                 it.remove();
             }
         }
-
-        // Mise à jour des explosions
         Iterator<Explosion> expIt = explosions.iterator();
         while (expIt.hasNext()) {
             Explosion exp = expIt.next();
@@ -167,8 +146,6 @@ public class Game {
                 expIt.remove();
             }
         }
-
-        // Ramassage des bonus
         for (Player p : players) {
             if (!p.isAlive()) continue;
             Iterator<Bonus> bonusIt = bonuses.iterator();
@@ -184,29 +161,18 @@ public class Game {
                 }
             }
         }
-
-        // Mise à jour des bonus actifs (durée)
         for (Player p : players) {
             if (p.isAlive()) {
                 p.updateActiveBonuses();
             }
         }
-
-        // Vérifie fin de partie
         updateGameState();
     }
 
-    /**
-     * Ajoute une explosion à la grille.
-     */
     private void addExplosion(int x, int y) {
         grid.setCell(x, y, Grid.CellType.EXPLOSION);
         explosions.add(new Explosion(x, y, 2));
     }
-
-    /**
-     * Gère l'explosion d'une bombe (dommages aux joueurs et murs).
-     */
     private void explode(Bomb b) {
         int x = b.getX(), y = b.getY(), range = b.getRange();
         addExplosion(x, y);
@@ -229,10 +195,6 @@ public class Game {
             }
         }
     }
-
-    /**
-     * Inflige des dégâts aux joueurs présents sur une case.
-     */
     private void damagePlayersAt(int x, int y) {
         for (Player p : players) {
             if (p.isAlive() && p.getX() == x && p.getY() == y) {
@@ -240,15 +202,9 @@ public class Game {
             }
         }
     }
-
-    /**
-     * Détruit un mur destructible, avec une chance d'apparition de bonus.
-     */
     private void destroyWall(int x, int y) {
         if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
-
-            // 20 % de chances de bonus
             if (Math.random() < 0.2) {
                 bonuses.add(new FlameBonus(x, y, 1));
             }
