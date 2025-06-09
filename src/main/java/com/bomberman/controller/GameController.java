@@ -76,6 +76,14 @@ public class GameController {
 
     private int[] playerDirections = new int[4];
 
+    // Animation des joueurs
+    private static class PlayerAnim {
+        double visX, visY;
+        int targetX, targetY;
+        boolean moving = false;
+    }
+    private PlayerAnim[] playerAnims;
+
     private Level level;
     private int playerCount;
     private int iaCount;
@@ -140,6 +148,18 @@ public class GameController {
         playerDirections = new int[game.getPlayers().size()];
         for (int i = 0; i < playerDirections.length; i++) playerDirections[i] = 0;
 
+        // Initialisation animation : positions visuelles = positions logiques
+        playerAnims = new PlayerAnim[game.getPlayers().size()];
+        for (int i = 0; i < playerAnims.length; i++) {
+            Player p = game.getPlayers().get(i);
+            playerAnims[i] = new PlayerAnim();
+            playerAnims[i].visX = p.getX();
+            playerAnims[i].visY = p.getY();
+            playerAnims[i].targetX = p.getX();
+            playerAnims[i].targetY = p.getY();
+            playerAnims[i].moving = false;
+        }
+
         drawGrid();
 
         // Ecoute clavier
@@ -148,7 +168,7 @@ public class GameController {
 
         // Ticks de jeu
         if (gameTimeline != null) gameTimeline.stop();
-        gameTimeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> updateIAAndGame()));
+        gameTimeline = new Timeline(new KeyFrame(Duration.seconds(0.05), e -> updateIAAndGame())); // Plus rapide pour l'animation
         gameTimeline.setCycleCount(Timeline.INDEFINITE);
         gameTimeline.play();
 
@@ -178,14 +198,23 @@ public class GameController {
             prevY[i] = p.getY();
         }
 
-        game.updateAIs();
-        game.updateBombs();
+        // On ne fait updateAIs et updateBombs que toutes les 4 frames (pour laisser le temps à l'animation)
+        boolean doLogicTick = (System.currentTimeMillis() / 50) % 4 == 0;
+        if (doLogicTick) {
+            game.updateAIs();
+            game.updateBombs();
+        }
 
         for (int i = 0; i < nbPlayers; i++) {
             Player p = game.getPlayers().get(i);
+            int dx = p.getX() - prevX[i];
+            int dy = p.getY() - prevY[i];
+            if ((dx != 0 || dy != 0) && playerAnims != null) {
+                playerAnims[i].targetX = p.getX();
+                playerAnims[i].targetY = p.getY();
+                playerAnims[i].moving = true;
+            }
             if (!p.isHuman()) {
-                int dx = p.getX() - prevX[i];
-                int dy = p.getY() - prevY[i];
                 if      (dx ==  1) playerDirections[i] = 3; // droite
                 else if (dx == -1) playerDirections[i] = 2; // gauche
                 else if (dy ==  1) playerDirections[i] = 0; // bas
@@ -219,19 +248,67 @@ public class GameController {
             switch (idx) {
                 case 0 -> { // Joueur 1 : flèches + espace
                     switch (event.getCode()) {
-                        case UP    -> { playerDirections[0] = 1; game.movePlayer(p, 0, -1); }
-                        case DOWN  -> { playerDirections[0] = 0; game.movePlayer(p, 0, 1); }
-                        case LEFT  -> { playerDirections[0] = 2; game.movePlayer(p, -1, 0); }
-                        case RIGHT -> { playerDirections[0] = 3; game.movePlayer(p, 1, 0); }
+                        case UP    -> {
+                            playerDirections[0] = 1;
+                            game.movePlayer(p, 0, -1);
+                            playerAnims[0].targetX = p.getX();
+                            playerAnims[0].targetY = p.getY();
+                            playerAnims[0].moving = true;
+                        }
+                        case DOWN  -> {
+                            playerDirections[0] = 0;
+                            game.movePlayer(p, 0, 1);
+                            playerAnims[0].targetX = p.getX();
+                            playerAnims[0].targetY = p.getY();
+                            playerAnims[0].moving = true;
+                        }
+                        case LEFT  -> {
+                            playerDirections[0] = 2;
+                            game.movePlayer(p, -1, 0);
+                            playerAnims[0].targetX = p.getX();
+                            playerAnims[0].targetY = p.getY();
+                            playerAnims[0].moving = true;
+                        }
+                        case RIGHT -> {
+                            playerDirections[0] = 3;
+                            game.movePlayer(p, 1, 0);
+                            playerAnims[0].targetX = p.getX();
+                            playerAnims[0].targetY = p.getY();
+                            playerAnims[0].moving = true;
+                        }
                         case SPACE -> game.placeBomb(p);
                     }
                 }
                 case 1 -> { // Joueur 2 : ZQSD + shift
                     switch (event.getCode()) {
-                        case Z     -> { playerDirections[1] = 1; game.movePlayer(p, 0, -1); }
-                        case S     -> { playerDirections[1] = 0; game.movePlayer(p, 0, 1); }
-                        case Q     -> { playerDirections[1] = 2; game.movePlayer(p, -1, 0); }
-                        case D     -> { playerDirections[1] = 3; game.movePlayer(p, 1, 0); }
+                        case Z     -> {
+                            playerDirections[1] = 1;
+                            game.movePlayer(p, 0, -1);
+                            playerAnims[1].targetX = p.getX();
+                            playerAnims[1].targetY = p.getY();
+                            playerAnims[1].moving = true;
+                        }
+                        case S     -> {
+                            playerDirections[1] = 0;
+                            game.movePlayer(p, 0, 1);
+                            playerAnims[1].targetX = p.getX();
+                            playerAnims[1].targetY = p.getY();
+                            playerAnims[1].moving = true;
+                        }
+                        case Q     -> {
+                            playerDirections[1] = 2;
+                            game.movePlayer(p, -1, 0);
+                            playerAnims[1].targetX = p.getX();
+                            playerAnims[1].targetY = p.getY();
+                            playerAnims[1].moving = true;
+                        }
+                        case D     -> {
+                            playerDirections[1] = 3;
+                            game.movePlayer(p, 1, 0);
+                            playerAnims[1].targetX = p.getX();
+                            playerAnims[1].targetY = p.getY();
+                            playerAnims[1].moving = true;
+                        }
                         case SHIFT -> game.placeBomb(p);
                     }
                 }
@@ -244,6 +321,27 @@ public class GameController {
     /** Affichage principal du plateau, des joueurs, du timer, etc. */
     private void drawGrid() {
         if (game == null || game.getPlayers().isEmpty()) return;
+
+        // Animation des joueurs
+        if (playerAnims != null) {
+            double speed = 0.18; // cases par frame, ajustez pour plus ou moins de fluidité
+            for (int i = 0; i < game.getPlayers().size(); i++) {
+                PlayerAnim anim = playerAnims[i];
+                if (anim.moving) {
+                    double dx = anim.targetX - anim.visX;
+                    double dy = anim.targetY - anim.visY;
+                    double dist = Math.hypot(dx, dy);
+                    if (dist < speed) {
+                        anim.visX = anim.targetX;
+                        anim.visY = anim.targetY;
+                        anim.moving = false;
+                    } else {
+                        anim.visX += dx * speed / dist;
+                        anim.visY += dy * speed / dist;
+                    }
+                }
+            }
+        }
 
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
         var grid = game.getGrid();
@@ -351,8 +449,8 @@ public class GameController {
         for (int idx = 0; idx < game.getPlayers().size(); idx++) {
             Player p = game.getPlayers().get(idx);
             if (p.isAlive()) {
-                double px = borderPixel + p.getX() * CELL_SIZE;
-                double py = topUiHeight + borderPixel + p.getY() * CELL_SIZE;
+                double px = borderPixel + playerAnims[idx].visX * CELL_SIZE;
+                double py = topUiHeight + borderPixel + playerAnims[idx].visY * CELL_SIZE;
                 int direction = playerDirections[idx];
                 Image currentSprite = playerSprites[idx][direction];
                 gc.drawImage(currentSprite, px, py, CELL_SIZE, CELL_SIZE);
