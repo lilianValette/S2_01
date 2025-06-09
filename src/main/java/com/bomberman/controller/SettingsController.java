@@ -1,8 +1,9 @@
 package com.bomberman.controller;
 
+import com.bomberman.model.AIDifficulty;
+import com.bomberman.model.GameSettings;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,8 +30,7 @@ public class SettingsController {
     @FXML private Label aiLevelLabel;
     @FXML private Label aiLevelRightArrow;
 
-    private final String[] aiLevels = {"FACILE", "NORMAL", "DIFFICILE", "EXPERT"};
-    private final IntegerProperty aiLevelIndex = new SimpleIntegerProperty(0); // Default "FACILE"
+    private final IntegerProperty aiLevelIndex = GameSettings.aiLevelIndexProperty(); // BIND GLOBAL
     private int selectedField = 0; // 1 si focus IA
 
     private Stage stage;
@@ -55,8 +55,9 @@ public class SettingsController {
         backButton.setOnAction(e -> returnToMenu());
         levelEditorButton.setOnAction(e -> openLevelEditor());
 
-        // --- IA Level UI setup ---
-        aiLevelLabel.setText(aiLevels[aiLevelIndex.get()]);
+        // --- Liaison BINDING du label sur la propriété globale ---
+        aiLevelLabel.textProperty().bind(aiLevelIndex.asString().map(idx -> GameSettings.AI_LEVELS[Integer.parseInt(idx)]));
+
         aiLevelLeftArrow.setOnMouseClicked(e -> { selectedField = 1; updateAILevelHighlight(); decrementAiLevel(); });
         aiLevelRightArrow.setOnMouseClicked(e -> { selectedField = 1; updateAILevelHighlight(); incrementAiLevel(); });
         aiLevelBox.setOnMouseEntered(e -> {
@@ -76,8 +77,7 @@ public class SettingsController {
         });
 
         aiLevelLeftArrow.visibleProperty().bind(aiLevelIndex.greaterThan(0));
-        aiLevelRightArrow.visibleProperty().bind(aiLevelIndex.lessThan(aiLevels.length - 1));
-        aiLevelIndex.addListener((obs, oldVal, newVal) -> aiLevelLabel.setText(aiLevels[newVal.intValue()]));
+        aiLevelRightArrow.visibleProperty().bind(aiLevelIndex.lessThan(GameSettings.AI_LEVELS.length - 1));
 
         updateAILevelHighlight();
     }
@@ -90,7 +90,7 @@ public class SettingsController {
             aiLevelTextLabel.getStyleClass().add("menu-highlighted");
             aiLevelLabel.getStyleClass().add("value-highlighted");
         } else {
-            levelEditorButton.getStyleClass().add("menu-highlighted"); // Pour effet spécial si tu veux
+            levelEditorButton.getStyleClass().add("menu-highlighted");
         }
     }
 
@@ -117,7 +117,6 @@ public class SettingsController {
         event.consume();
     }
 
-
     private void decrementAiLevel() {
         if (aiLevelIndex.get() > 0) {
             aiLevelIndex.set(aiLevelIndex.get() - 1);
@@ -125,7 +124,7 @@ public class SettingsController {
     }
 
     private void incrementAiLevel() {
-        if (aiLevelIndex.get() < aiLevels.length - 1) {
+        if (aiLevelIndex.get() < GameSettings.AI_LEVELS.length - 1) {
             aiLevelIndex.set(aiLevelIndex.get() + 1);
         }
     }
