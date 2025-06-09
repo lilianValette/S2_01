@@ -165,11 +165,11 @@ public class PlayerAI extends Player {
             return;
         }
 
-        // --- MODIFIE ICI : CIBLE LE JOUEUR LE PLUS PROCHE, QUEL QU'IL SOIT ---
+        // CIBLE LE JOUEUR OU IA LA PLUS PROCHE (vivant)
         Player target = null;
         int targetDist = Integer.MAX_VALUE;
         for (Player p : allPlayers) {
-            if (p != this && p.isAlive()) { // On ne cible que les autres vivants, humain ou IA
+            if (p != this && p.isAlive()) {
                 int dist = Math.abs(p.getX() - curX) + Math.abs(p.getY() - curY);
                 if (dist < targetDist) {
                     targetDist = dist; target = p;
@@ -195,36 +195,33 @@ public class PlayerAI extends Player {
                     }
                 }
             }
-            // On ne poursuit pas le joueur, on s'occupe de la fuite !
             if (mustFleeOwnBomb) {
                 fleeOwnBomb(grid, bombs, curX, curY);
             }
             return;
         }
 
-        // Sinon, se rapproche de la cible (A*) mais NE BOUGE que vers une case sûre
+        // Sinon, se rapproche de la cible (A*) MAIS NE RENTRE PAS DANS LES ZONES DANGEREUSES
         if (target != null) {
-            int[] nextMove = findPathToTargetOrDestructible(grid, bombs, curX, curY, target.getX(), target.getY());
+            int[] nextMove = findSafePathToTarget(grid, bombs, curX, curY, target.getX(), target.getY());
             if (nextMove != null) {
+                move(nextMove[0], nextMove[1], grid);
+                // Si il bloque sur un mur destructible, pose une bombe mais vérifie la fuite (robuste)
                 int nx = curX + nextMove[0], ny = curY + nextMove[1];
-                if (dangerLevelAt(nx, ny, bombs, grid, false) == Integer.MAX_VALUE) {
-                    move(nextMove[0], nextMove[1], grid);
-                    // Si il bloque sur un mur destructible, pose une bombe mais vérifie la fuite (robuste)
-                    if (grid.getCell(nx, ny) == Grid.CellType.DESTRUCTIBLE) {
-                        boolean alreadyBomb = false;
-                        for (Bomb b : bombs)
-                            if (b.getX() == curX && b.getY() == curY) alreadyBomb = true;
-                        if (!alreadyBomb) {
-                            boolean canEscape = canReallyEscapeAfterBomb(grid, bombs, curX, curY, Bomb.DEFAULT_TIMER);
-                            if (canEscape || random.nextDouble() < 0.08) {
-                                Bomb bomb = dropBomb(Bomb.DEFAULT_TIMER, bombs);
-                                if (bomb != null) {
-                                    bombs.add(bomb);
-                                    mustFleeOwnBomb = true;
-                                    lastBombX = curX;
-                                    lastBombY = curY;
-                                    lastBombTimer = bomb.getTimer();
-                                }
+                if (grid.isInBounds(nx, ny) && grid.getCell(nx, ny) == Grid.CellType.DESTRUCTIBLE) {
+                    boolean alreadyBomb = false;
+                    for (Bomb b : bombs)
+                        if (b.getX() == curX && b.getY() == curY) alreadyBomb = true;
+                    if (!alreadyBomb) {
+                        boolean canEscape = canReallyEscapeAfterBomb(grid, bombs, curX, curY, Bomb.DEFAULT_TIMER);
+                        if (canEscape || random.nextDouble() < 0.08) {
+                            Bomb bomb = dropBomb(Bomb.DEFAULT_TIMER, bombs);
+                            if (bomb != null) {
+                                bombs.add(bomb);
+                                mustFleeOwnBomb = true;
+                                lastBombX = curX;
+                                lastBombY = curY;
+                                lastBombTimer = bomb.getTimer();
                             }
                         }
                     }
@@ -266,6 +263,53 @@ public class PlayerAI extends Player {
         tryMoveToSafeNeighbour(grid, bombs, curX, curY);
     }
 
+    /**
+     * Version sécurisée de la poursuite : renvoie le premier pas d'un chemin vers la cible
+     * qui traverse seulement des cases sûres (hors danger). Si aucun chemin sûr n'existe, retourne null.
+     */
+    private int[] findSafePathToTarget(Grid grid, List<Bomb> bombs, int startX, int startY, int goalX, int goalY) {
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        int w = grid.getWidth(), h = grid.getHeight();
+        boolean[][] visited = new boolean[w][h];
+        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(n -> n.fCost));
+        queue.add(new Node(startX, startY, null, 0, Math.abs(startX - goalX) + Math.abs(startY - goalY)));
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            if (node.x == goalX && node.y == goalY) {
+                Node prev = node;
+                while (prev.parent != null && prev.parent.parent != null)
+                    prev = prev.parent;
+                // S'assure que le chemin ne traverse QUE des cases sûres
+                Node check = node;
+                boolean allSafe = true;
+                while (check != null) {
+                    if (dangerLevelAt(check.x, check.y, bombs, grid, false) != Integer.MAX_VALUE) {
+                        allSafe = false;
+                        break;
+                    }
+                    check = check.parent;
+                }
+                if (allSafe)
+                    return new int[]{prev.x - startX, prev.y - startY};
+            }
+            visited[node.x][node.y] = true;
+            for (int[] dir : directions) {
+                int nx = node.x + dir[0], ny = node.y + dir[1];
+                if (grid.isInBounds(nx, ny) && !visited[nx][ny]) {
+                    Grid.CellType cell = grid.getCell(nx, ny);
+                    // On n'autorise la traversée que des cases vides ou destructibles ET sûres
+                    if ((cell == Grid.CellType.EMPTY || cell == Grid.CellType.DESTRUCTIBLE) &&
+                            dangerLevelAt(nx, ny, bombs, grid, false) == Integer.MAX_VALUE) {
+                        int gCost = node.gCost + 1;
+                        int hCost = Math.abs(nx - goalX) + Math.abs(ny - goalY);
+                        queue.add(new Node(nx, ny, node, gCost, hCost));
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     // Fuite intelligente de SA bombe (ignore la bombe qu'on vient de poser)
     private boolean fleeOwnBomb(Grid grid, List<Bomb> bombs, int curX, int curY) {
         int[][] directions = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
@@ -288,7 +332,7 @@ public class PlayerAI extends Player {
             }
             return true;
         }
-        // Si pas de case sûre ignorée, alors tente une case moins dangereuse (priorité à la fuite)
+        // Si pas de case sûre ignorée, alors tente une case moins risquée (priorité à la fuite)
         int bestDanger = Integer.MIN_VALUE;
         int[] bestDir = null;
         for (int[] dir : directions) {
@@ -365,42 +409,8 @@ public class PlayerAI extends Player {
         return false;
     }
 
-    // Trouve un chemin vers la cible (A*) ou vers un bloc destructible si bloqué
-    private int[] findPathToTargetOrDestructible(Grid grid, List<Bomb> bombs, int startX, int startY, int goalX, int goalY) {
-        int[][] directions = {{1,0},{-1,0},{0,1},{0,-1}};
-        int w = grid.getWidth(), h = grid.getHeight();
-        boolean[][] visited = new boolean[w][h];
-        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(n -> n.fCost));
-        queue.add(new Node(startX, startY, null, 0, Math.abs(startX-goalX)+Math.abs(startY-goalY)));
-        while (!queue.isEmpty()) {
-            Node node = queue.poll();
-            if (node.x == goalX && node.y == goalY) {
-                Node prev = node;
-                while (prev.parent != null && prev.parent.parent != null)
-                    prev = prev.parent;
-                return new int[]{prev.x - startX, prev.y - startY};
-            }
-            visited[node.x][node.y] = true;
-            for (int[] dir : directions) {
-                int nx = node.x + dir[0], ny = node.y + dir[1];
-                if (grid.isInBounds(nx, ny) && !visited[nx][ny]) {
-                    Grid.CellType cell = grid.getCell(nx, ny);
-                    if (cell == Grid.CellType.EMPTY || cell == Grid.CellType.DESTRUCTIBLE) {
-                        int gCost = node.gCost + 1;
-                        int hCost = Math.abs(nx - goalX) + Math.abs(ny - goalY);
-                        queue.add(new Node(nx, ny, node, gCost, hCost));
-                    }
-                }
-            }
-        }
-        for (int[] dir : directions) {
-            int nx = startX + dir[0], ny = startY + dir[1];
-            if (grid.isInBounds(nx, ny) && grid.getCell(nx, ny) == Grid.CellType.DESTRUCTIBLE) {
-                return dir;
-            }
-        }
-        return null;
-    }
+    // Version ancienne : ne vérifiait pas la sécurité des cases du chemin !
+    // private int[] findPathToTargetOrDestructible(...)
 
     private static class Node {
         int x, y, gCost, hCost, fCost;
