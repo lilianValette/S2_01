@@ -81,7 +81,8 @@
                                   maxWidth="480.0" maxHeight="416.0"
                                   prefWidth="480.0" prefHeight="416.0"
                                   hgap="1.0" vgap="1.0"
-                                  styleClass="editor-grid"/>
+                                  styleClass="editor-grid"
+                                  mouseTransparent="false"/>
                     </VBox>
                 </AnchorPane>
             </HBox>

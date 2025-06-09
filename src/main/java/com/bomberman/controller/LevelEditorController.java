@@ -42,6 +42,9 @@ public class LevelEditorController {
     private char[][] gridData = new char[ROWS][COLUMNS];
     private Button[][] gridButtons = new Button[ROWS][COLUMNS];
 
+    private boolean isDrawing = false;
+    private char currentType = ' ';
+
     public void setStage(Stage stage) {
         this.stage = stage;
         stage.setWidth(900);
@@ -67,6 +70,10 @@ public class LevelEditorController {
         saveButton.setOnAction(e -> saveLevel());
         loadButton.setOnAction(e -> loadLevel());
         backButton.setOnAction(e -> returnToSettings());
+
+        gridPane.setOnMouseReleased(e -> isDrawing = false);
+        gridPane.setOnMouseExited(e -> isDrawing = false);
+        gridPane.setOnMouseDragReleased(e -> isDrawing = false);
     }
 
     private void loadBackgroundImage() {
@@ -127,31 +134,51 @@ public class LevelEditorController {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLUMNS; col++) {
                 if (gridData[row][col] == 0) gridData[row][col] = ' ';
-                Button cell = createCell(row, col);
+                final int finalRow = row;
+                final int finalCol = col;
+
+                Button cell = new Button();
+                cell.setMinSize(CELL_SIZE, CELL_SIZE);
+                cell.setMaxSize(CELL_SIZE, CELL_SIZE);
+                cell.setPrefSize(CELL_SIZE, CELL_SIZE);
+                cell.getStyleClass().add("editor-grid-cell");
+                updateCellVisual(cell, gridData[row][col]);
+                cell.setFocusTraversable(false);
+
+                cell.setOnMousePressed(e -> {
+                    Toggle selected = paletteGroup.getSelectedToggle();
+                    currentType = ' ';
+                    if (selected == wallButton) currentType = '#';
+                    else if (selected == breakableButton) currentType = '%';
+
+                    isDrawing = true;
+                    gridData[finalRow][finalCol] = currentType;
+                    updateCellVisual(cell, currentType);
+                });
+
+                cell.setOnDragDetected(e -> {
+                    cell.startFullDrag();
+                });
+
+                cell.setOnMouseDragEntered(e -> {
+                    if (isDrawing) {
+                        gridData[finalRow][finalCol] = currentType;
+                        updateCellVisual(cell, currentType);
+                    }
+                });
+
+                cell.setOnMouseReleased(e -> {
+                    isDrawing = false;
+                });
+
+                cell.setOnMouseDragReleased(e -> {
+                    isDrawing = false;
+                });
+
                 gridButtons[row][col] = cell;
                 gridPane.add(cell, col, row);
             }
         }
-    }
-
-    private Button createCell(int row, int col) {
-        Button cell = new Button();
-        cell.setMinSize(CELL_SIZE, CELL_SIZE);
-        cell.setMaxSize(CELL_SIZE, CELL_SIZE);
-        cell.setPrefSize(CELL_SIZE, CELL_SIZE);
-        cell.getStyleClass().add("editor-grid-cell");
-        updateCellVisual(cell, gridData[row][col]);
-        cell.setFocusTraversable(false);
-
-        cell.setOnAction(e -> {
-            Toggle selected = paletteGroup.getSelectedToggle();
-            char type = ' ';
-            if (selected == wallButton) type = '#';
-            else if (selected == breakableButton) type = '%';
-            gridData[row][col] = type;
-            updateCellVisual(cell, type);
-        });
-        return cell;
     }
 
     private void updateCellVisual(Button cell, char type) {

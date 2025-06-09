@@ -129,15 +129,21 @@
     -fx-border-radius: 0;
     -fx-padding: 0;
     -fx-alignment: center;
-    -fx-cursor: pointer;
+    -fx-cursor: crosshair;  /* Changé de pointer à crosshair pour indiquer le mode dessin */
     -fx-effect: dropshadow(two-pass-box, #000, 2, 0, 0.5, 0.5);
-    -fx-transition: background-color 0.1s;
+    -fx-transition: all 0.05s;  /* Transition plus rapide pour un meilleur retour visuel */
 }
 
-/* Effet sur hover pour la grille */
 .editor-grid-cell:hover {
     -fx-background-color: #FFD70088;
     -fx-border-width: 2;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.editor-grid-cell:pressed {
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
 }
 
 /* --------- BOUTONS BAS (Déjà stylés, amélioration hover) --------- */
