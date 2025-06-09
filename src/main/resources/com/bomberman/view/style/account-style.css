@@ -11,14 +11,14 @@
 }
 
 .page-title {
-    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
-    -fx-font-size: 26px;
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
+    -fx-font-size: 34px;
     -fx-font-weight: bold;
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow(one-pass-box, #000000, 6, 0.9, 1, 2);
-    -fx-padding: 0 0 0 0;
-    -fx-alignment: center;
-    -fx-letter-spacing: 2px;
+    -fx-letter-spacing: 3px;
+    /* Suppression de l'effet d'ombre */
+    -fx-effect: none;
+    /* Dégradé du texte */
+    -fx-fill: linear-gradient(to bottom, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
 }
 
 /* --- Titres de section (connexion, inscription, profil) --- */

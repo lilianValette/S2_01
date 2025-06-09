@@ -14,14 +14,20 @@
     -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-text-fill: #fff;
-    -fx-effect: dropshadow(two-pass-box, #000, 3, 0, 2, 2);
     -fx-letter-spacing: 2px;
 }
+
 .page-title {
+    -fx-font-family: "Press Start 2P", "Consolas", "monospace";
     -fx-font-size: 34px;
-    -fx-effect: dropshadow(two-pass-box, #000, 6, 0, 3, 3);
+    -fx-font-weight: bold;
     -fx-letter-spacing: 3px;
+    /* Suppression de l'effet d'ombre */
+    -fx-effect: none;
+    /* Dégradé du texte */
+    -fx-fill: linear-gradient(to bottom, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
 }
+
 .label, .editor-label {
     -fx-font-family: "Press Start 2P", "Consolas", "monospace";
     -fx-font-size: 13px;
@@ -40,7 +46,6 @@
 }
 
 /* --------- PALETTE TOGGLE BUTTONS --------- */
-
 .palette-toggle {
     -fx-font-family: "Press Start 2P", "Consolas", "monospace";
     -fx-font-size: 15px;
@@ -49,7 +54,7 @@
     -fx-background-color: linear-gradient(#373737 85%, #222 100%);
     -fx-text-fill: #fff;
     -fx-padding: 7 18 7 18;
-    -fx-border-color: #fff;
+    -fx-border-color: #FFD700;
     -fx-border-width: 2;
     -fx-border-radius: 5;
     -fx-cursor: hand;
@@ -61,21 +66,10 @@
 }
 
 .palette-toggle:selected, .palette-toggle:focused {
-    -fx-background-color: #FFD700;
-    -fx-text-fill: #222;
-    -fx-border-color: #222;
-}
-#emptyButton.palette-toggle:selected {
-    -fx-background-color: #FFD700;
-    -fx-text-fill: #222;
-}
-#wallButton.palette-toggle:selected {
-    -fx-background-color: #aaa;
-    -fx-text-fill: #222;
-}
-#breakableButton.palette-toggle:selected {
-    -fx-background-color: #e27209;
-    -fx-text-fill: #222;
+    -fx-background-color: linear-gradient(#FFD700 0%, #FFA500 50%, #FF8C00 100%);
+    -fx-text-fill: #000;
+    -fx-border-color: #000;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.6), 10, 0, 0, 0);
 }
 
 /* --------- BOUTONS CHOIX IMAGE --------- */
@@ -120,7 +114,6 @@
 }
 
 /* --------- GRILLE D'ÉDITION --------- */
-
 .editor-grid-cell {
     -fx-background-color: #222;
     -fx-border-color: #FFD700;
@@ -129,9 +122,9 @@
     -fx-border-radius: 0;
     -fx-padding: 0;
     -fx-alignment: center;
-    -fx-cursor: crosshair;  /* Changé de pointer à crosshair pour indiquer le mode dessin */
+    -fx-cursor: crosshair;
     -fx-effect: dropshadow(two-pass-box, #000, 2, 0, 0.5, 0.5);
-    -fx-transition: all 0.05s;  /* Transition plus rapide pour un meilleur retour visuel */
+    -fx-transition: all 0.05s;
 }
 
 .editor-grid-cell:hover {
@@ -146,8 +139,7 @@
     -fx-scale-y: 1;
 }
 
-/* --------- BOUTONS BAS (Déjà stylés, amélioration hover) --------- */
-
+/* --------- BOUTONS BAS --------- */
 .game-button-primary, .game-button-secondary {
     -fx-font-family: "Press Start 2P", "Consolas", "monospace";
     -fx-font-size: 18px;
@@ -161,16 +153,16 @@
 }
 
 .game-button-primary {
-    -fx-background-color: linear-gradient(#FFD700, #e8b800 85%);
-    -fx-text-fill: #222;
-    -fx-border-color: #fff;
+    -fx-background-color: linear-gradient(#FFD700 0%, #FFA500 50%, #FF8C00 100%);
+    -fx-text-fill: #000;
+    -fx-border-color: #000;
     -fx-border-width: 3;
 }
 
 .game-button-primary:hover {
-    -fx-background-color: linear-gradient(#fff995, #FFD700 90%);
-    -fx-text-fill: #111;
-    -fx-border-color: #222;
+    -fx-background-color: linear-gradient(#FFE44D 0%, #FFB732 50%, #FF9B32 100%);
+    -fx-text-fill: #000;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.8), 10, 0, 0, 0);
 }
 
 .game-button-secondary {
@@ -181,12 +173,12 @@
 }
 
 .game-button-secondary:hover {
-    -fx-background-color: #FFD700;
-    -fx-text-fill: #222;
-    -fx-border-color: #222;
+    -fx-background-color: linear-gradient(#FFD700 0%, #FFA500 50%, #FF8C00 100%);
+    -fx-text-fill: #000;
+    -fx-border-color: #000;
 }
 
-/* --------- SCROLLPANE & AUTRES (optionnel) --------- */
+/* --------- SCROLLPANE & AUTRES --------- */
 .scroll-pane {
     -fx-background: #232323;
     -fx-background-color: #232323;
@@ -198,7 +190,7 @@
     -fx-border-color: #FFD700;
 }
 
-/* --------- DIALOGUES (bonus UX) ---------- */
+/* --------- DIALOGUES ---------- */
 .dialog-pane {
     -fx-background-color: #101010;
     -fx-border-color: #FFD700;
@@ -209,5 +201,3 @@
     -fx-text-fill: #FFD700;
     -fx-font-size: 18px;
 }
-
-/* --------- FIN --------- */
