@@ -138,14 +138,18 @@ public class GameController {
         double x = event.getX();
         double y = event.getY();
 
+        System.out.println("Clic détecté en pause à : " + x + ", " + y); // Debug
+
         // Vérifier si le clic est sur le bouton "Reprendre"
         if (x >= resumeButtonX && x <= resumeButtonX + resumeButtonWidth &&
                 y >= resumeButtonY && y <= resumeButtonY + resumeButtonHeight) {
-            togglePause(); // Reprendre le jeu
+            System.out.println("Bouton Reprendre cliqué"); // Debug
+            resumeGame(); // Reprendre le jeu
         }
         // Vérifier si le clic est sur le bouton "Retour au menu"
         else if (x >= menuButtonX && x <= menuButtonX + menuButtonWidth &&
                 y >= menuButtonY && y <= menuButtonY + menuButtonHeight) {
+            System.out.println("Bouton Menu cliqué"); // Debug
             returnToMenu(); // Retourner au menu
         }
     }
@@ -162,39 +166,47 @@ public class GameController {
      */
     private void togglePause() {
         if (isPaused) {
-            // Reprendre le jeu
-            isPaused = false;
-            pauseButton.setText("PAUSE");
-
-            // Redémarrer les timelines
-            if (gameTimeline != null) {
-                gameTimeline.play();
-            }
-            if (timerTimeline != null) {
-                timerTimeline.play();
-            }
-
-            // Réactiver les contrôles
-            gameCanvas.setDisable(false);
-
+            resumeGame();
         } else {
-            // Mettre en pause
-            isPaused = true;
-            pauseButton.setText("REPRENDRE");
+            pauseGame();
+        }
+    }
 
-            // Arrêter les timelines
-            if (gameTimeline != null) {
-                gameTimeline.pause();
-            }
-            if (timerTimeline != null) {
-                timerTimeline.pause();
-            }
+    private void pauseGame() {
+        isPaused = true;
+        pauseButton.setText("REPRENDRE");
 
-            // Désactiver les contrôles
-            gameCanvas.setDisable(true);
+        // Arrêter les timelines
+        if (gameTimeline != null) {
+            gameTimeline.pause();
+        }
+        if (timerTimeline != null) {
+            timerTimeline.pause();
         }
 
-        // Redessiner pour afficher/masquer le voile
+        // Le canvas reste actif pour pouvoir cliquer sur les boutons du menu pause
+        gameCanvas.setDisable(false);
+
+        // Redessiner pour afficher le voile
+        drawGrid();
+    }
+
+    private void resumeGame() {
+        isPaused = false;
+        pauseButton.setText("PAUSE");
+
+        // Redémarrer les timelines
+        if (gameTimeline != null) {
+            gameTimeline.play();
+        }
+        if (timerTimeline != null) {
+            timerTimeline.play();
+        }
+
+        // Réactiver les contrôles normaux
+        gameCanvas.setDisable(false);
+
+        // Redessiner pour masquer le voile
         drawGrid();
     }
 
@@ -704,16 +716,8 @@ public class GameController {
 
         // Instructions
         gc.setFont(Font.font("Press Start 2P", FontWeight.NORMAL, 11));
-        String instruction = "Cliquez sur un bouton ou appuyez sur ECHAP";
-        Text instrText = new Text(instruction);
-        instrText.setFont(gc.getFont());
-        double instrWidth = instrText.getLayoutBounds().getWidth();
-
-        double instrX = (canvasWidth - instrWidth) / 2;
-        double instrY = menuButtonY + buttonHeight + 50;
 
         gc.setFill(Color.rgb(255, 255, 255, 0.9));
-        gc.fillText(instruction, instrX, instrY);
     }
 
     /**
