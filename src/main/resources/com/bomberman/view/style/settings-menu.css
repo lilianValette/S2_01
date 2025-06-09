@@ -22,11 +22,10 @@
 .settings-menu-container {
     -fx-background-color: rgba(34, 24, 8, 0.88);
     -fx-background-radius: 24;
-    -fx-padding: 42 36 38 36;
+    -fx-padding: 42 54 38 54;
     -fx-effect: dropshadow(gaussian, #00000099, 20, 0.22, 0, 7);
     -fx-spacing: 32;
     -fx-alignment: center;
-    -fx-max-width: 520px;
 }
 
 /* --- Style menu label (ex: LEVEL, NIVEAU DES IA) --- */
@@ -61,7 +60,6 @@
     -fx-padding: 4 24 4 24;
     -fx-background-radius: 16;
     -fx-font-size: 18px;
-    -fx-min-width: 80px;
     -fx-alignment: center;
     -fx-effect: dropshadow(gaussian, #000, 4, 0.8, 0, 1);
     -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
@@ -87,34 +85,35 @@
 }
 
 /* --- Style bouton principal --- */
-.game-button-primary {
-    -fx-background-color: linear-gradient(
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: linear-gradient(
             from 0% 0% to 0% 100%,
             #FF9900 0%,
+            #FFD700 40%,
             #FFD700 60%,
-            #FFD700 100%
+            #FF9900 100%
     );
-    -fx-background-radius: 10;
-    -fx-border-width: 2;
-    -fx-border-color: #FF9900;
     -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
-    -fx-font-size: 26px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #332200;
-    -fx-padding: 16 0 16 0;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(one-pass-box, #FF9900, 2, 0.5, 0, 1);
+    -fx-effect: null;
+    -fx-padding: 6 20 6 24;
     -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    /* SUPPRIMEZ ces deux lignes pour permettre l'élargissement */
+    /* -fx-min-width: 250px; */
+    /* -fx-max-width: 250px; */
 }
-.game-button-primary:focused, .game-button-primary:hover {
-    -fx-background-color: linear-gradient(
-            from 0% 0% to 0% 100%,
-            #FFD700 0%,
-            #FF9900 60%,
-            #FFD700 100%
-    );
-    -fx-text-fill: #fff;
-    -fx-effect: dropshadow(one-pass-box, #FF9900, 7, 0.8, 0, 2);
+
+/* Focus clavier / hover : texte blanc rétro */
+.menu-button:focused, .menu-button:hover {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 1, 0.7, 1, 2);
 }
 
 /* --- Bouton secondaire (retour) --- */
@@ -143,7 +142,6 @@
 .hbox, .vbox {
     -fx-spacing: 14;
     -fx-alignment: center;
-    -fx-max-width: 420px;
 }
 
 /* --- Footer --- */

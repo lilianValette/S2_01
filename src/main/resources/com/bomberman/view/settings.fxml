@@ -34,26 +34,27 @@
         <!-- Centre -->
         <center>
             <VBox alignment="CENTER" spacing="30.0">
-                <VBox alignment="CENTER" spacing="22.0" styleClass="settings-menu-container" maxWidth="520">
+                <VBox alignment="CENTER" spacing="22.0" styleClass="settings-menu-container" maxWidth="720" minWidth="720">
                     <!-- Bouton principal -->
                     <Button fx:id="levelEditorButton"
                             text="LEVEL EDITOR"
-                            styleClass="game-button-primary"
-                            maxWidth="420"
-                            minWidth="270"/>
-                    <!-- Sélecteur niveau IA, style menu à la GameSetup -->
+                            styleClass="menu-button"
+                            maxWidth="Infinity"/>
+                    <!-- Sélecteur niveau IA -->
                     <HBox fx:id="aiLevelBox"
                           alignment="CENTER"
                           spacing="16"
                           styleClass="hbox">
                         <Label fx:id="aiLevelTextLabel"
                                text="NIVEAU DES IA"
-                               styleClass="menu-label"/>
+                               styleClass="menu-label"
+                               maxWidth="Infinity"/>
                         <Label fx:id="aiLevelLeftArrow"
                                text="◀"
                                styleClass="arrow"/>
                         <Label fx:id="aiLevelLabel"
-                               styleClass="value-label"/>
+                               styleClass="value-label"
+                               maxWidth="Infinity"/>
                         <Label fx:id="aiLevelRightArrow"
                                text="▶"
                                styleClass="arrow"/>

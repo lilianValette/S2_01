@@ -57,24 +57,26 @@ public class SettingsController {
 
         // --- IA Level UI setup ---
         aiLevelLabel.setText(aiLevels[aiLevelIndex.get()]);
-        aiLevelLeftArrow.setOnMouseClicked(e -> decrementAiLevel());
-        aiLevelRightArrow.setOnMouseClicked(e -> incrementAiLevel());
+        aiLevelLeftArrow.setOnMouseClicked(e -> { selectedField = 1; updateAILevelHighlight(); decrementAiLevel(); });
+        aiLevelRightArrow.setOnMouseClicked(e -> { selectedField = 1; updateAILevelHighlight(); incrementAiLevel(); });
         aiLevelBox.setOnMouseEntered(e -> {
             selectedField = 1;
             updateAILevelHighlight();
         });
+        levelEditorButton.setOnMouseEntered(e -> {
+            selectedField = 0;
+            updateAILevelHighlight();
+            levelEditorButton.requestFocus();
+        });
 
-        // Focus clavier sur le composant (pour accessibilité/fleches)
         aiLevelLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleArrowKey);
             }
         });
 
-        // Bind arrows visibility
         aiLevelLeftArrow.visibleProperty().bind(aiLevelIndex.greaterThan(0));
         aiLevelRightArrow.visibleProperty().bind(aiLevelIndex.lessThan(aiLevels.length - 1));
-
         aiLevelIndex.addListener((obs, oldVal, newVal) -> aiLevelLabel.setText(aiLevels[newVal.intValue()]));
 
         updateAILevelHighlight();
@@ -83,20 +85,38 @@ public class SettingsController {
     private void updateAILevelHighlight() {
         aiLevelTextLabel.getStyleClass().removeAll("menu-highlighted");
         aiLevelLabel.getStyleClass().removeAll("value-highlighted");
+        levelEditorButton.getStyleClass().remove("menu-highlighted");
         if (selectedField == 1) {
             aiLevelTextLabel.getStyleClass().add("menu-highlighted");
             aiLevelLabel.getStyleClass().add("value-highlighted");
+        } else {
+            levelEditorButton.getStyleClass().add("menu-highlighted"); // Pour effet spécial si tu veux
         }
     }
 
     private void handleArrowKey(KeyEvent event) {
-        if (selectedField != 1) return;
         switch (event.getCode()) {
-            case LEFT -> decrementAiLevel();
-            case RIGHT -> incrementAiLevel();
+            case UP, DOWN -> {
+                selectedField = (selectedField == 0) ? 1 : 0;
+                updateAILevelHighlight();
+                if (selectedField == 0) {
+                    levelEditorButton.requestFocus();
+                } else {
+                    aiLevelBox.requestFocus();
+                }
+            }
+            case LEFT -> { if (selectedField == 1) decrementAiLevel(); }
+            case RIGHT -> { if (selectedField == 1) incrementAiLevel(); }
+            case ENTER, SPACE -> {
+                if (selectedField == 0) {
+                    openLevelEditor();
+                }
+            }
+            default -> { return; }
         }
         event.consume();
     }
+
 
     private void decrementAiLevel() {
         if (aiLevelIndex.get() > 0) {
