@@ -63,6 +63,8 @@ public class GameController {
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
     private Image bombImg;
+    private Image jacketBonusImg;
+    private Image flameBonusImg;
 
     private boolean gameEnded = false;
 
@@ -75,6 +77,10 @@ public class GameController {
     // À appeler explicitement après avoir injecté les paramètres
     public void startGame() {
         game = new Game(15, 13, playerCount, iaCount, theme);
+
+
+        jacketBonusImg = new Image(getClass().getResourceAsStream("/images/items/jacket_bonus.png"));
+        flameBonusImg = new Image(getClass().getResourceAsStream("/images/items/flame_bonus.png"));
 
         avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
@@ -286,7 +292,7 @@ public class GameController {
             gc.fillText(p2LivesStr, p2TextX, p2TextY);
         }
 
-        // Afficher le temps restant du bonus FLAME pour chaque joueur
+        // Afficher le temps restant des bonus pour chaque joueur
         for (Player p : game.getPlayers()) {
             double textX;
             double baseY;
@@ -294,28 +300,40 @@ public class GameController {
 
             if (p.getId() == 1) {
                 textX = margin + iconSize + spacing + counterSize + 8;
-                baseY = topUiHeight * 0.6;
+                baseY = topUiHeight * 0.6 + 12; // +12 pour baseline texte
             } else {
                 textX = canvasWidth - margin - iconSize - spacing - counterSize - 75;
-                baseY = topUiHeight * 0.6;
+                baseY = topUiHeight * 0.6 + 12;
             }
 
+            double lineHeight = 18;
+            double imgSize = iconSize * 0.5;
+
             for (ActiveBonus ab : p.getActiveBonuses()) {
-                String suffix = switch (ab.getType()) {
-                    case FLAME -> " F";
-                    case JACKET -> " J";
-                    case LIFE -> " L";
+                String timeStr = ab.getSecondsRemaining() + "s";
+
+                double y = baseY + bonusIndex * lineHeight;
+                double imgY = y - imgSize + (lineHeight - imgSize) / 2 + imgSize * 0.1;
+
+                //gc.setFill(Color.WHITE);
+                //gc.setFont(Font.font("Consolas", iconSize * 0.4));
+                //gc.fillText(timeStr, textX + imgSize + 5, y);
+
+                Image bonusImg = switch (ab.getType()) {
+                    case FLAME -> flameBonusImg;
+                    case JACKET -> jacketBonusImg;
+                    default -> null;  // obligatoire pour couvrir toutes les valeurs
+
                 };
 
-                String timeStr = ab.getSecondsRemaining() + "s" + suffix;
+                if (bonusImg != null) {
+                    gc.drawImage(bonusImg, textX, imgY, imgSize, imgSize);
+                }
 
-                gc.setFill(Color.WHITE);
-                gc.setFont(Font.font("Consolas", iconSize * 0.4));
-                double textY = baseY + bonusIndex * 18;
-                gc.fillText(timeStr, textX, textY);
                 bonusIndex++;
             }
         }
+
 
 
         // --- Timer centré, fond élargi 1.5x ---

@@ -10,7 +10,9 @@ public class LifeBonus extends Bonus {
 
     @Override
     public void applyTo(Player player) {
-        player.addLife();
+        if (player.getLives() <3 ) {
+            player.addLife();
+        }
         this.setCollected(true);
     }
 }

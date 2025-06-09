@@ -40,13 +40,11 @@ public abstract class Bonus {
     private void loadSprite(String resourcePath) {
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
             if (is == null) {
-                System.err.println("Bonus : impossible de trouver la ressource " + resourcePath);
                 sprite = null;
             } else {
                 sprite = new Image(is);
             }
         } catch (Exception e) {
-            System.err.println("Bonus : erreur en chargeant l’image " + resourcePath);
             e.printStackTrace();
             sprite = null;
         }
