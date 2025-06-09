@@ -9,7 +9,7 @@
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.bomberman.controller.SettingsController"
            styleClass="main-background"
-           stylesheets="@style/account-style.css">
+           stylesheets="@style/settings-menu.css">
 
     <!-- Fond -->
     <ImageView fx:id="backgroundImage"
@@ -31,22 +31,37 @@
                 </padding>
             </VBox>
         </top>
-        <!-- Centre : liste des paramètres -->
+        <!-- Centre -->
         <center>
             <VBox alignment="CENTER" spacing="30.0">
-                <!-- Bloc pour chaque paramètre -->
-                <VBox spacing="18.0" alignment="CENTER" styleClass="form-container" maxWidth="400">
-                    <!-- Accès éditeur de niveaux -->
+                <VBox alignment="CENTER" spacing="22.0" styleClass="settings-menu-container" maxWidth="520">
+                    <!-- Bouton principal -->
                     <Button fx:id="levelEditorButton"
                             text="LEVEL EDITOR"
                             styleClass="game-button-primary"
-                            maxWidth="300"
-                            minWidth="220"/>
-                    <!-- Ici on pourra rajouter d'autres paramètres dynamiquement -->
+                            maxWidth="420"
+                            minWidth="270"/>
+                    <!-- Sélecteur niveau IA, style menu à la GameSetup -->
+                    <HBox fx:id="aiLevelBox"
+                          alignment="CENTER"
+                          spacing="16"
+                          styleClass="hbox">
+                        <Label fx:id="aiLevelTextLabel"
+                               text="NIVEAU DES IA"
+                               styleClass="menu-label"/>
+                        <Label fx:id="aiLevelLeftArrow"
+                               text="◀"
+                               styleClass="arrow"/>
+                        <Label fx:id="aiLevelLabel"
+                               styleClass="value-label"/>
+                        <Label fx:id="aiLevelRightArrow"
+                               text="▶"
+                               styleClass="arrow"/>
+                    </HBox>
                 </VBox>
             </VBox>
         </center>
-        <!-- Bas : bouton retour -->
+        <!-- Bas : bouton retour -->
         <bottom>
             <HBox alignment="CENTER" spacing="20.0" styleClass="footer-section">
                 <children>

@@ -1,31 +1,42 @@
 package com.bomberman.controller;
 
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/**
- * Contrôleur de la page des paramètres (Settings).
- * Modulaire : chaque paramètre (bouton, toggle...) peut être ajouté facilement.
- */
 public class SettingsController {
     @FXML private StackPane rootPane;
     @FXML private ImageView backgroundImage;
     @FXML private Button levelEditorButton;
     @FXML private Button backButton;
 
+    // IA level
+    @FXML private HBox aiLevelBox;
+    @FXML private Label aiLevelTextLabel;
+    @FXML private Label aiLevelLeftArrow;
+    @FXML private Label aiLevelLabel;
+    @FXML private Label aiLevelRightArrow;
+
+    private final String[] aiLevels = {"FACILE", "NORMAL", "DIFFICILE", "EXPERT"};
+    private final IntegerProperty aiLevelIndex = new SimpleIntegerProperty(0); // Default "FACILE"
+    private int selectedField = 0; // 1 si focus IA
+
     private Stage stage;
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        // Taille fixe cohérente
         stage.setWidth(800);
         stage.setHeight(600);
         stage.setMinWidth(800);
@@ -34,21 +45,69 @@ public class SettingsController {
         stage.setMaxHeight(600);
         stage.setResizable(false);
         stage.centerOnScreen();
-
-        // Charger le CSS après initialisation
         Platform.runLater(this::loadStylesheet);
     }
 
     @FXML
     public void initialize() {
-        // Fond identique au menu/account
         loadBackgroundImage();
 
-        // Actions des boutons
         backButton.setOnAction(e -> returnToMenu());
         levelEditorButton.setOnAction(e -> openLevelEditor());
 
-        // Prévoir ici l'ajout d'autres paramètres ou listeners
+        // --- IA Level UI setup ---
+        aiLevelLabel.setText(aiLevels[aiLevelIndex.get()]);
+        aiLevelLeftArrow.setOnMouseClicked(e -> decrementAiLevel());
+        aiLevelRightArrow.setOnMouseClicked(e -> incrementAiLevel());
+        aiLevelBox.setOnMouseEntered(e -> {
+            selectedField = 1;
+            updateAILevelHighlight();
+        });
+
+        // Focus clavier sur le composant (pour accessibilité/fleches)
+        aiLevelLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleArrowKey);
+            }
+        });
+
+        // Bind arrows visibility
+        aiLevelLeftArrow.visibleProperty().bind(aiLevelIndex.greaterThan(0));
+        aiLevelRightArrow.visibleProperty().bind(aiLevelIndex.lessThan(aiLevels.length - 1));
+
+        aiLevelIndex.addListener((obs, oldVal, newVal) -> aiLevelLabel.setText(aiLevels[newVal.intValue()]));
+
+        updateAILevelHighlight();
+    }
+
+    private void updateAILevelHighlight() {
+        aiLevelTextLabel.getStyleClass().removeAll("menu-highlighted");
+        aiLevelLabel.getStyleClass().removeAll("value-highlighted");
+        if (selectedField == 1) {
+            aiLevelTextLabel.getStyleClass().add("menu-highlighted");
+            aiLevelLabel.getStyleClass().add("value-highlighted");
+        }
+    }
+
+    private void handleArrowKey(KeyEvent event) {
+        if (selectedField != 1) return;
+        switch (event.getCode()) {
+            case LEFT -> decrementAiLevel();
+            case RIGHT -> incrementAiLevel();
+        }
+        event.consume();
+    }
+
+    private void decrementAiLevel() {
+        if (aiLevelIndex.get() > 0) {
+            aiLevelIndex.set(aiLevelIndex.get() - 1);
+        }
+    }
+
+    private void incrementAiLevel() {
+        if (aiLevelIndex.get() < aiLevels.length - 1) {
+            aiLevelIndex.set(aiLevelIndex.get() + 1);
+        }
     }
 
     private void loadBackgroundImage() {
@@ -70,7 +129,7 @@ public class SettingsController {
 
     private void loadStylesheet() {
         try {
-            java.net.URL cssUrl = getClass().getResource("/css/style.css");
+            java.net.URL cssUrl = getClass().getResource("/css/settings-menu.css");
             if (cssUrl != null && stage.getScene() != null) {
                 stage.getScene().getStylesheets().clear();
                 stage.getScene().getStylesheets().add(cssUrl.toExternalForm());
@@ -85,17 +144,13 @@ public class SettingsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/menu.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-
-            // Appliquer le CSS
-            java.net.URL cssUrl = getClass().getResource("/css/style.css");
+            java.net.URL cssUrl = getClass().getResource("/css/settings-menu.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
             }
-
             MenuController menuController = loader.getController();
             stage.setScene(scene);
             menuController.setStage(stage);
-
         } catch (Exception ex) {
             System.err.println("Erreur lors du retour au menu : " + ex.getMessage());
             ex.printStackTrace();
@@ -107,21 +162,15 @@ public class SettingsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/level-editor.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-
-            // Appliquer le CSS si besoin
-            java.net.URL cssUrl = getClass().getResource("/css/style.css");
+            java.net.URL cssUrl = getClass().getResource("/css/settings-menu.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
             }
-
-            // Si tu crées un LevelEditorController, pense à transmettre le stage
             Object ctrl = loader.getController();
             if (ctrl instanceof LevelEditorController lec) {
                 lec.setStage(stage);
             }
-
             stage.setScene(scene);
-
         } catch (Exception ex) {
             System.err.println("Erreur lors de l'ouverture de l’éditeur de niveau : " + ex.getMessage());
             ex.printStackTrace();
