@@ -11,6 +11,8 @@
            stylesheets="@style/game-setup-menu.css">
 
     <StackPane fx:id="themePreviewPane" maxWidth="256" maxHeight="192"/>
+
+    <!-- VBox principal avec tous les éléments du menu -->
     <VBox alignment="CENTER" spacing="20">
         <HBox alignment="CENTER" spacing="16">
             <Label fx:id="playerTextLabel" text="SELECT PLAYER" styleClass="menu-label"/>
@@ -32,4 +34,9 @@
         </HBox>
         <Label fx:id="playTextLabel" text="PLAY" styleClass="menu-play-label"/>
     </VBox>
+
+    <!-- Bouton retour en haut à gauche - DOIT être en dernier pour être au-dessus -->
+    <Label fx:id="backButton" text="◀ BACK" styleClass="back-button"
+           StackPane.alignment="TOP_LEFT"/>
+
 </StackPane>

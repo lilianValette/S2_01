@@ -26,6 +26,7 @@ import java.util.List;
 public class GameSetupController {
 
     @FXML private StackPane themePreviewPane;
+    @FXML private Label backButton; // Nouveau bouton de retour
     @FXML private Label
             playerTextLabel, iaTextLabel, themeTextLabel, playTextLabel,
             playerLeftArrow, playerRightArrow,
@@ -63,7 +64,7 @@ public class GameSetupController {
     }
 
     private Stage stage;
-    private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY
+    private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY, 4 = BACK
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -76,6 +77,10 @@ public class GameSetupController {
         setupArrowsVisibility();
         playTextLabel.setOnMouseClicked(e -> startGame());
         playTextLabel.setOnMouseEntered(e -> { selectedField = 3; updateHighlight(); });
+
+        // Ajout du bouton de retour
+        backButton.setOnMouseClicked(e -> goBackToMenu());
+        backButton.setOnMouseEntered(e -> { selectedField = 4; updateHighlight(); });
 
         // Flèches cliquables en plus du clavier (UX bonus)
         playerLeftArrow.setOnMouseClicked(e -> { selectedField = 0; decrementSelected(); });
@@ -110,10 +115,12 @@ public class GameSetupController {
     }
 
     private void updateHighlight() {
+        // Enlever tous les surlignages
         playerTextLabel.getStyleClass().removeAll("menu-highlighted");
         iaTextLabel.getStyleClass().removeAll("menu-highlighted");
         themeTextLabel.getStyleClass().removeAll("menu-highlighted");
         playTextLabel.getStyleClass().removeAll("menu-highlighted");
+        backButton.getStyleClass().removeAll("back-highlighted"); // Nouveau
         playerCountLabel.getStyleClass().removeAll("value-highlighted");
         iaCountLabel.getStyleClass().removeAll("value-highlighted");
         themeLabel.getStyleClass().removeAll("value-highlighted");
@@ -132,6 +139,7 @@ public class GameSetupController {
                 themeLabel.getStyleClass().add("value-highlighted");
             }
             case 3 -> playTextLabel.getStyleClass().add("menu-highlighted");
+            case 4 -> backButton.getStyleClass().add("back-highlighted"); // Nouveau
         }
     }
 
@@ -182,6 +190,22 @@ public class GameSetupController {
         }
     }
 
+    /**
+     * Retourne au menu principal
+     */
+    private void goBackToMenu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/menu.fxml"));
+            Parent root = loader.load();
+            MenuController menuController = loader.getController();
+            menuController.setStage(stage);
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du retour au menu : " + e.getMessage());
+        }
+    }
+
     private void startGame() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/game-view.fxml"));
@@ -200,11 +224,15 @@ public class GameSetupController {
 
     private void handleArrowKey(KeyEvent event) {
         switch (event.getCode()) {
-            case UP    -> { selectedField = (selectedField + 3) % 4; updateHighlight(); }
-            case DOWN  -> { selectedField = (selectedField + 1) % 4; updateHighlight(); }
+            case UP    -> { selectedField = (selectedField + 4) % 5; updateHighlight(); } // Modifié pour 5 champs
+            case DOWN  -> { selectedField = (selectedField + 1) % 5; updateHighlight(); } // Modifié pour 5 champs
             case LEFT  -> { if (selectedField < 3) decrementSelected(); }
             case RIGHT -> { if (selectedField < 3) incrementSelected(); }
-            case ENTER, SPACE -> { if (selectedField == 3) startGame(); }
+            case ENTER, SPACE -> {
+                if (selectedField == 3) startGame();
+                else if (selectedField == 4) goBackToMenu(); // Nouveau
+            }
+            case ESCAPE -> goBackToMenu(); // Touche ESC pour retour rapide
             default -> { return; }
         }
         event.consume();
