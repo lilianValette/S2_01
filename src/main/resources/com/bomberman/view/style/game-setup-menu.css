@@ -65,6 +65,39 @@
     -fx-font-family: 'Press Start 2P', 'Consolas', monospace;
 }
 
+/* Style pour le bouton pause */
+.pause-button {
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+    -fx-background-radius: 8;
+    -fx-border-color: #FF9900;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-text-fill: #FF9900;
+    -fx-font-family: 'Press Start 2P', 'Consolas', 'monospace';
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 12 6 12;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #000, 4, 0.5, 0, 2);
+    -fx-min-width: 80px;
+    -fx-min-height: 35px;
+}
+
+.pause-button:hover {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: rgba(255, 153, 0, 0.2);
+    -fx-effect: dropshadow(one-pass-box, #FF9900, 2, 0.8, 0, 2);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.pause-button:pressed {
+    -fx-background-color: rgba(255, 153, 0, 0.4);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
 /* Surlignage valeur sélectionnée (change juste texte/ombre) */
 .value-label.value-highlighted {
     -fx-text-fill: #FFFFFF;

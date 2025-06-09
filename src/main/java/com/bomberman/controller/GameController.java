@@ -13,9 +13,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -32,6 +35,9 @@ public class GameController {
     @FXML
     private Canvas gameCanvas;
 
+    @FXML
+    private Button pauseButton;
+
     private Stage stage;
 
     // Constantes d'affichage
@@ -45,6 +51,13 @@ public class GameController {
     private Timeline gameTimeline;
     private Timeline timerTimeline;
     private int timerSeconds = 180; // 3 minutes
+
+    // État de pause
+    private boolean isPaused = false;
+
+    // Variables pour les boutons du menu pause
+    private double resumeButtonX, resumeButtonY, resumeButtonWidth, resumeButtonHeight;
+    private double menuButtonX, menuButtonY, menuButtonWidth, menuButtonHeight;
 
     // Ressources graphiques
     private static final String[] AVATAR_PATHS = {
@@ -104,7 +117,86 @@ public class GameController {
     public void setIaCount(int iaCount) { this.iaCount = iaCount; }
 
     @FXML
-    public void initialize() {}
+    public void initialize() {
+        // Configuration du bouton pause
+        if (pauseButton != null) {
+            pauseButton.setOnAction(e -> handlePauseButtonClick());
+        }
+
+        // Ajout du gestionnaire de clic sur le canvas pour les boutons du menu pause
+        if (gameCanvas != null) {
+            gameCanvas.setOnMouseClicked(this::handleCanvasClick);
+        }
+    }
+
+    /**
+     * Gestionnaire du clic sur le canvas (pour les boutons du menu pause)
+     */
+    private void handleCanvasClick(MouseEvent event) {
+        if (!isPaused) return;
+
+        double x = event.getX();
+        double y = event.getY();
+
+        // Vérifier si le clic est sur le bouton "Reprendre"
+        if (x >= resumeButtonX && x <= resumeButtonX + resumeButtonWidth &&
+                y >= resumeButtonY && y <= resumeButtonY + resumeButtonHeight) {
+            togglePause(); // Reprendre le jeu
+        }
+        // Vérifier si le clic est sur le bouton "Retour au menu"
+        else if (x >= menuButtonX && x <= menuButtonX + menuButtonWidth &&
+                y >= menuButtonY && y <= menuButtonY + menuButtonHeight) {
+            returnToMenu(); // Retourner au menu
+        }
+    }
+
+    /**
+     * Gestionnaire du clic sur le bouton pause
+     */
+    private void handlePauseButtonClick() {
+        togglePause();
+    }
+
+    /**
+     * Bascule entre pause et reprise du jeu
+     */
+    private void togglePause() {
+        if (isPaused) {
+            // Reprendre le jeu
+            isPaused = false;
+            pauseButton.setText("PAUSE");
+
+            // Redémarrer les timelines
+            if (gameTimeline != null) {
+                gameTimeline.play();
+            }
+            if (timerTimeline != null) {
+                timerTimeline.play();
+            }
+
+            // Réactiver les contrôles
+            gameCanvas.setDisable(false);
+
+        } else {
+            // Mettre en pause
+            isPaused = true;
+            pauseButton.setText("REPRENDRE");
+
+            // Arrêter les timelines
+            if (gameTimeline != null) {
+                gameTimeline.pause();
+            }
+            if (timerTimeline != null) {
+                timerTimeline.pause();
+            }
+
+            // Désactiver les contrôles
+            gameCanvas.setDisable(true);
+        }
+
+        // Redessiner pour afficher/masquer le voile
+        drawGrid();
+    }
 
     public void startGame() {
         // 1. Initialisation du modèle
@@ -151,20 +243,25 @@ public class GameController {
         playerDirections = new int[game.getPlayers().size()];
         for (int i = 0; i < playerDirections.length; i++) playerDirections[i] = 0;
 
-        // 5. Premier affichage
+        // 5. Réinitialiser l'état de pause
+        isPaused = false;
+        pauseButton.setText("PAUSE");
+        gameCanvas.setDisable(false);
+
+        // 6. Premier affichage
         drawGrid();
 
-        // 6. Ecoute clavier
+        // 7. Ecoute clavier
         gameCanvas.setFocusTraversable(true);
         gameCanvas.setOnKeyPressed(this::handleKeyPressed);
 
-        // 7. Game tick (IA, bombes, etc) avec gestion de direction des IA
+        // 8. Game tick (IA, bombes, etc) avec gestion de direction des IA
         if (gameTimeline != null) gameTimeline.stop();
         gameTimeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> updateIAAndGame()));
         gameTimeline.setCycleCount(Timeline.INDEFINITE);
         gameTimeline.play();
 
-        // 8. Timer décompte (3 minutes)
+        // 9. Timer décompte (3 minutes)
         if (timerTimeline != null) timerTimeline.stop();
         timerSeconds = 180;
         timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
@@ -181,9 +278,12 @@ public class GameController {
     }
 
     /**
-     * Tick du jeu : met à jour IA, bombes et directions des IA.
+     * Tick du jeu : met à jour IA, bombes et directions des IA.
      */
     private void updateIAAndGame() {
+        // Ne pas mettre à jour si le jeu est en pause
+        if (isPaused) return;
+
         // Mémorise les positions avant
         int nbPlayers = game.getPlayers().size();
         int[] prevX = new int[nbPlayers];
@@ -242,6 +342,16 @@ public class GameController {
     /** Entrées clavier joueurs humains : gère aussi leur direction */
     private void handleKeyPressed(KeyEvent event) {
         if (game.getPlayers().isEmpty()) return;
+
+        // Gestion de la touche Escape pour basculer la pause
+        if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+            togglePause();
+            return;
+        }
+
+        // Ne pas traiter les autres touches si le jeu est en pause
+        if (isPaused) return;
+
         for (int idx = 0; idx < game.getPlayers().size(); idx++) {
             Player p = game.getPlayers().get(idx);
             if (!p.isAlive() || !p.isHuman()) continue;
@@ -388,7 +498,73 @@ public class GameController {
             }
         }
 
+        // Affichage du voile de pause
+        if (isPaused) {
+            drawPauseOverlay(gc, canvasWidth, canvasHeight);
+        }
+
         checkGameOver();
+    }/**
+     * Retourne la taille de cellule utilisée pour l'affichage
+     */
+    public static int getCellSize() {
+        return DEFAULT_CELL_SIZE;
+    }
+
+    /**
+     * Crée un canvas d'aperçu du niveau pour l'écran de configuration
+     */
+    public static Canvas createLevelPreviewCanvas(Level level, int cellSize) {
+        if (level == null) {
+            Canvas canvas = new Canvas(cellSize * 10, cellSize * 8);
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.setFill(Color.GRAY);
+            gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Arial", 16));
+            gc.fillText("AUCUN NIVEAU", 20, canvas.getHeight() / 2);
+            return canvas;
+        }
+
+        // Dimensions du niveau
+        int gridWidth = 15;  // Largeur standard du plateau
+        int gridHeight = 13; // Hauteur standard du plateau
+
+        Canvas canvas = new Canvas(gridWidth * cellSize, gridHeight * cellSize);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        // Chargement des images pour l'aperçu
+        Image wallIndestructibleImg = safeImageFromResource(level.getWallIndestructibleImagePath());
+        Image wallDestructibleImg = safeImageFromResource(level.getWallDestructibleImagePath());
+        Image solImg = safeImageFromResource(level.getGroundImagePath());
+
+        // Créer une grille temporaire pour l'aperçu
+        // Vous devrez adapter cette partie selon la structure de votre classe Level
+        // En attendant, voici une version basique qui dessine un aperçu générique
+
+        for (int y = 0; y < gridHeight; y++) {
+            for (int x = 0; x < gridWidth; x++) {
+                double drawX = x * cellSize;
+                double drawY = y * cellSize;
+
+                // Logique d'affichage basique (à adapter selon votre Level)
+                if (x == 0 || x == gridWidth - 1 || y == 0 || y == gridHeight - 1) {
+                    // Bordures = murs indestructibles
+                    gc.drawImage(wallIndestructibleImg, drawX, drawY, cellSize, cellSize);
+                } else if ((x % 2 == 0 && y % 2 == 0)) {
+                    // Murs indestructibles en damier
+                    gc.drawImage(wallIndestructibleImg, drawX, drawY, cellSize, cellSize);
+                } else if (Math.random() < 0.3) {
+                    // Murs destructibles aléatoires (30% de chance)
+                    gc.drawImage(wallDestructibleImg, drawX, drawY, cellSize, cellSize);
+                } else {
+                    // Sol
+                    gc.drawImage(solImg, drawX, drawY, cellSize, cellSize);
+                }
+            }
+        }
+
+        return canvas;
     }
 
     /** Affiche l'avatar d'un joueur, ses vies, et s'il est IA. */
@@ -423,48 +599,187 @@ public class GameController {
     /** DRY : charge une image depuis un chemin ressource ou disque, toujours chemin relatif ressource. */
     public static Image safeImageFromResource(String path) {
         String fixedPath = path;
-        if (fixedPath != null && (fixedPath.contains(":\\") || fixedPath.contains(":/") || fixedPath.startsWith("\\") || fixedPath.startsWith("/"))) {
-            // On cherche le dossier "images" dans le chemin...
-            int idx = fixedPath.lastIndexOf("images");
-            if (idx != -1) {
-                fixedPath = "/" + fixedPath.substring(idx).replace("\\", "/");
+        if (fixedPath != null && !fixedPath.startsWith("/")) {
+            fixedPath = "/" + fixedPath;
+        }
+        try {
+            InputStream stream = GameController.class.getResourceAsStream(fixedPath);
+            if (stream != null) {
+                return new Image(stream);
+            } else {
+                System.err.println("Ressource introuvable : " + fixedPath);
+                // Image par défaut ou placeholder
+                return createDefaultImage();
             }
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de l'image : " + fixedPath + " - " + e.getMessage());
+            return createDefaultImage();
         }
-        InputStream is = GameController.class.getResourceAsStream(fixedPath);
-        if (is == null) {
-            throw new IllegalArgumentException("Image not found in resources: " + fixedPath + " (original: " + path + ")");
-        }
-        return new Image(is);
     }
 
-    /** Génère un canvas de preview pour l'écran de sélection de niveau. */
-    public static Canvas createLevelPreviewCanvas(Level level, int cellSize) {
-        int[][] preview = level.getLayout();
-        int w = preview[0].length;
-        int h = preview.length;
+    /**
+     * Crée une image par défaut en cas d'erreur de chargement
+     */
+    private static Image createDefaultImage() {
+        try {
+            // Crée une image simple de 48x48 pixels avec un carré coloré
+            javafx.scene.image.WritableImage defaultImg = new javafx.scene.image.WritableImage(48, 48);
+            javafx.scene.image.PixelWriter pw = defaultImg.getPixelWriter();
 
-        Canvas canvas = new Canvas(w * cellSize, h * cellSize);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        Image solImg = safeImageFromResource(level.getGroundImagePath());
-        Image murImg = safeImageFromResource(level.getWallIndestructibleImagePath());
-        Image blocImg = safeImageFromResource(level.getWallDestructibleImagePath());
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                double px = x * cellSize;
-                double py = y * cellSize;
-                switch (preview[y][x]) {
-                    case 1 -> gc.drawImage(murImg, px, py, cellSize, cellSize);
-                    case 2 -> gc.drawImage(blocImg, px, py, cellSize, cellSize);
-                    default -> gc.drawImage(solImg, px, py, cellSize, cellSize);
+            // Remplit avec une couleur magenta pour indiquer l'image manquante
+            for (int x = 0; x < 48; x++) {
+                for (int y = 0; y < 48; y++) {
+                    if ((x < 5 || x > 42) || (y < 5 || y > 42)) {
+                        pw.setColor(x, y, Color.BLACK);
+                    } else {
+                        pw.setColor(x, y, Color.MAGENTA);
+                    }
                 }
             }
+            return defaultImg;
+        } catch (Exception e) {
+            // En dernier recours, retourne null (sera géré par l'appelant)
+            System.err.println("Impossible de créer une image par défaut : " + e.getMessage());
+            return null;
         }
-        gc.setFill(new Color(0, 0, 0, 0.4));
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        return canvas;
     }
 
-    public static int getCellSize() { return DEFAULT_CELL_SIZE; }
+    /**
+     * Dessine le voile noir de pause avec les boutons "REPRENDRE" et "RETOUR AU MENU" centrés
+     */
+    private void drawPauseOverlay(GraphicsContext gc, double canvasWidth, double canvasHeight) {
+        // Voile noir semi-transparent
+        gc.setFill(Color.rgb(0, 0, 0, 0.75));
+        gc.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Texte "PAUSE" au centre
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Press Start 2P", FontWeight.BOLD, 36));
+
+        String pauseText = "PAUSE";
+        Text text = new Text(pauseText);
+        text.setFont(gc.getFont());
+        double textWidth = text.getLayoutBounds().getWidth();
+        double textHeight = text.getLayoutBounds().getHeight();
+
+        double textX = (canvasWidth - textWidth) / 2;
+        double textY = canvasHeight / 2 - 100;
+
+        // Effet d'ombre pour le titre
+        gc.setFill(Color.rgb(255, 153, 0, 0.8));
+        gc.fillText(pauseText, textX + 2, textY + 2);
+
+        // Texte principal
+        gc.setFill(Color.WHITE);
+        gc.fillText(pauseText, textX, textY);
+
+        // Dimensions des boutons
+        double buttonWidth = 280;
+        double buttonHeight = 55;
+        double buttonSpacing = 25;
+
+        // Calculer la position verticale pour centrer les deux boutons ensemble
+        double totalButtonsHeight = 2 * buttonHeight + buttonSpacing;
+        double buttonsStartY = (canvasHeight - totalButtonsHeight) / 2;
+
+// Position du premier bouton (REPRENDRE) - centré
+        resumeButtonX = (canvasWidth - buttonWidth) / 2;
+        resumeButtonY = buttonsStartY;
+        resumeButtonWidth = buttonWidth;
+        resumeButtonHeight = buttonHeight;
+
+// Position du deuxième bouton (RETOUR AU MENU) - centré
+        menuButtonX = (canvasWidth - buttonWidth) / 2;
+        menuButtonY = buttonsStartY + buttonHeight + buttonSpacing;
+        menuButtonWidth = buttonWidth;
+        menuButtonHeight = buttonHeight;
+
+        // Dessiner le bouton "REPRENDRE"
+        drawButton(gc, "REPRENDRE", resumeButtonX, resumeButtonY, resumeButtonWidth, resumeButtonHeight,
+                Color.rgb(34, 139, 34), Color.rgb(50, 205, 50)); // Vert foncé/clair
+
+        // Dessiner le bouton "RETOUR AU MENU"
+        drawButton(gc, "RETOUR AU MENU", menuButtonX, menuButtonY, menuButtonWidth, menuButtonHeight,
+                Color.rgb(178, 34, 34), Color.rgb(220, 20, 60)); // Rouge foncé/clair
+
+        // Instructions
+        gc.setFont(Font.font("Press Start 2P", FontWeight.NORMAL, 11));
+        String instruction = "Cliquez sur un bouton ou appuyez sur ECHAP";
+        Text instrText = new Text(instruction);
+        instrText.setFont(gc.getFont());
+        double instrWidth = instrText.getLayoutBounds().getWidth();
+
+        double instrX = (canvasWidth - instrWidth) / 2;
+        double instrY = menuButtonY + buttonHeight + 50;
+
+        gc.setFill(Color.rgb(255, 255, 255, 0.9));
+        gc.fillText(instruction, instrX, instrY);
+    }
+
+    /**
+     * Dessine un bouton avec du texte centré et un effet de dégradé
+     */
+    private void drawButton(GraphicsContext gc, String text, double x, double y, double width, double height, Color bgColor, Color highlightColor) {
+        // Effet d'ombre
+        gc.setFill(Color.rgb(0, 0, 0, 0.4));
+        gc.fillRoundRect(x + 3, y + 3, width, height, 12, 12);
+
+        // Fond du bouton principal
+        gc.setFill(bgColor);
+        gc.fillRoundRect(x, y, width, height, 12, 12);
+
+        // Effet de lumière en haut du bouton
+        gc.setFill(Color.rgb(255, 255, 255, 0.2));
+        gc.fillRoundRect(x + 2, y + 2, width - 4, height / 3, 8, 8);
+
+        // Bordure du bouton
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(3);
+        gc.strokeRoundRect(x, y, width, height, 12, 12);
+
+        // Bordure intérieure pour plus d'effet
+        gc.setStroke(highlightColor);
+        gc.setLineWidth(1);
+        gc.strokeRoundRect(x + 2, y + 2, width - 4, height - 4, 8, 8);
+
+        // Texte du bouton
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Press Start 2P", FontWeight.BOLD, 14));
+
+        Text buttonText = new Text(text);
+        buttonText.setFont(gc.getFont());
+        double textWidth = buttonText.getLayoutBounds().getWidth();
+        double textHeight = buttonText.getLayoutBounds().getHeight();
+
+        double textX = x + (width - textWidth) / 2;
+        double textY = y + height / 2 + textHeight / 3;
+
+        // Ombre du texte
+        gc.setFill(Color.rgb(0, 0, 0, 0.7));
+        gc.fillText(text, textX + 1, textY + 1);
+
+        // Texte principal
+        gc.setFill(Color.WHITE);
+        gc.fillText(text, textX, textY);
+    }
+
+    /**
+     * Version surchargée pour maintenir la compatibilité avec l'ancien code
+     */
+    private void drawButton(GraphicsContext gc, String text, double x, double y, double width, double height, Color bgColor) {
+        Color highlightColor = bgColor.brighter();
+        drawButton(gc, text, x, y, width, height, bgColor, highlightColor);
+    }
+
+    /**
+     * Nettoie les ressources lors de la fermeture
+     */
+    public void cleanup() {
+        if (gameTimeline != null) {
+            gameTimeline.stop();
+        }
+        if (timerTimeline != null) {
+            timerTimeline.stop();
+        }
+    }
 }
