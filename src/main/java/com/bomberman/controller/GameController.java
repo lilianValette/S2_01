@@ -1,10 +1,6 @@
 package com.bomberman.controller;
 
-import com.bomberman.model.Game;
-import com.bomberman.model.Player;
-import com.bomberman.model.Bomb;
-import com.bomberman.model.Level;
-import com.bomberman.model.Bonus;
+import com.bomberman.model.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -23,11 +19,6 @@ import javafx.scene.image.Image;
 
 import java.io.InputStream;
 
-/**
- * Contrôleur principal du jeu Bomberman.
- * Gère l'affichage, les entrées clavier et la logique de jeu,
- * y compris la direction des sprites IA & joueurs, et le timer.
- */
 public class GameController {
     @FXML
     private Canvas gameCanvas;
@@ -55,8 +46,6 @@ public class GameController {
     };
     private final Image[] avatarsJoueurs = new Image[4];
 
-    // Sprites directionnels pour chaque joueur : [playerIndex][direction]
-    // Directions : 0=bas, 1=haut, 2=gauche, 3=droite
     private static final String[][] PLAYER_SPRITE_PATHS = {
             {
                     "/images/Player/PBlanc/PBlanc-face.png",
@@ -85,13 +74,12 @@ public class GameController {
     };
     private final Image[][] playerSprites = new Image[4][4];
 
-    // Pour la direction d'affichage de chaque joueur/IA (0=bas, 1=haut, 2=gauche, 3=droite)
-    // Indexé sur la position dans game.getPlayers()
     private int[] playerDirections = new int[4];
 
     private Level level;
     private int playerCount;
     private int iaCount;
+    private AIDifficulty aiDifficulty = AIDifficulty.FACILE;
 
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
@@ -102,15 +90,16 @@ public class GameController {
     public void setLevel(Level level) { this.level = level; }
     public void setPlayerCount(int playerCount) { this.playerCount = playerCount; }
     public void setIaCount(int iaCount) { this.iaCount = iaCount; }
+    public void setAIDifficulty(AIDifficulty aiDifficulty) { this.aiDifficulty = aiDifficulty; }
 
     @FXML
     public void initialize() {}
 
     public void startGame() {
-        // 1. Initialisation du modèle
-        game = new Game(15, 13, playerCount, iaCount, level);
+        // Création du modèle avec la difficulté IA choisie
+        game = new Game(15, 13, playerCount, iaCount, level, aiDifficulty);
 
-        // 2. Chargement des ressources
+        // Chargement des images
         for (int i = 0; i < avatarsJoueurs.length; i++) {
             avatarsJoueurs[i] = safeImageFromResource(AVATAR_PATHS[i]);
         }
@@ -129,7 +118,7 @@ public class GameController {
         solImg                = safeImageFromResource(level.getGroundImagePath());
         bombImg               = safeImageFromResource("/images/items/bombe.png");
 
-        // 3. Taille du canvas/fenêtre
+        // Mise à l'échelle du canvas/fenêtre
         int gridWidth = game.getGrid().getWidth();
         int gridHeight = game.getGrid().getHeight();
         double borderPixel = CELL_SIZE * BORDER_PIXEL_RATIO;
@@ -147,24 +136,23 @@ public class GameController {
             stage.setMaxHeight(canvasHeight + 40);
         }
 
-        // 4. Directions initiales : tous vers le bas
+        // Directions initiales
         playerDirections = new int[game.getPlayers().size()];
         for (int i = 0; i < playerDirections.length; i++) playerDirections[i] = 0;
 
-        // 5. Premier affichage
         drawGrid();
 
-        // 6. Ecoute clavier
+        // Ecoute clavier
         gameCanvas.setFocusTraversable(true);
         gameCanvas.setOnKeyPressed(this::handleKeyPressed);
 
-        // 7. Game tick (IA, bombes, etc) avec gestion de direction des IA
+        // Ticks de jeu
         if (gameTimeline != null) gameTimeline.stop();
         gameTimeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> updateIAAndGame()));
         gameTimeline.setCycleCount(Timeline.INDEFINITE);
         gameTimeline.play();
 
-        // 8. Timer décompte (3 minutes)
+        // Timer décompte
         if (timerTimeline != null) timerTimeline.stop();
         timerSeconds = 180;
         timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
@@ -180,11 +168,7 @@ public class GameController {
         timerTimeline.play();
     }
 
-    /**
-     * Tick du jeu : met à jour IA, bombes et directions des IA.
-     */
     private void updateIAAndGame() {
-        // Mémorise les positions avant
         int nbPlayers = game.getPlayers().size();
         int[] prevX = new int[nbPlayers];
         int[] prevY = new int[nbPlayers];
@@ -194,11 +178,9 @@ public class GameController {
             prevY[i] = p.getY();
         }
 
-        // Tick IA et bombes
         game.updateAIs();
         game.updateBombs();
 
-        // Met à jour direction des IA (pour tous les joueurs non humains)
         for (int i = 0; i < nbPlayers; i++) {
             Player p = game.getPlayers().get(i);
             if (!p.isHuman()) {
@@ -208,7 +190,6 @@ public class GameController {
                 else if (dx == -1) playerDirections[i] = 2; // gauche
                 else if (dy ==  1) playerDirections[i] = 0; // bas
                 else if (dy == -1) playerDirections[i] = 1; // haut
-                // sinon : direction inchangée
             }
         }
         drawGrid();
@@ -226,16 +207,6 @@ public class GameController {
             if (stage != null) stage.setScene(new Scene(root));
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-    }
-
-    /** Fin de partie si un joueur est mort */
-    private void checkGameOver() {
-        boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
-        if (someoneDead) {
-            if (gameTimeline != null) gameTimeline.stop();
-            if (timerTimeline != null) timerTimeline.stop();
-            returnToMenu();
         }
     }
 
@@ -388,7 +359,13 @@ public class GameController {
             }
         }
 
-        checkGameOver();
+        // Fin de partie ?
+        boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
+        if (someoneDead) {
+            if (gameTimeline != null) gameTimeline.stop();
+            if (timerTimeline != null) timerTimeline.stop();
+            returnToMenu();
+        }
     }
 
     /** Affiche l'avatar d'un joueur, ses vies, et s'il est IA. */
@@ -424,7 +401,6 @@ public class GameController {
     public static Image safeImageFromResource(String path) {
         String fixedPath = path;
         if (fixedPath != null && (fixedPath.contains(":\\") || fixedPath.contains(":/") || fixedPath.startsWith("\\") || fixedPath.startsWith("/"))) {
-            // On cherche le dossier "images" dans le chemin...
             int idx = fixedPath.lastIndexOf("images");
             if (idx != -1) {
                 fixedPath = "/" + fixedPath.substring(idx).replace("\\", "/");

@@ -1,5 +1,7 @@
 package com.bomberman.controller;
 
+import com.bomberman.model.AIDifficulty;
+import com.bomberman.model.GameSettings;
 import com.bomberman.model.Level;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -19,10 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Contrôleur de l'écran de configuration de la partie.
- * Affiche un aperçu du niveau en fond et adapte parfaitement la taille de la fenêtre à l'aperçu.
- */
 public class GameSetupController {
 
     @FXML private StackPane themePreviewPane;
@@ -38,32 +36,23 @@ public class GameSetupController {
     private final IntegerProperty levelIndex = new SimpleIntegerProperty(0);
     private final Level[] levels = loadAllLevels();
 
-    /**
-     * Charge tous les niveaux depuis les dossiers predefined ET custom
-     */
+    private Stage stage;
+    private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY
+
     private Level[] loadAllLevels() {
         List<Level> allLevels = new ArrayList<>();
         try {
-            // Charge les niveaux prédéfinis
             allLevels.addAll(Level.loadLevelsFromDirectory(
                     Path.of("src/main/resources/levels/predefined")
             ));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         try {
-            // Charge les niveaux custom créés par l'utilisateur
             allLevels.addAll(Level.loadLevelsFromDirectory(
                     Path.of("src/main/resources/levels/custom")
             ));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return allLevels.toArray(new Level[0]);
     }
-
-    private Stage stage;
-    private int selectedField = 0; // 0 = player, 1 = ia, 2 = theme, 3 = PLAY
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -77,7 +66,6 @@ public class GameSetupController {
         playTextLabel.setOnMouseClicked(e -> startGame());
         playTextLabel.setOnMouseEntered(e -> { selectedField = 3; updateHighlight(); });
 
-        // Flèches cliquables en plus du clavier (UX bonus)
         playerLeftArrow.setOnMouseClicked(e -> { selectedField = 0; decrementSelected(); });
         playerRightArrow.setOnMouseClicked(e -> { selectedField = 0; incrementSelected(); });
         iaLeftArrow.setOnMouseClicked(e -> { selectedField = 1; decrementSelected(); });
@@ -85,7 +73,6 @@ public class GameSetupController {
         themeLeftArrow.setOnMouseClicked(e -> { selectedField = 2; decrementSelected(); });
         themeRightArrow.setOnMouseClicked(e -> { selectedField = 2; incrementSelected(); });
 
-        // Clavier partout sur la scène
         playerCountLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleArrowKey);
@@ -191,6 +178,8 @@ public class GameSetupController {
             gameController.setLevel(levels[levelIndex.get()]);
             gameController.setPlayerCount(playerCount.get());
             gameController.setIaCount(iaCount.get());
+            // Utilise la difficulté IA GLOBALE
+            gameController.setAIDifficulty(GameSettings.getSelectedAIDifficulty());
             gameController.startGame();
             stage.setScene(new Scene(root));
         } catch (Exception ex) {
