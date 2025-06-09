@@ -31,7 +31,7 @@ public class SettingsController {
     @FXML private Label aiLevelRightArrow;
 
     private final IntegerProperty aiLevelIndex = GameSettings.aiLevelIndexProperty(); // BIND GLOBAL
-    private int selectedField = 0; // 1 si focus IA
+    private int selectedField = 0; // 0: levelEditor, 1: IA, 2: retour
 
     private Stage stage;
 
@@ -69,6 +69,11 @@ public class SettingsController {
             updateAILevelHighlight();
             levelEditorButton.requestFocus();
         });
+        backButton.setOnMouseEntered(e -> {
+            selectedField = 2;
+            updateAILevelHighlight();
+            backButton.requestFocus();
+        });
 
         aiLevelLabel.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
@@ -86,35 +91,51 @@ public class SettingsController {
         aiLevelTextLabel.getStyleClass().removeAll("menu-highlighted");
         aiLevelLabel.getStyleClass().removeAll("value-highlighted");
         levelEditorButton.getStyleClass().remove("menu-highlighted");
+        backButton.getStyleClass().remove("menu-highlighted");
         if (selectedField == 1) {
             aiLevelTextLabel.getStyleClass().add("menu-highlighted");
             aiLevelLabel.getStyleClass().add("value-highlighted");
-        } else {
+        } else if (selectedField == 0) {
             levelEditorButton.getStyleClass().add("menu-highlighted");
+        } else if (selectedField == 2) {
+            backButton.getStyleClass().add("menu-highlighted");
         }
     }
 
     private void handleArrowKey(KeyEvent event) {
         switch (event.getCode()) {
-            case UP, DOWN -> {
-                selectedField = (selectedField == 0) ? 1 : 0;
+            case UP -> {
+                selectedField = (selectedField + 2) % 3;
                 updateAILevelHighlight();
-                if (selectedField == 0) {
-                    levelEditorButton.requestFocus();
-                } else {
-                    aiLevelBox.requestFocus();
-                }
+                focusSelectedField();
+            }
+            case DOWN -> {
+                selectedField = (selectedField + 1) % 3;
+                updateAILevelHighlight();
+                focusSelectedField();
             }
             case LEFT -> { if (selectedField == 1) decrementAiLevel(); }
             case RIGHT -> { if (selectedField == 1) incrementAiLevel(); }
             case ENTER, SPACE -> {
                 if (selectedField == 0) {
                     openLevelEditor();
+                } else if (selectedField == 2) {
+                    returnToMenu();
                 }
             }
             default -> { return; }
         }
         event.consume();
+    }
+
+    private void focusSelectedField() {
+        if (selectedField == 0) {
+            levelEditorButton.requestFocus();
+        } else if (selectedField == 1) {
+            aiLevelBox.requestFocus();
+        } else if (selectedField == 2) {
+            backButton.requestFocus();
+        }
     }
 
     private void decrementAiLevel() {
