@@ -93,6 +93,7 @@ public class GameController {
     private Image wallDestructibleImg;
     private Image solImg;
     private Image bombImg;
+    private Image explosionImg;
 
     private static final java.util.Map<String, Image> imageCache = new java.util.HashMap<>();
 
@@ -127,6 +128,7 @@ public class GameController {
         wallDestructibleImg   = safeImageFromResource(level.getWallDestructibleImagePath());
         solImg                = safeImageFromResource(level.getGroundImagePath());
         bombImg               = safeImageFromResource("/images/items/bombe.png");
+        explosionImg = safeImageFromResource("/images/explosion/explosionV1.png");
 
         // Mise à l'échelle du canvas/fenêtre
         int gridWidth = game.getGrid().getWidth();
@@ -423,12 +425,7 @@ public class GameController {
                     case DESTRUCTIBLE   -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case BOMB           -> gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case EXPLOSION -> {
-                        gc.setFill(Color.ORANGE);
-                        gc.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
-                        gc.setFill(Color.YELLOW);
-                        gc.fillOval(drawX + CELL_SIZE * 0.2, drawY + CELL_SIZE * 0.2, CELL_SIZE * 0.6, CELL_SIZE * 0.6);
-                        gc.setFill(Color.rgb(255,255,255,0.4));
-                        gc.fillOval(drawX + CELL_SIZE * 0.35, drawY + CELL_SIZE * 0.35, CELL_SIZE * 0.3, CELL_SIZE * 0.3);
+                        gc.drawImage(explosionImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                     default -> gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                 }
