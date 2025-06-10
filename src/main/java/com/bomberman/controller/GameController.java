@@ -94,6 +94,8 @@ public class GameController {
     private Image solImg;
     private Image bombImg;
 
+    private static final java.util.Map<String, Image> imageCache = new java.util.HashMap<>();
+
     public void setStage(Stage stage) { this.stage = stage; }
     public void setLevel(Level level) { this.level = level; }
     public void setPlayerCount(int playerCount) { this.playerCount = playerCount; }
@@ -504,11 +506,17 @@ public class GameController {
                 fixedPath = "/" + fixedPath.substring(idx).replace("\\", "/");
             }
         }
+        // Gestion du cache
+        if (imageCache.containsKey(fixedPath)) {
+            return imageCache.get(fixedPath);
+        }
         InputStream is = GameController.class.getResourceAsStream(fixedPath);
         if (is == null) {
             throw new IllegalArgumentException("Image not found in resources: " + fixedPath + " (original: " + path + ")");
         }
-        return new Image(is);
+        Image img = new Image(is);
+        imageCache.put(fixedPath, img);
+        return img;
     }
 
     /** Génère un canvas de preview pour l'écran de sélection de niveau. */
