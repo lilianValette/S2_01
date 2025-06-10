@@ -38,6 +38,7 @@ public class Game {
 
         //test d'un bonus fixe
         bonuses.add(new FlameBonus(5,3,1));
+        bonuses.add(new LifeBonus(5,6));
 
     }
 
@@ -177,7 +178,7 @@ public class Game {
     private void explode(Bomb b) {
         int x = b.getX(), y = b.getY(), range = b.getRange();
         addExplosion(x, y);
-        destroyWall(x, y);
+        //destroyWall(x, y);
         damagePlayersAt(x, y);
 
         int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
@@ -199,21 +200,19 @@ public class Game {
     private void damagePlayersAt(int x, int y) {
         for (Player p : players) {
             if (p.isAlive() && p.getX() == x && p.getY() == y) {
-                p.takeDamage();
+                if (!p.isInvincibleToBombs()) {
+                    p.takeDamage();
+                }
             }
         }
     }
     private void destroyWall(int x, int y) {
-        System.out.println("Fonction destroyWall bien appelée");
-        if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
-            grid.setCell(x, y, Grid.CellType.EMPTY);
-            if (Math.random() < 0.2) {
-                int bonusType = (int) (Math.random() * 3);
-                switch (bonusType) {
-                    case 0 -> bonuses.add(new FlameBonus(x, y, 1));
-                    case 1 -> bonuses.add(new JacketBonus(x, y));
-                    case 2 -> bonuses.add(new LifeBonus(x, y));
-                }
+        if (Math.random() < 0.2) {
+            int bonusType = (int) (Math.random() * 3);
+            switch (bonusType) {
+                case 0 -> bonuses.add(new FlameBonus(x, y, 1));
+                case 1 -> bonuses.add(new JacketBonus(x, y));
+                case 2 -> bonuses.add(new LifeBonus(x, y));
             }
         }
     }

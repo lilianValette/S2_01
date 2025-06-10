@@ -101,7 +101,7 @@ public class GameController {
     private Image explosionImg;
     private Image jacketBonusImg;
     private Image flameBonusImg;
-
+    private Image lifeBonusImg;
     private boolean gameEnded = false;
 
     private static final java.util.Map<String, Image> imageCache = new java.util.HashMap<>();
@@ -137,6 +137,7 @@ public class GameController {
 
         jacketBonusImg = new Image(getClass().getResourceAsStream("/images/items/jacket_bonus.png"));
         flameBonusImg = new Image(getClass().getResourceAsStream("/images/items/flame_bonus.png"));
+        lifeBonusImg = new Image(getClass().getResourceAsStream("/images/items/flame_bonus.png"));
         wallIndestructibleImg = safeImageFromResource(level.getWallIndestructibleImagePath());
         wallDestructibleImg   = safeImageFromResource(level.getWallDestructibleImagePath());
         solImg                = safeImageFromResource(level.getGroundImagePath());
@@ -545,6 +546,7 @@ public class GameController {
                 Image bonusImg = switch (ab.getType()) {
                     case FLAME -> flameBonusImg;
                     case JACKET -> jacketBonusImg;
+                    case LIFE -> null;
                     default -> null;  // obligatoire pour couvrir toutes les valeurs
 
                 };
