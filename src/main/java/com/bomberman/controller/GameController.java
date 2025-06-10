@@ -1,10 +1,6 @@
 package com.bomberman.controller;
 
-import com.bomberman.model.Game;
-import com.bomberman.model.Player;
-import com.bomberman.model.Bomb;
-import com.bomberman.model.Level;
-import com.bomberman.model.Bonus;
+import com.bomberman.model.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -23,7 +19,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
-import com.bomberman.model.AIDifficulty;
 
 import java.io.InputStream;
 
@@ -128,6 +123,30 @@ public class GameController {
         // Ajout du gestionnaire de clic sur le canvas pour les boutons du menu pause
         if (gameCanvas != null) {
             gameCanvas.setOnMouseClicked(this::handleCanvasClick);
+        }
+    }
+    private void handleGameEnd() {
+        UserManager userManager = UserManager.getInstance();
+
+        if (userManager.isLoggedIn()) {
+            Player winner = game.getWinner();
+            User currentUser = userManager.getCurrentUser();
+
+            // Vérifier si l'utilisateur connecté correspond au joueur gagnant
+            boolean userWon = false;
+
+            if (winner != null) {
+                // Si le winner est un joueur humain (pas une IA), considérer que l'utilisateur a gagné
+                if (!(winner instanceof PlayerAI)) {
+                    userWon = true;
+                }
+            }
+
+            // Mettre à jour les statistiques - CORRECTION : utiliser la bonne méthode
+            userManager.updateCurrentUserGameStats(userWon);
+
+            System.out.println("Partie terminée - Utilisateur: " + currentUser.getUsername() +
+                    ", Victoire: " + userWon);
         }
     }
 
@@ -317,6 +336,11 @@ public class GameController {
         // 1. Initialisation du modèle
         game = new Game(15, 13, playerCount, iaCount, level, null);
 
+        // AJOUT : Incrémenter le nombre de parties jouées dès le début de la partie
+        UserManager userManager = UserManager.getInstance();
+        if (userManager.isLoggedIn()) {
+            userManager.incrementCurrentUserGamesPlayed();
+        }
         // 2. Chargement des ressources
         for (int i = 0; i < avatarsJoueurs.length; i++) {
             avatarsJoueurs[i] = safeImageFromResource(AVATAR_PATHS[i]);
@@ -448,6 +472,9 @@ public class GameController {
     private void checkGameOver() {
         boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
         if (someoneDead) {
+            // Appeler handleGameEnd() avant de nettoyer
+            handleGameEnd();
+
             if (gameTimeline != null) gameTimeline.stop();
             if (timerTimeline != null) timerTimeline.stop();
             returnToMenu();
@@ -890,6 +917,18 @@ public class GameController {
         }
     }
 
+    public void update() {
+        if (!game.isGameOver()) {
+            // Votre logique de mise à jour existante...
+            game.updateAIs();
+            game.updateBombs();
+
+            // Vérifier si le jeu vient de se terminer
+            if (game.isGameOver()) {
+                handleGameEnd();
+            }
+        }
+    }
     public void setAIDifficulty(AIDifficulty selectedAIDifficulty) {
     }
 }

@@ -5,23 +5,20 @@ public class User {
     private String password;
     private int gamesPlayed;
     private int gamesWon;
-    private int totalScore;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
         this.gamesPlayed = 0;
         this.gamesWon = 0;
-        this.totalScore = 0;
     }
 
     // Constructeur complet pour charger depuis fichier
-    public User(String username, String password, int gamesPlayed, int gamesWon, int totalScore) {
+    public User(String username, String password, int gamesPlayed, int gamesWon) {
         this.username = username;
         this.password = password;
         this.gamesPlayed = gamesPlayed;
         this.gamesWon = gamesWon;
-        this.totalScore = totalScore;
     }
 
     public String getUsername() {
@@ -40,20 +37,12 @@ public class User {
         return gamesWon;
     }
 
-    public int getTotalScore() {
-        return totalScore;
-    }
-
     public void incrementGamesPlayed() {
         this.gamesPlayed++;
     }
 
     public void incrementGamesWon() {
         this.gamesWon++;
-    }
-
-    public void addScore(int score) {
-        this.totalScore += score;
     }
 
     public double getWinRate() {
@@ -63,21 +52,41 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%d,%d,%d",
-                username, password, gamesPlayed, gamesWon, totalScore);
+        return String.format("%s,%s,%d,%d",
+                username, password, gamesPlayed, gamesWon);
     }
 
     public static User fromString(String line) {
         String[] parts = line.split(",");
-        if (parts.length == 5) {
+        if (parts.length == 4) {
             return new User(
                     parts[0],
                     parts[1],
                     Integer.parseInt(parts[2]),
-                    Integer.parseInt(parts[3]),
-                    Integer.parseInt(parts[4])
+                    Integer.parseInt(parts[3])
+            );
+        }
+        // Compatibilité avec l'ancien format (5 parties avec score)
+        else if (parts.length == 5) {
+            return new User(
+                    parts[0],
+                    parts[1],
+                    Integer.parseInt(parts[2]),
+                    Integer.parseInt(parts[3])
+                    // On ignore le score (parts[4])
             );
         }
         return null;
+    }
+
+    /**
+     * Met à jour les statistiques après une partie
+     * @param hasWon true si le joueur a gagné la partie
+     */
+    public void updateGameStats(boolean hasWon) {
+        incrementGamesPlayed();
+        if (hasWon) {
+            incrementGamesWon();
+        }
     }
 }

@@ -1,6 +1,6 @@
-
 package com.bomberman.controller;
 
+import com.bomberman.controller.MenuController;
 import com.bomberman.model.User;
 import com.bomberman.model.UserManager;
 import javafx.application.Platform;
@@ -41,12 +41,11 @@ public class AccountController {
     @FXML private Button createButton;
     @FXML private Label createMessage;
 
-    // Éléments de profil
+    // Éléments de profil (SANS SCORE)
     @FXML private Label profileUsername;
     @FXML private Label profileGamesPlayed;
     @FXML private Label profileGamesWon;
     @FXML private Label profileWinRate;
-    @FXML private Label profileTotalScore;
     @FXML private Button logoutButton;
 
     // Bouton de retour
@@ -341,7 +340,6 @@ public class AccountController {
             profileGamesPlayed.setText(String.valueOf(user.getGamesPlayed()));
             profileGamesWon.setText(String.valueOf(user.getGamesWon()));
             profileWinRate.setText(String.format("%.1f%%", user.getWinRate()));
-            profileTotalScore.setText(String.valueOf(user.getTotalScore()));
         }
     }
 

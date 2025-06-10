@@ -127,16 +127,41 @@ public class UserManager {
     }
 
     /**
-     * Met à jour les statistiques de l'utilisateur actuel et sauvegarde.
+     * MÉTHODE PRINCIPALE : Met à jour les statistiques de jeu de l'utilisateur actuel.
+     * Cette méthode doit être appelée UNE SEULE FOIS à la fin de chaque partie.
+     * @param hasWon true si le joueur a gagné, false s'il a perdu
      */
-    public void updateCurrentUserStats(boolean won, int score) {
+    public void updateCurrentUserGameStats(boolean hasWon) {
         if (currentUser != null) {
-            currentUser.incrementGamesPlayed();
-            if (won) {
-                currentUser.incrementGamesWon();
-            }
-            currentUser.addScore(score);
+            currentUser.updateGameStats(hasWon);
             saveUsers();
+
+            // Log pour debug (à supprimer en production)
+            System.out.println("Stats mises à jour pour " + currentUser.getUsername() +
+                    " - Victoire: " + hasWon +
+                    " - Parties jouées: " + currentUser.getGamesPlayed() +
+                    " - Parties gagnées: " + currentUser.getGamesWon());
         }
+    }
+
+    // MÉTHODES DÉPRÉCIÉES - À NE PLUS UTILISER
+    // Gardées pour compatibilité mais ne doivent plus être appelées
+
+    /**
+     * @deprecated Utilisez updateCurrentUserGameStats(boolean) à la place
+     */
+    @Deprecated
+    public void incrementCurrentUserGamesWon() {
+        System.err.println("ATTENTION: incrementCurrentUserGamesWon() est déprécié. Utilisez updateCurrentUserGameStats(true)");
+        // Ne fait rien pour éviter la double incrémentation
+    }
+
+    /**
+     * @deprecated Utilisez updateCurrentUserGameStats(boolean) à la place
+     */
+    @Deprecated
+    public void incrementCurrentUserGamesPlayed() {
+        System.err.println("ATTENTION: incrementCurrentUserGamesPlayed() est déprécié. Utilisez updateCurrentUserGameStats(boolean)");
+        // Ne fait rien pour éviter la double incrémentation
     }
 }
