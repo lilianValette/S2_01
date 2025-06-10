@@ -108,6 +108,22 @@ public class Player {
     }
 
     /**
+     * Ajoute un bonus JACKET temporaire de durée donnée (en secondes).
+     */
+    public void addJacketBonusTemp(double durationSeconds) {
+        activeBonuses.add(new ActiveBonus(ActiveBonus.Type.JACKET, 0, durationSeconds));
+    }
+
+    public boolean isInvincibleToBombs() {
+        return activeBonuses.stream()
+                .anyMatch(ab -> ab.getType() == ActiveBonus.Type.JACKET);
+    }
+
+    public void addLife() {
+        lives++;
+    }
+
+    /**
      * Ajoute un bonus FLAME temporaire de durée donnée (en secondes).
      */
     public void addFlameBonusTemp(int extraRange, double durationSeconds) {

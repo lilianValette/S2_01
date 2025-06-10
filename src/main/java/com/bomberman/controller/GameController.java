@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -17,11 +18,15 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class GameController {
     @FXML
     private Canvas gameCanvas;
+
+    @FXML
+    private StackPane rootPane;
 
     private Stage stage;
 
@@ -94,6 +99,10 @@ public class GameController {
     private Image solImg;
     private Image bombImg;
     private Image explosionImg;
+    private Image jacketBonusImg;
+    private Image flameBonusImg;
+
+    private boolean gameEnded = false;
 
     private static final java.util.Map<String, Image> imageCache = new java.util.HashMap<>();
 
@@ -124,6 +133,10 @@ public class GameController {
                 }
             }
         }
+
+
+        jacketBonusImg = new Image(getClass().getResourceAsStream("/images/items/jacket_bonus.png"));
+        flameBonusImg = new Image(getClass().getResourceAsStream("/images/items/flame_bonus.png"));
         wallIndestructibleImg = safeImageFromResource(level.getWallIndestructibleImagePath());
         wallDestructibleImg   = safeImageFromResource(level.getWallDestructibleImagePath());
         solImg                = safeImageFromResource(level.getGroundImagePath());
@@ -184,12 +197,57 @@ public class GameController {
             if (timerSeconds <= 0) {
                 timerTimeline.stop();
                 gameTimeline.stop();
-                returnToMenu();
-            }
+                showEndGameScreen("Temps écoulé !");            }
             drawGrid();
         }));
         timerTimeline.setCycleCount(Timeline.INDEFINITE);
         timerTimeline.play();
+    }
+
+    private void showEndGameScreen(String message) {
+        if (gameTimeline != null) gameTimeline.stop();
+        if (timerTimeline != null) timerTimeline.stop();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bomberman/view/EndGameScreen.fxml"));
+            Parent root = loader.load();
+
+            if (stage != null) {
+                stage.setScene(new Scene(root));
+                stage.show();
+                System.out.println("Scene changée, stage : " + stage);
+            } else {
+                System.err.println("Stage est null, impossible de changer de scène");
+            }
+
+            EndGameScreenController controller = loader.getController();
+            controller.setMessage(message);
+            controller.setOnReturnCallback(() -> returnToMenu());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkGameOver() {
+        boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
+
+        if (someoneDead && !gameEnded) {
+            gameEnded = true;
+            Player winner = game.getPlayers().stream()
+                    .filter(Player::isAlive)
+                    .findFirst()
+                    .orElse(null);
+
+            String message;
+            if (winner != null) {
+                message = "Le joueur " + winner.getId() + " a gagné !";
+            } else {
+                message = "Match nul !";
+            }
+
+            showEndGameScreen(message);
+        }
     }
 
     private void updateIAAndGame() {
@@ -368,6 +426,7 @@ public class GameController {
         double timerWidth = topUiHeight * 1.15;
         double timerHeight = topUiHeight * 0.85;
         double spacing = Math.max(desiredSpacing, minSpacing);
+        double margin = 14;
 
         double blocksWidth = totalPlayers * (iconSize + counterSize) + (totalPlayers + 1) * spacing + timerWidth;
         double x = (canvasWidth - blocksWidth) / 2.0;
@@ -456,12 +515,54 @@ public class GameController {
             }
         }
 
+        // Afficher le temps restant des bonus pour chaque joueur
+        for (Player p : game.getPlayers()) {
+            double textX;
+            double baseY;
+            int bonusIndex = 0;
+
+            if (p.getId() == 1) {
+                textX = margin + iconSize + spacing + counterSize + 8;
+                baseY = topUiHeight * 0.6 + 12; // +12 pour baseline texte
+            } else {
+                textX = canvasWidth - margin - iconSize - spacing - counterSize - 75;
+                baseY = topUiHeight * 0.6 + 12;
+            }
+
+            double lineHeight = 18;
+            double imgSize = iconSize * 0.5;
+
+            for (ActiveBonus ab : p.getActiveBonuses()) {
+                String timeStr = ab.getSecondsRemaining() + "s";
+
+                double y = baseY + bonusIndex * lineHeight;
+                double imgY = y - imgSize + (lineHeight - imgSize) / 2 + imgSize * 0.1;
+
+                //gc.setFill(Color.WHITE);
+                //gc.setFont(Font.font("Consolas", iconSize * 0.4));
+                //gc.fillText(timeStr, textX + imgSize + 5, y);
+
+                Image bonusImg = switch (ab.getType()) {
+                    case FLAME -> flameBonusImg;
+                    case JACKET -> jacketBonusImg;
+                    default -> null;  // obligatoire pour couvrir toutes les valeurs
+
+                };
+
+                if (bonusImg != null) {
+                    gc.drawImage(bonusImg, textX, imgY, imgSize, imgSize);
+                }
+
+                bonusIndex++;
+            }
+        }
+
         // Fin de partie ?
         boolean someoneDead = game.getPlayers().stream().anyMatch(p -> p.getLives() <= 0);
         if (someoneDead) {
             if (gameTimeline != null) gameTimeline.stop();
             if (timerTimeline != null) timerTimeline.stop();
-            returnToMenu();
+            checkGameOver();
         }
     }
 

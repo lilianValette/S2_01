@@ -36,8 +36,9 @@ public class Game {
         this.aiDifficulty = aiDifficulty;
         initializePlayers(playerCount, iaCount);
 
-        // Exemple de bonus fixe pour test, à adapter selon besoins
-        bonuses.add(new FlameBonus(5, 3, 1));
+        //test d'un bonus fixe
+        bonuses.add(new FlameBonus(5,3,1));
+
     }
 
     private void initializePlayers(int humanCount, int iaCount) {
@@ -203,10 +204,16 @@ public class Game {
         }
     }
     private void destroyWall(int x, int y) {
+        System.out.println("Fonction destroyWall bien appelée");
         if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
             grid.setCell(x, y, Grid.CellType.EMPTY);
             if (Math.random() < 0.2) {
-                bonuses.add(new FlameBonus(x, y, 1));
+                int bonusType = (int) (Math.random() * 3);
+                switch (bonusType) {
+                    case 0 -> bonuses.add(new FlameBonus(x, y, 1));
+                    case 1 -> bonuses.add(new JacketBonus(x, y));
+                    case 2 -> bonuses.add(new LifeBonus(x, y));
+                }
             }
         }
     }
