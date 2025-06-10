@@ -13,9 +13,9 @@ public class Level {
 
     public Level(String name, String groundImagePath, String wallIndestructibleImagePath, String wallDestructibleImagePath, int[][] layout) {
         this.name = name;
-        this.groundImagePath = groundImagePath;
-        this.wallIndestructibleImagePath = wallIndestructibleImagePath;
-        this.wallDestructibleImagePath = wallDestructibleImagePath;
+        this.groundImagePath = normalizeResourcePath(groundImagePath);
+        this.wallIndestructibleImagePath = normalizeResourcePath(wallIndestructibleImagePath);
+        this.wallDestructibleImagePath = normalizeResourcePath(wallDestructibleImagePath);
         this.layout = layout;
     }
 
@@ -77,5 +77,22 @@ public class Level {
             }
         }
         return levels;
+    }
+
+    // --- Correction : normaliser les chemins de ressources ---
+    private static String normalizeResourcePath(String path) {
+        if (path == null) return null;
+        // Toujours commencer par /
+        String p = path.startsWith("/") ? path : "/" + path;
+        // Correction extension PNG en minuscule
+        p = p.replaceAll("\\.PNG$", ".png");
+        // Correction noms courants pour la casse
+        // (à adapter selon les vrais fichiers dans ton dossier !)
+        p = p.replace("BonhommeNeige", "bonhommeNeige");
+        p = p.replace("MurDestructible", "murDestructible");
+        p = p.replace("MurIndestructible", "murIndestructible");
+        p = p.replace("FondFeuilles", "fondFeuilles");
+        // Ajoute d'autres corrections si besoin...
+        return p;
     }
 }
