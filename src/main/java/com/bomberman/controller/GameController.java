@@ -16,6 +16,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
+import com.bomberman.model.Game.ExplosionCell;
+import com.bomberman.model.Game.ExplosionPartType;
+import com.bomberman.model.Game.Direction;
 
 import java.io.InputStream;
 
@@ -94,6 +97,7 @@ public class GameController {
     private Image solImg;
     private Image bombImg;
     private Image explosionImg;
+    private Image explosionV2CentreImg, explosionV2BrancheImg, explosionV2FinImg;
 
     private static final java.util.Map<String, Image> imageCache = new java.util.HashMap<>();
 
@@ -129,6 +133,9 @@ public class GameController {
         solImg                = safeImageFromResource(level.getGroundImagePath());
         bombImg               = safeImageFromResource("/images/items/bombe.png");
         explosionImg = safeImageFromResource("/images/explosion/explosionV1.png");
+        explosionV2CentreImg  = safeImageFromResource("/images/explosion/ExplosionV2-Centre.png");
+        explosionV2BrancheImg = safeImageFromResource("/images/explosion/ExplosionV2.png");
+        explosionV2FinImg     = safeImageFromResource("/images/explosion/ExplosionV2-fin.png");
 
         // Mise à l'échelle du canvas/fenêtre
         int gridWidth = game.getGrid().getWidth();
@@ -425,7 +432,30 @@ public class GameController {
                     case DESTRUCTIBLE   -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case BOMB           -> gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     case EXPLOSION -> {
-                        gc.drawImage(explosionImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
+                        ExplosionCell exCell = game.getExplosionCell(xg, y);
+                        if (exCell == null) {
+                            gc.drawImage(explosionImg, drawX, drawY, CELL_SIZE, CELL_SIZE); // fallback
+                        } else if (exCell.type == ExplosionPartType.CENTRE) {
+                            gc.drawImage(explosionV2CentreImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
+                        } else {
+                            gc.save();
+                            double angle = 0;
+                            switch (exCell.direction) {
+                                case UP    -> angle = 0;
+                                case RIGHT -> angle = 90;
+                                case DOWN  -> angle = 180;
+                                case LEFT  -> angle = 270;
+                            }
+                            gc.translate(drawX + CELL_SIZE / 2, drawY + CELL_SIZE / 2);
+                            gc.rotate(angle);
+                            gc.translate(-CELL_SIZE / 2, -CELL_SIZE / 2);
+                            if (exCell.type == ExplosionPartType.BRANCH) {
+                                gc.drawImage(explosionV2BrancheImg, 0, 0, CELL_SIZE, CELL_SIZE);
+                            } else if (exCell.type == ExplosionPartType.END) {
+                                gc.drawImage(explosionV2FinImg, 0, 0, CELL_SIZE, CELL_SIZE);
+                            }
+                            gc.restore();
+                        }
                     }
                     default -> gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                 }
