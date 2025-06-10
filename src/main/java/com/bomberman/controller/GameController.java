@@ -35,7 +35,11 @@ public class GameController {
 
     private Game game;
     private static final int CELL_SIZE = 48;
-    public static int getCellSize() { return CELL_SIZE; }
+
+    public static int getCellSize() {
+        return CELL_SIZE;
+    }
+
     private final int BORDER_SIZE = 1;
     private final double BORDER_PIXEL_RATIO = 0.5;
     private final double TOP_UI_HEIGHT_RATIO = 2.5;
@@ -49,9 +53,17 @@ public class GameController {
     private int playerCount;
     private int iaCount;
 
-    public void setTheme(Theme theme) { this.theme = theme; }
-    public void setPlayerCount(int playerCount) { this.playerCount = playerCount; }
-    public void setIaCount(int iaCount) { this.iaCount = iaCount; }
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+
+    public void setPlayerCount(int playerCount) {
+        this.playerCount = playerCount;
+    }
+
+    public void setIaCount(int iaCount) {
+        this.iaCount = iaCount;
+    }
 
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
@@ -88,8 +100,8 @@ public class GameController {
         avatarP1 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBleu.png"));
         avatarP2 = new Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarRouge.png"));
         wallIndestructibleImg = new Image(getClass().getResourceAsStream(theme.getMurImagePath()));
-        wallDestructibleImg   = new Image(getClass().getResourceAsStream(theme.getDestructibleImagePath()));
-        solImg                = new Image(getClass().getResourceAsStream(theme.getSolImagePath()));
+        wallDestructibleImg = new Image(getClass().getResourceAsStream(theme.getDestructibleImagePath()));
+        solImg = new Image(getClass().getResourceAsStream(theme.getSolImagePath()));
         bombImg = new Image(getClass().getResourceAsStream("/images/items/bombe.png"));
 
         try {
@@ -231,19 +243,19 @@ public class GameController {
         Player p2 = game.getPlayers().size() > 1 ? game.getPlayers().get(1) : null;
 
         switch (event.getCode()) {
-            case UP    -> {
+            case UP -> {
                 if (p1.isAlive()) {
                     player1Direction = 1;
                     game.movePlayer(p1, 0, -1);
                 }
             }
-            case DOWN  -> {
+            case DOWN -> {
                 if (p1.isAlive()) {
                     player1Direction = 0;
-                    game.movePlayer(p1, 0,  1);
+                    game.movePlayer(p1, 0, 1);
                 }
             }
-            case LEFT  -> {
+            case LEFT -> {
                 if (p1.isAlive()) {
                     player1Direction = 2;
                     game.movePlayer(p1, -1, 0);
@@ -252,24 +264,26 @@ public class GameController {
             case RIGHT -> {
                 if (p1.isAlive()) {
                     player1Direction = 3;
-                    game.movePlayer(p1, 1,  0);
+                    game.movePlayer(p1, 1, 0);
                 }
             }
-            case SPACE -> { if (p1.isAlive()) game.placeBomb(p1); }
+            case SPACE -> {
+                if (p1.isAlive()) game.placeBomb(p1);
+            }
 
-            case Z    -> {
+            case Z -> {
                 if (p2 != null && p2.isAlive()) {
                     player2Direction = 1;
                     game.movePlayer(p2, 0, -1);
                 }
             }
-            case S  -> {
+            case S -> {
                 if (p2 != null && p2.isAlive()) {
                     player2Direction = 0;
                     game.movePlayer(p2, 0, 1);
                 }
             }
-            case Q  -> {
+            case Q -> {
                 if (p2 != null && p2.isAlive()) {
                     player2Direction = 2;
                     game.movePlayer(p2, -1, 0);
@@ -281,7 +295,9 @@ public class GameController {
                     game.movePlayer(p2, 1, 0);
                 }
             }
-            case SHIFT -> { if (p2 != null && p2.isAlive()) game.placeBomb(p2); }
+            case SHIFT -> {
+                if (p2 != null && p2.isAlive()) game.placeBomb(p2);
+            }
         }
         drawGrid();
     }
@@ -418,8 +434,8 @@ public class GameController {
 
                 switch (grid.getCell(x, y)) {
                     case INDESTRUCTIBLE -> gc.drawImage(wallIndestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
-                    case DESTRUCTIBLE   -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
-                    case BOMB           -> {
+                    case DESTRUCTIBLE -> gc.drawImage(wallDestructibleImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
+                    case BOMB -> {
                         gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                     case EXPLOSION -> {
@@ -429,13 +445,13 @@ public class GameController {
                         gc.setFill(Color.YELLOW);
                         gc.fillOval(drawX + CELL_SIZE * 0.2, drawY + CELL_SIZE * 0.2, CELL_SIZE * 0.6, CELL_SIZE * 0.6);
 
-                        gc.setFill(Color.rgb(255,255,255,0.4));
+                        gc.setFill(Color.rgb(255, 255, 255, 0.4));
                         gc.fillOval(drawX + CELL_SIZE * 0.35, drawY + CELL_SIZE * 0.35, CELL_SIZE * 0.3, CELL_SIZE * 0.3);
 
                         gc.setStroke(Color.BLACK);
                         gc.strokeRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
-                    default             -> {
+                    default -> {
                         gc.drawImage(solImg, drawX, drawY, CELL_SIZE, CELL_SIZE);
                     }
                 }
@@ -449,7 +465,7 @@ public class GameController {
         // dessiner chaque bonus
         for (Bonus bonus : game.getBonuses()) {
             double bx = borderPixel + bonus.getX() * CELL_SIZE;
-            double by = topUiHeight  + borderPixel + bonus.getY() * CELL_SIZE;
+            double by = topUiHeight + borderPixel + bonus.getY() * CELL_SIZE;
             gc.drawImage(bonus.getSprite(), bx, by, CELL_SIZE, CELL_SIZE);
         }
 
@@ -516,23 +532,25 @@ public class GameController {
                 }
             }
         }
-        gc.setStroke(javafx.scene.paint.Color.rgb(0,0,0,0.5));
+        gc.setStroke(javafx.scene.paint.Color.rgb(0, 0, 0, 0.5));
         for (int y = 0; y <= h; y++)
-            gc.strokeLine(0, y*cellSize, w*cellSize, y*cellSize);
+            gc.strokeLine(0, y * cellSize, w * cellSize, y * cellSize);
         for (int x = 0; x <= w; x++)
-            gc.strokeLine(x*cellSize, 0, x*cellSize, h*cellSize);
+            gc.strokeLine(x * cellSize, 0, x * cellSize, h * cellSize);
 
         gc.setFill(new Color(0, 0, 0, 0.4));
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         return canvas;
     }
+
     private void updateUserStats() {
         UserManager userManager = UserManager.getInstance();
 
         if (userManager.isLoggedIn()) {
             // Détermine si l'utilisateur a gagné
             boolean hasWon = false;
+            int score = 0;
 
             // CORRECTION : Vérifier si le joueur humain est le gagnant de la partie
             Player winner = game.getWinner();
@@ -551,11 +569,12 @@ public class GameController {
             // 2. Le gagnant est le joueur humain
             if (winner != null && humanPlayer != null && winner.getId() == humanPlayer.getId()) {
                 hasWon = true;
+            }
 
             // Met à jour les statistiques
-            userManager.updateCurrentUserStats(hasWon);
+            userManager.updateCurrentUserStats(hasWon );
 
-            System.out.println("Statistiques mises à jour - Gagné: " + hasWon );
+            System.out.println("Statistiques mises à jour - Gagné: " + hasWon + ", Score: " + score);
             if (winner != null) {
                 System.out.println("Gagnant: Joueur " + winner.getId() + (winner.isHuman() ? " (Humain)" : " (IA)"));
             } else {
@@ -563,4 +582,4 @@ public class GameController {
             }
         }
     }
-}}
+}
