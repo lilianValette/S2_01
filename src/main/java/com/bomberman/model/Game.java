@@ -36,9 +36,6 @@ public class Game {
         this.aiDifficulty = aiDifficulty;
         initializePlayers(playerCount, iaCount);
 
-        //test d'un bonus fixe
-        bonuses.add(new FlameBonus(5,3,1));
-        bonuses.add(new LifeBonus(5,6));
 
     }
 

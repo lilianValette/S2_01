@@ -137,7 +137,7 @@ public class GameController {
 
         jacketBonusImg = new Image(getClass().getResourceAsStream("/images/items/jacket_bonus.png"));
         flameBonusImg = new Image(getClass().getResourceAsStream("/images/items/flame_bonus.png"));
-        lifeBonusImg = new Image(getClass().getResourceAsStream("/images/items/flame_bonus.png"));
+        lifeBonusImg = new Image(getClass().getResourceAsStream("/images/items/life_bonus.png"));
         wallIndestructibleImg = safeImageFromResource(level.getWallIndestructibleImagePath());
         wallDestructibleImg   = safeImageFromResource(level.getWallDestructibleImagePath());
         solImg                = safeImageFromResource(level.getGroundImagePath());
