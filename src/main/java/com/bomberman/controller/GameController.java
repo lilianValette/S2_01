@@ -23,7 +23,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
-import com.bomberman.model.AIDifficulty;
 
 import java.io.InputStream;
 
@@ -213,7 +212,7 @@ public class GameController {
 
     public void startGame() {
         // 1. Initialisation du modèle
-        game = new Game(15, 13, playerCount, iaCount, level, null);
+        game = new Game(15, 13, playerCount, iaCount, level);
 
         // 2. Chargement des ressources
         for (int i = 0; i < avatarsJoueurs.length; i++) {
@@ -786,8 +785,5 @@ public class GameController {
         if (timerTimeline != null) {
             timerTimeline.stop();
         }
-    }
-
-    public void setAIDifficulty(AIDifficulty selectedAIDifficulty) {
     }
 }
