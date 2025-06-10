@@ -5,6 +5,8 @@ import com.bomberman.model.Player;
 import com.bomberman.model.Bomb;
 import com.bomberman.model.Level;
 import com.bomberman.model.Bonus;
+import com.bomberman.model.AIDifficulty;
+import com.bomberman.model.GameSettings;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -92,6 +94,7 @@ public class GameController {
     private Level level;
     private int playerCount;
     private int iaCount;
+    private AIDifficulty aiDifficulty;
 
     private Image wallIndestructibleImg;
     private Image wallDestructibleImg;
@@ -102,13 +105,15 @@ public class GameController {
     public void setLevel(Level level) { this.level = level; }
     public void setPlayerCount(int playerCount) { this.playerCount = playerCount; }
     public void setIaCount(int iaCount) { this.iaCount = iaCount; }
+    public void setAIDifficulty(AIDifficulty aiDifficulty) { this.aiDifficulty = aiDifficulty; }
 
     @FXML
     public void initialize() {}
 
     public void startGame() {
-        // 1. Initialisation du modèle
-        game = new Game(15, 13, playerCount, iaCount, level);
+        // 1. Initialisation du modèle avec la difficulté IA
+        AIDifficulty difficulty = (aiDifficulty != null) ? aiDifficulty : GameSettings.getSelectedAIDifficulty();
+        game = new Game(15, 13, playerCount, iaCount, level, difficulty);
 
         // 2. Chargement des ressources
         for (int i = 0; i < avatarsJoueurs.length; i++) {
@@ -181,7 +186,7 @@ public class GameController {
     }
 
     /**
-     * Tick du jeu : met à jour IA, bombes et directions des IA.
+     * Tick du jeu : met à jour IA, bombes et directions des IA.
      */
     private void updateIAAndGame() {
         // Mémorise les positions avant
