@@ -40,13 +40,11 @@ public abstract class Bonus {
     private void loadSprite(String resourcePath) {
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
             if (is == null) {
-                System.err.println("Bonus : impossible de trouver la ressource " + resourcePath);
                 sprite = null;
             } else {
                 sprite = new Image(is);
             }
         } catch (Exception e) {
-            System.err.println("Bonus : erreur en chargeant l’image " + resourcePath);
             e.printStackTrace();
             sprite = null;
         }
@@ -56,6 +54,11 @@ public abstract class Bonus {
     public boolean isCollected() {
         return collected;
     }
+
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
+
 
     /** @return la coordonnée X (en tiles) du bonus */
     public int getX() {

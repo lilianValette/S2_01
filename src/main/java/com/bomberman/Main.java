@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import java.io.InputStream;
 
 public class Main extends Application {
 
@@ -15,6 +16,10 @@ public class Main extends Application {
         Parent root = loader.load();
         MenuController menuController = loader.getController();
         menuController.setStage(primaryStage);
+
+        primaryStage.getIcons().add(
+                new javafx.scene.image.Image(getClass().getResourceAsStream("/images/avatarsJoueurs/avatarBlanc.png"))
+        );
 
         primaryStage.setTitle("Bomberman");
         primaryStage.setScene(new Scene(root));
