@@ -550,7 +550,7 @@ public class GameController {
                 };
 
                 if (bonusImg != null) {
-                    gc.drawImage(bonusImg, textX, imgY, imgSize, imgSize);
+                    gc.drawImage(bonusImg, textX-40, imgY, imgSize, imgSize);
                 }
 
                 bonusIndex++;
