@@ -60,8 +60,6 @@ public class Game {
         this.aiDifficulty = aiDifficulty;
         initializePlayers(playerCount, iaCount);
 
-        // Exemple de bonus fixe pour test, à adapter selon besoins
-        bonuses.add(new FlameBonus(5, 3, 1));
     }
 
     private void initializePlayers(int humanCount, int iaCount) {
@@ -209,7 +207,6 @@ public class Game {
         int x = b.getX(), y = b.getY(), range = b.getRange();
         explosionFrameCounter++; // incrémente à chaque nouvelle explosion centrale
         addExplosion(x, y, true); // true => centre
-        destroyWall(x, y);
         damagePlayersAt(x, y);
 
         int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
@@ -231,15 +228,19 @@ public class Game {
     private void damagePlayersAt(int x, int y) {
         for (Player p : players) {
             if (p.isAlive() && p.getX() == x && p.getY() == y) {
-                p.takeDamage();
+                if (!p.isInvincibleToBombs()) {
+                    p.takeDamage();
+                }
             }
         }
     }
     private void destroyWall(int x, int y) {
-        if (grid.getCell(x, y) == Grid.CellType.DESTRUCTIBLE) {
-            grid.setCell(x, y, Grid.CellType.EMPTY);
-            if (Math.random() < 0.2) {
-                bonuses.add(new FlameBonus(x, y, 1));
+        if (Math.random() < 0.2) {
+            int bonusType = (int) (Math.random() * 3);
+            switch (bonusType) {
+                case 0 -> bonuses.add(new FlameBonus(x, y, 1));
+                case 1 -> bonuses.add(new JacketBonus(x, y));
+                case 2 -> bonuses.add(new LifeBonus(x, y));
             }
         }
     }
