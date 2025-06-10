@@ -119,8 +119,9 @@ public class GameController {
 
     @FXML
     public void initialize() {
-        // Configuration du bouton pause
+        // Configuration du bouton pause avec style personnalisé
         if (pauseButton != null) {
+            stylePauseButton();
             pauseButton.setOnAction(e -> handlePauseButtonClick());
         }
 
@@ -130,6 +131,102 @@ public class GameController {
         }
     }
 
+    private void stylePauseButton() {
+        pauseButton.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, #FF6B35, #D84315);" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-family: 'Press Start 2P', 'Consolas', monospace;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 8 16 8 16;" +
+                        "-fx-border-color: #FFE0B2;" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-border-radius: 8px;" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.5, 2, 2);" +
+                        "-fx-cursor: hand;"
+        );
+
+        // Effet au survol
+        pauseButton.setOnMouseEntered(e -> {
+            pauseButton.setStyle(
+                    "-fx-background-color: linear-gradient(to bottom, #FF8A65, #F4511E);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-family: 'Press Start 2P', 'Consolas', monospace;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-padding: 8 16 8 16;" +
+                            "-fx-border-color: #FFCC02;" +
+                            "-fx-border-width: 3px;" +
+                            "-fx-border-radius: 8px;" +
+                            "-fx-background-radius: 8px;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(255,204,2,0.6), 6, 0.7, 0, 0);" +
+                            "-fx-cursor: hand;" +
+                            "-fx-scale-x: 1.05;" +
+                            "-fx-scale-y: 1.05;"
+            );
+        });
+
+        // Retour au style normal quand la souris sort
+        pauseButton.setOnMouseExited(e -> {
+            pauseButton.setStyle(
+                    "-fx-background-color: linear-gradient(to bottom, #FF6B35, #D84315);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-family: 'Press Start 2P', 'Consolas', monospace;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-padding: 8 16 8 16;" +
+                            "-fx-border-color: #FFE0B2;" +
+                            "-fx-border-width: 2px;" +
+                            "-fx-border-radius: 8px;" +
+                            "-fx-background-radius: 8px;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.5, 2, 2);" +
+                            "-fx-cursor: hand;" +
+                            "-fx-scale-x: 1.0;" +
+                            "-fx-scale-y: 1.0;"
+            );
+        });
+
+        // Effet au clic (pressed)
+        pauseButton.setOnMousePressed(e -> {
+            pauseButton.setStyle(
+                    "-fx-background-color: linear-gradient(to bottom, #D84315, #BF360C);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-family: 'Press Start 2P', 'Consolas', monospace;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-padding: 9 15 7 17;" + // Légèrement décalé pour effet "enfoncé"
+                            "-fx-border-color: #FFCC02;" +
+                            "-fx-border-width: 3px;" +
+                            "-fx-border-radius: 8px;" +
+                            "-fx-background-radius: 8px;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 2, 0.3, 1, 1);" +
+                            "-fx-cursor: hand;" +
+                            "-fx-scale-x: 0.98;" +
+                            "-fx-scale-y: 0.98;"
+            );
+        });
+
+        // Retour au style de survol au relâchement
+        pauseButton.setOnMouseReleased(e -> {
+            pauseButton.setStyle(
+                    "-fx-background-color: linear-gradient(to bottom, #FF8A65, #F4511E);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-family: 'Press Start 2P', 'Consolas', monospace;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-padding: 8 16 8 16;" +
+                            "-fx-border-color: #FFCC02;" +
+                            "-fx-border-width: 3px;" +
+                            "-fx-border-radius: 8px;" +
+                            "-fx-background-radius: 8px;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(255,204,2,0.6), 6, 0.7, 0, 0);" +
+                            "-fx-cursor: hand;" +
+                            "-fx-scale-x: 1.05;" +
+                            "-fx-scale-y: 1.05;"
+            );
+        });
+    }
     /**
      * Gestionnaire du clic sur le canvas (pour les boutons du menu pause)
      */
@@ -175,7 +272,9 @@ public class GameController {
 
     private void pauseGame() {
         isPaused = true;
-        pauseButton.setText("REPRENDRE");
+
+        // Cacher complètement le bouton pause
+        pauseButton.setVisible(false);
 
         // Arrêter les timelines
         if (gameTimeline != null) {
@@ -194,6 +293,9 @@ public class GameController {
 
     private void resumeGame() {
         isPaused = false;
+
+        // Réafficher le bouton pause
+        pauseButton.setVisible(true);
         pauseButton.setText("PAUSE");
 
         // Redémarrer les timelines
